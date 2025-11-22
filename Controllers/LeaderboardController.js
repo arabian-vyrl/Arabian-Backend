@@ -684,11 +684,22 @@ async function runAllSyncs() {
     console.log("⏰ [CRON] Starting scheduled Salesforce sync job...");
     const t0 = Date.now();
     try {
-      // 1) Build & apply leaderboard snapshot in one shot
+      // 1) Deals + commissions + viewings via snapshot
       const leaderboardResult = await syncLeaderboardCoreCurrentMonth();
 
-      // 2) Then monthly properties (agent model method)
-      // const monthlyPropsResult = await syncMonthlyPropertiesJobNew();
+      // 2) Listings via the EXISTING Express handler logic
+      const dummyReq = { query: {} };
+      const dummyRes = {
+        status(code) {
+          this.statusCode = code;
+          return this;
+        },
+        json(payload) {
+          console.log("📊 [CRON] Monthly property sync summary:", payload?.data || payload);
+        },
+      };
+
+      await updateMonthlyPropertiesForAllAgents(dummyReq, dummyRes);
 
       const sec = ((Date.now() - t0) / 1000).toFixed(2);
       console.log(`✅ [CRON] All syncs completed successfully in ${sec}s`);
@@ -703,6 +714,7 @@ async function runAllSyncs() {
   });
 }
 
+
 let cronScheduled = false;
 function setupCronJobs() {
   if (cronScheduled) {
@@ -712,7 +724,7 @@ function setupCronJobs() {
 
   // Every 2 minutes, pinned to UTC
   cron.schedule(
-    "*/3 * * * *",
+    "*/4 * * * *",
     async () => {
       const now = new Date().toISOString();
       console.log(`🔔 [CRON TICK] Triggered at ${now} (UTC)`);
