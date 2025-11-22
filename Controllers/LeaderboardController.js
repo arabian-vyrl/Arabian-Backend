@@ -4590,9 +4590,151 @@ async function applyLeaderboardSnapshot(snapshot) {
  * builds snapshot + applies it in one go.
  */
 async function syncLeaderboardCoreCurrentMonth() {
-  const snapshot = await buildLeaderboardSnapshotCurrentMonth();
-  return applyLeaderboardSnapshot(snapshot);
+  const session = await mongoose.startSession();
+  
+  try {
+    // Start transaction
+    session.startTransaction();
+    
+    console.log('🔒 [TRANSACTION] Starting leaderboard sync with transaction...');
+    
+    // Build snapshot (read-only operations, no transaction needed)
+    const snapshot = await buildLeaderboardSnapshotCurrentMonth();
+    
+    // Apply snapshot within transaction
+    const result = await applyLeaderboardSnapshotWithTransaction(snapshot, session);
+    
+    // Commit transaction - all updates become visible at once
+    await session.commitTransaction();
+    console.log('✅ [TRANSACTION] Committed successfully - all updates are now visible');
+    
+    return result;
+    
+  } catch (error) {
+    // Rollback on any error - no partial updates will be visible
+    await session.abortTransaction();
+    console.error('❌ [TRANSACTION] Aborted due to error - no changes applied:', error);
+    throw error;
+    
+  } finally {
+    // Always end session
+    session.endSession();
+  }
 }
+
+/**
+ * Apply leaderboard snapshot within a transaction
+ */
+const mongoose = require('mongoose');
+async function applyLeaderboardSnapshotWithTransaction(snapshot, session) {
+  const { targetY, targetM, agentMap, metricsByKey, meta } = snapshot;
+
+  const todayUTC = utcTodayStart();
+  const canZero = allowZeroingNow();
+  const now = new Date();
+
+  const ops = [];
+  let agentsTouched = 0;
+
+  for (const [key, agent] of agentMap.entries()) {
+    const m = metricsByKey.get(key) || {
+      propertiesSold: 0,
+      totalCommission: 0,
+      viewings: 0,
+      lastDealDate: null,
+      activePropertiesThisMonth: 0,
+    };
+
+    const propertiesSold = m.propertiesSold || 0;
+    const totalCommission = Math.round((m.totalCommission || 0) * 100) / 100;
+    const viewings = m.viewings || 0;
+    const activePropertiesThisMonth = m.activePropertiesThisMonth || 0;
+
+    let lastDealDays = null;
+    if (m.lastDealDate) {
+      const d0 = new Date(m.lastDealDate);
+      d0.setUTCHours(0, 0, 0, 0);
+      lastDealDays = Math.max(0, Math.floor((todayUTC - d0) / 86400000));
+    }
+
+    const $set = {
+      "leaderboard.lastUpdated": now,
+      lastUpdated: now,
+    };
+
+    if (propertiesSold !== 0 || canZero) {
+      $set["leaderboard.propertiesSold"] = propertiesSold;
+    }
+    if (totalCommission !== 0 || canZero) {
+      $set["leaderboard.totalCommission"] = totalCommission;
+    }
+    if (viewings !== 0 || canZero) {
+      $set["leaderboard.viewings"] = viewings;
+    }
+    if (activePropertiesThisMonth !== 0 || canZero) {
+      $set["leaderboard.activePropertiesThisMonth"] = activePropertiesThisMonth;
+    }
+
+    if (m.lastDealDate) {
+      $set["leaderboard.lastDealDate"] = m.lastDealDate;
+      $set["leaderboard.lastDealDays"] = lastDealDays;
+    } else if (canZero) {
+      $set["leaderboard.lastDealDate"] = null;
+      $set["leaderboard.lastDealDays"] = null;
+    }
+
+    ops.push({
+      updateOne: {
+        filter: { _id: agent._id },
+        update: { $set },
+      },
+    });
+
+    if (
+      propertiesSold !== 0 ||
+      totalCommission !== 0 ||
+      viewings !== 0 ||
+      activePropertiesThisMonth !== 0 ||
+      m.lastDealDate
+    ) {
+      agentsTouched++;
+    }
+  }
+
+  if (!ops.length) {
+    console.log(
+      `ℹ️ [LEADERBOARD SNAPSHOT] No leaderboard updates needed for UTC ${targetY}-${String(
+        targetM + 1
+      ).padStart(2, "0")}`
+    );
+    return {
+      targetY,
+      targetM,
+      agentsTouched: 0,
+      meta,
+    };
+  }
+
+  // Execute bulkWrite with session for transaction support
+  await Agent.bulkWrite(ops, { 
+    ordered: false, 
+    session // Pass session to include in transaction
+  });
+
+  console.log(
+    `✅ [LEADERBOARD SNAPSHOT] Prepared bulkWrite for UTC ${targetY}-${String(
+      targetM + 1
+    ).padStart(2, "0")} → Agents to update: ${agentsTouched} (waiting for commit)`
+  );
+
+  return {
+    targetY,
+    targetM,
+    agentsTouched,
+    meta,
+  };
+}
+
 
 
 /** ───────────────────────────────────────────────────────────────────────────
