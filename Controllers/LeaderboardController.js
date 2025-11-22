@@ -566,7 +566,7 @@ async function syncLeaderboardCoreCurrentMonth(maxRetries = 3) {
  */
 async function applyLeaderboardSnapshotWithTransaction(snapshot, session) {
   const { targetY, targetM, agentMap, metricsByKey, meta } = snapshot;
-
+  // console.log("metricsByKey",metricsByKey)
   const todayUTC = utcTodayStart();
   const canZero = allowZeroingNow();
   const now = new Date();
@@ -699,7 +699,7 @@ async function runAllSyncs() {
         },
       };
 
-      await updateMonthlyPropertiesForAllAgents(dummyReq, dummyRes);
+      // await updateMonthlyPropertiesForAllAgents(dummyReq, dummyRes);
 
       const sec = ((Date.now() - t0) / 1000).toFixed(2);
       console.log(`✅ [CRON] All syncs completed successfully in ${sec}s`);
