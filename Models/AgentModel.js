@@ -2289,13 +2289,13 @@ agentSchema.methods.incrementLeaderboardMetric = function (metric, value = 1) {
 //   }
 // };
 // Add this as a static method to the schema
-// agentSchema.statics.isRelistedProperty = function (propertyId) {
-//   if (!propertyId) return false;
-//   const segments = propertyId.split("-");
-//   const lastSegment = segments[segments.length - 1];
-//   // Relisted if: more than 3 segments AND last is purely numeric
-//   return segments.length > 3 && /^\d+$/.test(lastSegment);
-// };
+agentSchema.statics.isRelistedProperty = function (propertyId) {
+  if (!propertyId) return false;
+  const segments = propertyId.split("-");
+  const lastSegment = segments[segments.length - 1];
+  // Relisted if: more than 3 segments AND last is purely numeric
+  return segments.length > 3 && /^\d+$/.test(lastSegment);
+};
 
 // You can also add this as an instance method if needed
 agentSchema.methods.getOriginalProperties = function () {

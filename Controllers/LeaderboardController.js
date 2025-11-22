@@ -371,13 +371,25 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 
   /* ───────────── MONTHLY PROPERTIES: activePropertiesThisMonth ───────────── */
 
-  // Filter listings by PF_Published_Date (current UTC month) + Live status
   const listingsThisMonth = listingsRaw.filter((listing) => {
+    // Skip if no PF_Published_Date
     if (!listing.PF_Published_Date) return false;
+
+    // Skip if not Live status
     if (listing.status !== "Live") return false;
-    return isSameUtcMonth(listing.PF_Published_Date, targetY, targetM);
+
+    // Parse PF_Published_Date and check month/year
+    const publishedDate = toUtcDate(listing.PF_Published_Date);
+    if (!publishedDate) return false;
+
+    const isCurrentMonth =
+      publishedDate.getUTCFullYear() === targetY &&
+      publishedDate.getUTCMonth() === targetM;
+
+    return isCurrentMonth;
   });
 
+  // Mirror your manual stats
   const skippedNullDate = listingsRaw.filter(
     (l) => !l.PF_Published_Date
   ).length;
@@ -387,15 +399,19 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 
   let excludedRelisted = 0;
   const unmatchedListingEmails = new Set();
+
   for (const listing of listingsThisMonth) {
-    const emailKey = listing.listing_agent_email?.toLowerCase().trim();
+    const emailKey = listing.listing_agent_email
+      ?.toLowerCase()
+      .trim();
 
     if (!emailKey) continue;
 
-    // Check if property is relisted
+    // 🔁 Same relisted logic as your old Agent.isRelistedProperty
     const isRelisted = (() => {
-      if (!listing.id) return false;
-      const segments = listing.id.split("-");
+      const id = listing.id;
+      if (!id) return false;
+      const segments = id.split("-");
       const lastSegment = segments[segments.length - 1];
       // Relisted if: more than 3 segments AND last is purely numeric
       return segments.length > 3 && /^\d+$/.test(lastSegment);
@@ -405,6 +421,8 @@ async function buildLeaderboardSnapshotCurrentMonth() {
       excludedRelisted++;
       continue;
     }
+
+    // Map email → normalized agentName key (same pattern as rest of snapshot)
     const metricsKey = emailToNameKey.get(emailKey);
     if (!metricsKey || !agentMap.has(metricsKey)) {
       unmatchedListingEmails.add(emailKey);
@@ -412,7 +430,8 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     }
 
     const m = ensureMetrics(metricsKey);
-    m.activePropertiesThisMonth = (m.activePropertiesThisMonth || 0) + 1;
+    m.activePropertiesThisMonth =
+      (m.activePropertiesThisMonth || 0) + 1;
   }
 
   console.log(
@@ -421,6 +440,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
   console.log(
     `   → Excluded relisted: ${excludedRelisted}, skippedNullDate: ${skippedNullDate}, skippedOffMarket: ${skippedOffMarket}`
   );
+
 
   return {
     targetY,
@@ -466,44 +486,69 @@ async function buildLeaderboardSnapshotCurrentMonth() {
  * Core function the cron (and optionally manual) can call:
  * builds snapshot + applies it in one go.
  */
-async function syncLeaderboardCoreCurrentMonth() {
-  const session = await mongoose.startSession();
+/**
+ * Core function the cron (and optionally manual) can call:
+ * builds snapshot + applies it in one go with retry logic.
+ */
+async function syncLeaderboardCoreCurrentMonth(maxRetries = 3) {
+  let attempt = 0;
+  
+  while (attempt < maxRetries) {
+    const session = await mongoose.startSession();
 
-  try {
-    // Start transaction
-    session.startTransaction();
+    try {
+      // Start transaction
+      session.startTransaction();
 
-    console.log(
-      "🔒 [TRANSACTION] Starting leaderboard sync with transaction..."
-    );
+      console.log(
+        `🔒 [TRANSACTION] Starting leaderboard sync with transaction... (Attempt ${attempt + 1}/${maxRetries})`
+      );
 
-    // Build snapshot (read-only operations, no transaction needed)
-    const snapshot = await buildLeaderboardSnapshotCurrentMonth();
+      // Build snapshot (read-only operations, no transaction needed)
+      const snapshot = await buildLeaderboardSnapshotCurrentMonth();
 
-    // Apply snapshot within transaction
-    const result = await applyLeaderboardSnapshotWithTransaction(
-      snapshot,
-      session
-    );
+      // Apply snapshot within transaction
+      const result = await applyLeaderboardSnapshotWithTransaction(
+        snapshot,
+        session
+      );
 
-    // Commit transaction - all updates become visible at once
-    await session.commitTransaction();
-    console.log(
-      "✅ [TRANSACTION] Committed successfully - all updates are now visible"
-    );
+      // Commit transaction - all updates become visible at once
+      await session.commitTransaction();
+      console.log(
+        "✅ [TRANSACTION] Committed successfully - all updates are now visible"
+      );
 
-    return result;
-  } catch (error) {
-    // Rollback on any error - no partial updates will be visible
-    await session.abortTransaction();
-    console.error(
-      "❌ [TRANSACTION] Aborted due to error - no changes applied:",
-      error
-    );
-    throw error;
-  } finally {
-    // Always end session
-    session.endSession();
+      return result;
+    } catch (error) {
+      // Rollback on any error - no partial updates will be visible
+      await session.abortTransaction();
+      
+      // Check if it's a transient transaction error that can be retried
+      const isTransientError = 
+        error.errorLabelSet?.has('TransientTransactionError') ||
+        error.code === 112 || // WriteConflict
+        error.codeName === 'WriteConflict';
+
+      if (isTransientError && attempt < maxRetries - 1) {
+        attempt++;
+        const delayMs = Math.min(1000 * Math.pow(2, attempt), 5000); // Exponential backoff, max 5s
+        console.log(
+          `⚠️ [TRANSACTION] Write conflict detected. Retrying in ${delayMs}ms... (Attempt ${attempt}/${maxRetries})`
+        );
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        continue;
+      }
+
+      console.error(
+        "❌ [TRANSACTION] Aborted due to error - no changes applied:",
+        error.message
+      );
+      throw error;
+    } finally {
+      // Always end session
+      session.endSession();
+    }
   }
 }
 
@@ -658,7 +703,7 @@ function setupCronJobs() {
 
   // Every 2 minutes, pinned to UTC
   cron.schedule(
-    "*/2 * * * *",
+    "*/5 * * * *",
     async () => {
       const now = new Date().toISOString();
       console.log(`🔔 [CRON TICK] Triggered at ${now} (UTC)`);
@@ -1404,159 +1449,7 @@ const syncAgentViewingsFromSalesforce = async (req, res) => {
   }
 };
 
-// const updateMonthlyPropertiesForAllAgents = async (req, res) => {
-//   try {
-//     console.log("🔄 Starting full Salesforce property sync...");
 
-//     // ✅ USE sfGet() instead of axios.get() to include authentication
-//     const response = await sfGet("/services/apexrest/listingsAPI");
-
-//     if (!response.data || !response.data.listings) {
-//       throw new Error("Invalid response from Salesforce API");
-//     }
-
-//     const listings = response.data.listings;
-//     console.log(`📦 Fetched ${listings.length} listings from Salesforce`);
-
-//     // Get current date info for filtering
-//     const now = new Date();
-//     const currentYear = now.getUTCFullYear();
-//     const currentMonth = now.getUTCMonth();
-
-//     // Group all Live properties by agent email
-//     const propertiesByEmail = {};
-//     listings.forEach(listing => {
-//       const email = listing.listing_agent_email?.toLowerCase().trim();
-//       if (email && listing.status === "Live") {
-//         if (!propertiesByEmail[email]) {
-//           propertiesByEmail[email] = [];
-//         }
-//         propertiesByEmail[email].push(listing);
-//       }
-//     });
-
-//     console.log(`👥 Properties distributed across ${Object.keys(propertiesByEmail).length} agent emails`);
-
-//     const stats = {
-//       agentsUpdated: 0,
-//       propertiesAdded: 0,
-//       agentsNotFound: [],
-//       excludedRelisted: 0
-//     };
-
-//     // Use bulkWrite for better performance
-//     const ops = [];
-
-//     for (const [email, properties] of Object.entries(propertiesByEmail)) {
-//       const agent = await Agent.findOne({
-//         email: email,
-//         isActive: true
-//       });
-
-//       if (!agent) {
-//         stats.agentsNotFound.push(email);
-//         console.log(`⚠️  Agent not found for email: ${email}`);
-//         continue;
-//       }
-
-//       // Process each property for this agent
-//       properties.forEach(listing => {
-//         // Check if it's a relisted property (exclude from monthly count)
-//         const isRelisted = Agent.isRelistedProperty(listing.id);
-//         if (isRelisted) {
-//           stats.excludedRelisted++;
-//         }
-
-//         const propertyData = {
-//           propertyId: listing.id,
-//           listingTitle: listing.listing_title || '',
-//           listingType: listing.listingtype || 'Sale',
-//           propertyType: listing.property_type || 'Unknown',
-//           price: listing.listingprice?.toString() || '0',
-//           currency: listing.currency_iso_code || 'AED',
-//           status: listing.status || 'Active',
-//           bedrooms: listing.bedrooms?.toString() || '0',
-//           bathrooms: listing.fullbathrooms?.toString() || '0',
-//           area: listing.totalarea?.toString() || '0',
-//           location: {
-//             city: listing.city || '',
-//             address: listing.propertyfinder_region || '',
-//             community: listing.community || '',
-//             building: listing.property_name || ''
-//           },
-//           description: listing.description || '',
-//           addedDate: listing.PF_Published_Date ? toUtcDate(listing.PF_Published_Date) : null,
-//           lastUpdated: new Date()
-//         };
-
-//         agent.addOrUpdateProperty(propertyData);
-//         stats.propertiesAdded++;
-//       });
-
-//       // Calculate monthly properties count
-//       const monthlyCount = agent.calculateActivePropertiesThisMonth();
-//       agent.leaderboard = agent.leaderboard || {};
-//       agent.leaderboard.activePropertiesThisMonth = monthlyCount;
-//       agent.leaderboard.lastUpdated = new Date();
-
-//       // Prepare bulk operation instead of individual saves
-//       ops.push({
-//         updateOne: {
-//           filter: { _id: agent._id },
-//           update: {
-//             $set: {
-//               properties: agent.properties,
-//               activeSaleListings: agent.activeSaleListings,
-//               'leaderboard.activePropertiesThisMonth': monthlyCount,
-//               'leaderboard.lastUpdated': new Date(),
-//               lastUpdated: new Date()
-//             }
-//           }
-//         }
-//       });
-
-//       stats.agentsUpdated++;
-
-//       console.log(
-//         `✅ ${agent.agentName}: Added ${properties.length} properties, ` +
-//         `Monthly count: ${monthlyCount}`
-//       );
-//     }
-
-//     // Execute bulk update
-//     if (ops.length > 0) {
-//       await Agent.bulkWrite(ops, { ordered: false });
-//     }
-
-//     console.log("\n📊 Sync Summary:");
-//     console.log(`   ✅ Agents updated: ${stats.agentsUpdated}`);
-//     console.log(`   📦 Properties processed: ${stats.propertiesAdded}`);
-//     console.log(`   🔄 Relisted properties excluded: ${stats.excludedRelisted}`);
-//     console.log(`   ⚠️  Agents not found: ${stats.agentsNotFound.length}`);
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Successfully synced all properties from Salesforce",
-//       data: {
-//         totalListings: listings.length,
-//         agentsUpdated: stats.agentsUpdated,
-//         propertiesAdded: stats.propertiesAdded,
-//         excludedRelisted: stats.excludedRelisted,
-//         agentsNotFound: stats.agentsNotFound,
-//         month: currentMonth + 1,
-//         year: currentYear
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error("❌ Error in full sync:", error.message);
-//     return res.status(500).json({
-//       success: false,
-//       error: "Failed to sync all properties",
-//       details: error.message
-//     });
-//   }
-// };
 const updateMonthlyPropertiesForAllAgents = async (req, res) => {
   try {
     console.log("🔄 Starting monthly Salesforce property sync...");
