@@ -71,8 +71,8 @@ const getSingleProperty = async (req, res) => {
 
       // Address information for map coordinates
       address_information: {
-        latitude: property.custom_fields?.latitude || property.address_information?.latitude || null,
-        longitude: property.custom_fields?.longitude || property.address_information?.longitude || null,
+        location: property.address_information?.latitude || property.address_information?.latitude || null,
+        // longitude: property.address_information?.longitude || property.address_information?.longitude || null,
         city: property.custom_fields?.city || property.address_information?.city || "Dubai",
         community: property.custom_fields?.community || property.address_information?.community || "",
         address: property.custom_fields?.pba__addresstext_pb || property.address_information?.address || ""
