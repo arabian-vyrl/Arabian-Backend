@@ -208,7 +208,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     agents.map((a) => [normalizeAgentName(a.agentName), a])
   );
 
-  // 🔹 NEW: email -> Agent document (to mirror manual function’s Agent.findOne({ email }))
+  // email -> Agent document (to mirror manual Agent.findOne({ email }))
   const emailToAgent = new Map();
   for (const a of agents) {
     if (!a.email) continue;
@@ -229,7 +229,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
         totalCommission: 0,
         viewings: 0,
         lastDealDate: null,
-        activePropertiesThisMonth: 0, // 🔥 NEW
+        activePropertiesThisMonth: 0,
       };
       metricsByKey.set(key, m);
     }
@@ -237,11 +237,141 @@ async function buildLeaderboardSnapshotCurrentMonth() {
   };
 
   /* ───────────── DEALS: propertiesSold + lastDealDate ───────────── */
-  // ... your deals + commissions + viewings code stays EXACTLY as it is ...
+
+  const monthlyDeals = monthlyDealsRaw.filter((d) =>
+    isSameUtcMonth(d?.createddate, targetY, targetM)
+  );
+
+  const unmatchedMonthly = [];
+  const unmatchedYtd = [];
+
+  // use deal_agent, deal_agent_1, deal_agent_2 + dedupe
+  const namesFromDeal = (deal) => {
+    const nameCandidates = [];
+    if (deal.deal_agent) nameCandidates.push(deal.deal_agent);
+    if (deal.deal_agent_1) nameCandidates.push(deal.deal_agent_1);
+    if (deal.deal_agent_2) nameCandidates.push(deal.deal_agent_2);
+
+    return [
+      ...new Set(
+        nameCandidates
+          .map((n) => (typeof n === "string" ? n.trim() : "").trim())
+          .filter(Boolean)
+      ),
+    ];
+  };
+
+  // Monthly deal counts
+  for (const deal of monthlyDeals) {
+    const names = namesFromDeal(deal);
+    if (!names.length) continue;
+
+    for (const nm of names) {
+      const key = normalizeAgentName(nm);
+      if (!key || !agentMap.has(key)) {
+        if (nm && !unmatchedMonthly.includes(nm)) unmatchedMonthly.push(nm);
+        continue;
+      }
+      const m = ensureMetrics(key);
+      m.propertiesSold += 1;
+    }
+  }
+
+  // YTD lastDealDate
+  for (const deal of ytdDealsRaw) {
+    const names = namesFromDeal(deal);
+    if (!names.length) continue;
+
+    const created = deal.createddate;
+    const dealDate = created ? new Date(created) : null;
+    if (!dealDate || Number.isNaN(dealDate.getTime())) continue;
+
+    for (const nm of names) {
+      const key = normalizeAgentName(nm);
+      if (!key) continue;
+      if (!agentMap.has(key)) {
+        if (nm && !unmatchedYtd.includes(nm)) unmatchedYtd.push(nm);
+        continue;
+      }
+      const m = ensureMetrics(key);
+      if (!m.lastDealDate || dealDate > m.lastDealDate) {
+        m.lastDealDate = dealDate;
+      }
+    }
+  }
+
+  /* ───────────── COMMISSIONS: totalCommission ───────────── */
+
+  const unmatchedCommissionAgents = [];
+  let filteredCommissionsCount = 0;
+
+  const CONTRACT_DATE_TYPES = new Set([
+    "Landlord Commission",
+    "Landlord Referral Commission",
+    "Tenant Commission",
+    "Tenant Referral",
+  ]);
+
+  const getEffectiveDateForCommission = (c) => {
+    const recordType = c?.record_type;
+
+    if (CONTRACT_DATE_TYPES.has(recordType)) {
+      return c.offer_contract_date || null;
+    }
+    return c.from_f_startdate;
+  };
+
+  for (const c of commissionsRaw) {
+    const effectiveDate = getEffectiveDateForCommission(c);
+    const keep =
+      effectiveDate && isSameUtcMonth(effectiveDate, targetY, targetM);
+
+    if (!keep) continue;
+    filteredCommissionsCount++;
+
+    const agentName = c.agent_name || c.commission_agents;
+    if (!agentName) continue;
+
+    const key = normalizeAgentName(agentName);
+    if (!agentMap.has(key)) {
+      if (!unmatchedCommissionAgents.includes(agentName)) {
+        unmatchedCommissionAgents.push(agentName);
+      }
+      continue;
+    }
+
+    const rawAmount = c.commission_amount_excl_vat ?? c.total_commissions ?? 0;
+    const amt = amountNumber(rawAmount);
+
+    const m = ensureMetrics(key);
+    m.totalCommission += amt;
+  }
+
+  /* ───────────── VIEWINGS: viewings count ───────────── */
+
+  const unmatchedViewingOwners = new Set();
+
+  const currentMonthViewings = viewingsRaw.filter((v) =>
+    isSameUtcMonth(v?.start, targetY, targetM)
+  );
+
+  for (const v of currentMonthViewings) {
+    const owner = v.owner || v.owner_name || v.agent_name || v.createdById;
+    const key = normalizeAgentName(owner);
+    if (!key) continue;
+
+    if (agentMap.has(key)) {
+      const m = ensureMetrics(key);
+      m.viewings += 1;
+    } else if (owner) {
+      unmatchedViewingOwners.add(owner);
+    }
+  }
 
   /* ───────────── MONTHLY PROPERTIES: activePropertiesThisMonth ───────────── */
+  // MIRRORS updateMonthlyPropertiesForAllAgents
 
-  // Filter listings by PF_Published_Date (current UTC month) + Live status
+  // 1) Filter listings by PF_Published_Date (current UTC month) + Live status
   const listingsThisMonth = listingsRaw.filter((listing) => {
     if (!listing.PF_Published_Date) return false;
     if (listing.status !== "Live") return false;
@@ -256,7 +386,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     return isCurrentMonth;
   });
 
-  // Mirror manual stats
+  // Same stats as manual
   const skippedNullDate = listingsRaw.filter(
     (l) => !l.PF_Published_Date
   ).length;
@@ -264,40 +394,42 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     (l) => l.status !== "Live"
   ).length;
 
+  // 2) Group current-month listings by agent email (same as manual)
+  const propertiesByEmail = {};
+  for (const listing of listingsThisMonth) {
+    const email = listing.listing_agent_email?.toLowerCase().trim();
+    if (!email) continue;
+
+    if (!propertiesByEmail[email]) {
+      propertiesByEmail[email] = [];
+    }
+    propertiesByEmail[email].push(listing);
+  }
+
   let excludedRelisted = 0;
   const unmatchedListingEmails = new Set();
 
-  for (const listing of listingsThisMonth) {
-    const emailKey = listing.listing_agent_email
-      ?.toLowerCase()
-      .trim();
-
-    if (!emailKey) continue;
-
-    // 🔁 Use EXACT same relisted logic as manual (prefer Agent.isRelistedProperty if defined)
-    const isRelisted =
-      typeof Agent.isRelistedProperty === "function"
-        ? Agent.isRelistedProperty(listing.id)
-        : (() => {
-            const id = listing.id;
-            if (!id) return false;
-            const segments = id.split("-");
-            const lastSegment = segments[segments.length - 1];
-            // Relisted if: more than 3 segments AND last is purely numeric
-            return segments.length > 3 && /^\d+$/.test(lastSegment);
-          })();
-
-    if (isRelisted) {
-      excludedRelisted++;
-      continue;
-    }
-
-    // 🔹 Mirror manual join: email → Agent
+  // 3) For each email group, mirror manual logic
+  for (const [emailKey, properties] of Object.entries(propertiesByEmail)) {
+    // Same as: Agent.findOne({ email, isActive: true })
     const agentDoc = emailToAgent.get(emailKey);
-    if (!agentDoc) {
+    if (!agentDoc || !agentDoc.isActive) {
       unmatchedListingEmails.add(emailKey);
       continue;
     }
+
+    const validProperties = properties.filter((listing) => {
+      if (
+        typeof Agent.isRelistedProperty === "function" &&
+        Agent.isRelistedProperty(listing.id)
+      ) {
+        excludedRelisted++;
+        return false;
+      }
+      return true;
+    });
+
+    const monthlyCount = validProperties.length;
 
     const metricsKey = normalizeAgentName(agentDoc.agentName);
     if (!metricsKey) {
@@ -306,8 +438,8 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     }
 
     const m = ensureMetrics(metricsKey);
-    m.activePropertiesThisMonth =
-      (m.activePropertiesThisMonth || 0) + 1;
+    // mirror manual behavior — assign, don't increment
+    m.activePropertiesThisMonth = monthlyCount;
   }
 
   console.log(
@@ -317,11 +449,12 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     `   → Excluded relisted: ${excludedRelisted}, skippedNullDate: ${skippedNullDate}, skippedOffMarket: ${skippedOffMarket}`
   );
 
+  // 4) Return snapshot + meta for logging / debugging
   return {
     targetY,
     targetM,
     agents,
-    agentMap, // still available if needed
+    agentMap,
     metricsByKey,
     meta: {
       deals: {
@@ -351,6 +484,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     },
   };
 }
+
 
 /**
  * Apply a leaderboard snapshot to Mongo in a single bulkWrite,
