@@ -3023,9 +3023,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     }
   }
 
- /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
-
-    /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
+  /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
 
   // Relisted IDs example:
   //   Original: "PB-S-15856"   -> 2 hyphens, 3 segments
@@ -3171,8 +3169,8 @@ async function buildLeaderboardSnapshotCurrentMonth() {
       },
     },
   };
-
 }
+
 
 /** ───────────────────────────────────────────────────────────────────────────
  *  Apply snapshot via bulkWrite
@@ -3235,10 +3233,10 @@ async function applyLeaderboardSnapshot(snapshot) {
     if (viewings !== 0 || canZero) {
       $set["leaderboard.viewings"] = viewings;
     }
-    // ⭐ NEW: activePropertiesThisMonth
-    if (activeProps !== 0 || canZero) {
-      $set["leaderboard.activePropertiesThisMonth"] = activeProps;
-    }
+
+    // ⭐ IMPORTANT: always overwrite activePropertiesThisMonth from snapshot
+    // This ensures ONLY the cron snapshot controls this field, no stale values.
+    $set["leaderboard.activePropertiesThisMonth"] = activeProps;
 
     if (m.lastDealDate) {
       $set["leaderboard.lastDealDate"] = m.lastDealDate;

@@ -1911,9 +1911,9 @@ const agentSchema = new mongoose.Schema(
 // Indexes
 agentSchema.index({ agentId: 1 }); // Index for sequence number
 agentSchema.index({ sequenceNumber: 1 }); // Index for sequence number
-agentSchema.index({ "properties.propertyId": 1 });
-agentSchema.index({ "leaderboard.propertiesSold": -1 }); // Index for leaderboard sorting
-agentSchema.index({ "leaderboard.totalCommission": -1 }); // Index for leaderboard sorting
+// agentSchema.index({ "properties.propertyId": 1 });
+// agentSchema.index({ "leaderboard.propertiesSold": -1 }); // Index for leaderboard sorting
+// agentSchema.index({ "leaderboard.totalCommission": -1 }); // Index for leaderboard sorting
 
 // ——— Virtual fields for property counts ———
 agentSchema.virtual("totalProperties").get(function () {
@@ -2127,62 +2127,7 @@ agentSchema.statics.reorderAllSequences = async function () {
   }
 };
 
-// ——— NEW: Leaderboard Management Methods ———
-agentSchema.methods.updateLeaderboardMetrics = function (metrics = {}) {
-  if (!this.leaderboard) this.leaderboard = {};
 
-  const assignNum = (k) => {
-    if (metrics[k] !== undefined) {
-      // force Mongoose change tracking on nested path
-      this.set(`leaderboard.${k}`, Number(metrics[k]) || 0);
-    }
-  };
-
-  [
-    "propertiesSold",
-    "totalCommission",
-    "viewings",
-    "offers",
-    "activePropertiesThisMonth",
-    "lastDealDate",
-    "lastDealDays",
-  ].forEach(assignNum);
-
-  this.set("leaderboard.lastUpdated", new Date());
-  this.set("lastUpdated", new Date());
-
-  // ✅ ensure persistence for plain nested object
-  this.markModified("leaderboard");
-  return this;
-};
-
-agentSchema.methods.incrementLeaderboardMetric = function (metric, value = 1) {
-  if (!this.leaderboard) {
-    this.leaderboard = {
-      propertiesSold: 0,
-      totalCommission: 0,
-      viewings: 0,
-      offers: 0,
-    };
-  }
-
-  const validMetrics = [
-    "propertiesSold",
-    "totalCommission",
-    "viewings",
-    "offers",
-  ];
-  if (!validMetrics.includes(metric)) {
-    throw new Error(
-      `Invalid metric: ${metric}. Must be one of: ${validMetrics.join(", ")}`
-    );
-  }
-
-  this.leaderboard[metric] += value;
-  this.leaderboard.lastUpdated = new Date();
-  this.lastUpdated = new Date();
-  return this;
-};
 // agentSchema.statics.updateAllAgentsMonthlyProperties = async function () {
 //   try {
 //     console.log("📊 Updating active properties this month for all agents...");
@@ -2318,101 +2263,57 @@ agentSchema.methods.getRelistedProperties = function () {
   });
 };
 
-agentSchema.methods.resetLeaderboardMetrics = function () {
-  this.leaderboard = {
-    propertiesSold: 0,
-    totalCommission: 0,
-    viewings: 0,
-    offers: 0,
-    lastUpdated: new Date(),
-  };
-  this.lastUpdated = new Date();
-  return this;
-};
 
-// ——— NEW: Leaderboard Static Methods ———
-agentSchema.statics.getLeaderboard = function (options = {}) {
-  const {
-    sortBy = "propertiesSold", // Default sort by properties sold
-    limit = 10,
-    includeInactive = false,
-  } = options;
 
-  const matchStage = includeInactive ? {} : { isActive: true };
+// agentSchema.statics.getTopPerformersByMetric = function (metric, limit = 5) {
+//   const validMetrics = [
+//     "propertiesSold",
+//     "totalCommission",
+//     "viewings",
+//     "offers",
+//   ];
+//   if (!validMetrics.includes(metric)) {
+//     throw new Error(
+//       `Invalid metric: ${metric}. Must be one of: ${validMetrics.join(", ")}`
+//     );
+//   }
 
-  const sortField = `leaderboard.${sortBy}`;
-  const sortStage = { [sortField]: -1 };
+//   const sortField = `leaderboard.${metric}`;
+//   return this.aggregate([
+//     { $match: { isActive: true } },
+//     {
+//       $project: {
+//         agentId: 1,
+//         agentName: 1,
+//         designation: 1,
+//         imageUrl: 1,
+//         [`leaderboard.${metric}`]: 1,
+//       },
+//     },
+//     { $sort: { [sortField]: -1 } },
+//     { $limit: limit },
+//   ]);
+// };
 
-  return this.aggregate([
-    { $match: matchStage },
-    {
-      $project: {
-        agentId: 1,
-        agentName: 1,
-        designation: 1,
-        email: 1,
-        phone: 1,
-        imageUrl: 1,
-        specialistAreas: 1,
-        leaderboard: 1,
-        sequenceNumber: 1,
-        isActive: 1,
-      },
-    },
-    { $sort: sortStage },
-    { $limit: limit },
-  ]);
-};
-
-agentSchema.statics.getTopPerformersByMetric = function (metric, limit = 5) {
-  const validMetrics = [
-    "propertiesSold",
-    "totalCommission",
-    "viewings",
-    "offers",
-  ];
-  if (!validMetrics.includes(metric)) {
-    throw new Error(
-      `Invalid metric: ${metric}. Must be one of: ${validMetrics.join(", ")}`
-    );
-  }
-
-  const sortField = `leaderboard.${metric}`;
-  return this.aggregate([
-    { $match: { isActive: true } },
-    {
-      $project: {
-        agentId: 1,
-        agentName: 1,
-        designation: 1,
-        imageUrl: 1,
-        [`leaderboard.${metric}`]: 1,
-      },
-    },
-    { $sort: { [sortField]: -1 } },
-    { $limit: limit },
-  ]);
-};
-
-agentSchema.statics.getLeaderboardStats = function () {
-  return this.aggregate([
-    { $match: { isActive: true } },
-    {
-      $group: {
-        _id: null,
-        totalPropertiesSold: { $sum: "$leaderboard.propertiesSold" },
-        totalCommission: { $sum: "$leaderboard.totalCommission" },
-        totalViewings: { $sum: "$leaderboard.viewings" },
-        totalOffers: { $sum: "$leaderboard.offers" },
-        avgPropertiesSold: { $avg: "$leaderboard.propertiesSold" },
-        avgCommission: { $avg: "$leaderboard.totalCommission" },
-        avgViewings: { $avg: "$leaderboard.viewings" },
-        avgOffers: { $avg: "$leaderboard.offers" },
-        totalAgents: { $sum: 1 },
-      },
-    },
-  ]);
-};
+// agentSchema.statics.getLeaderboardStats = function () {
+//   return this.aggregate([
+//     { $match: { isActive: true } },
+//     {
+//       $group: {
+//         _id: null,
+//         totalPropertiesSold: { $sum: "$leaderboard.propertiesSold" },
+//         totalCommission: { $sum: "$leaderboard.totalCommission" },
+//         totalViewings: { $sum: "$leaderboard.viewings" },
+//         totalOffers: { $sum: "$leaderboard.offers" },
+//         avgPropertiesSold: { $avg: "$leaderboard.propertiesSold" },
+//         avgCommission: { $avg: "$leaderboard.totalCommission" },
+//         avgViewings: { $avg: "$leaderboard.viewings" },
+//         avgOffers: { $avg: "$leaderboard.offers" },
+//         totalAgents: { $sum: 1 },
+//       },
+//     },
+//   ]);
+// };
 
 // ——— Property management methods ———
 agentSchema.methods.addOrUpdateProperty = function (propertyData) {
