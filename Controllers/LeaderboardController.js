@@ -3025,10 +3025,15 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 
  /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
 
+    /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
+
+  // Relisted IDs example:
+  //   Original: "PB-S-15856"   -> 2 hyphens, 3 segments
+  //   Relisted: "PB-S-15857-2" -> 3 hyphens, 4 segments, last purely numeric
   const isRelistedId = (id) => {
     if (!id) return false;
 
-    const segments = id.split("-"); // e.g. "PB-S-15856" -> 3 segments, "PB-S-15857-2" -> 4 segments
+    const segments = id.split("-"); // "PB-S-15856" -> 3, "PB-S-15857-2" -> 4
 
     // Original IDs: 2 hyphens → 3 segments (PB-S-15856)
     // Relisted IDs: 3 hyphens → 4 segments (PB-S-15857-2) with numeric last segment
@@ -3040,10 +3045,22 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     return /^\d+$/.test(lastSegment); // relisted only if last part is purely numeric
   };
 
+  // Base id helper: "PB-S-15857-2" → "PB-S-15857"
+  const getBaseId = (id) => {
+    if (!id) return null;
+    const segments = id.split("-");
+    if (segments.length < 3) return id.trim();
+    return segments.slice(0, 3).join("-");
+  };
+
   let totalListingsConsidered = 0;
   let totalListingsMatched = 0;
   let totalActivePropsThisMonth = 0;
   const unmatchedListingEmails = new Set();
+
+  // Track which base property IDs we've already counted per agent
+  // key = normalized agent name, value = Set of baseIds
+  const listingsPerAgentBaseIds = new Map();
 
   console.log("📊 Processing listingsAPI for activePropertiesThisMonth...");
 
@@ -3053,21 +3070,21 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     const status = listing.status;
     const id = listing.id;
     const email = listing.listing_agent_email;
-
     const pfDateRaw = listing.PF_Published_Date;
+
     if (!pfDateRaw) continue;
 
     // "2025-11-20 14:29:17" → Date
     const pfDate = new Date(pfDateRaw.replace(" ", "T") + "Z");
     if (!pfDate || Number.isNaN(pfDate.getTime())) continue;
 
-    // 1) PF_Published_Date in current month
+    // 1) PF_Published_Date in current month (UTC)
     if (!isSameUtcMonth(pfDate, targetY, targetM)) continue;
 
     // 2) status Live only
     if (status !== "Live") continue;
 
-    // 3) not relisted (skip IDs like PB-S-15857-2)
+    // 3) skip relisted IDs (we only want the original base property)
     if (isRelistedId(id)) continue;
 
     // 4) match agent by email
@@ -3084,10 +3101,26 @@ async function buildLeaderboardSnapshotCurrentMonth() {
       continue;
     }
 
-    // 5) increment leaderboard metric via name key
     const key = normalizeAgentName(agent.agentName);
     if (!key) continue;
 
+    // 5) get base ID and de-dupe per agent
+    const baseId = getBaseId(id);
+    if (!baseId) continue;
+
+    let baseIdSet = listingsPerAgentBaseIds.get(key);
+    if (!baseIdSet) {
+      baseIdSet = new Set();
+      listingsPerAgentBaseIds.set(key, baseIdSet);
+    }
+
+    // If we've already counted this property for this agent, skip
+    if (baseIdSet.has(baseId)) {
+      continue;
+    }
+    baseIdSet.add(baseId);
+
+    // 6) increment leaderboard metric via name key
     const m = ensureMetrics(key);
     m.activePropertiesThisMonth = (m.activePropertiesThisMonth || 0) + 1;
 
