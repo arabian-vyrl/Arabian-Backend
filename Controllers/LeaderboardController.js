@@ -3023,14 +3023,21 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     }
   }
 
-  /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
+ /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
 
   const isRelistedId = (id) => {
     if (!id) return false;
-    const segments = id.split("-");
+
+    const segments = id.split("-"); // e.g. "PB-S-15856" -> 3 segments, "PB-S-15857-2" -> 4 segments
+
+    // Original IDs: 2 hyphens → 3 segments (PB-S-15856)
+    // Relisted IDs: 3 hyphens → 4 segments (PB-S-15857-2) with numeric last segment
+    if (segments.length <= 3) {
+      return false;
+    }
+
     const lastSegment = segments[segments.length - 1];
-    // relisted if: more than 3 segments AND last is purely numeric
-    return segments.length > 3 && /^\d+$/.test(lastSegment);
+    return /^\d+$/.test(lastSegment); // relisted only if last part is purely numeric
   };
 
   let totalListingsConsidered = 0;
@@ -3060,7 +3067,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     // 2) status Live only
     if (status !== "Live") continue;
 
-    // 3) not relisted
+    // 3) not relisted (skip IDs like PB-S-15857-2)
     if (isRelistedId(id)) continue;
 
     // 4) match agent by email
@@ -3131,6 +3138,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
       },
     },
   };
+
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
@@ -3385,7 +3393,7 @@ function setupCronJobs() {
 
   // Every 12 minutes, pinned to UTC
   cron.schedule(
-    "*/2 * * * *",
+    "*/12 * * * *",
     async () => {
       const now = new Date().toISOString();
       console.log(`🔔 [CRON TICK] Triggered at ${now} (UTC)`);
