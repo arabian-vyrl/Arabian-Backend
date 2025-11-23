@@ -2875,7 +2875,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
   const listingsRaw = listingsResp?.data?.listings || []; // based on sample payload
 
   // 2) Load all active agents once
-  const agents = await Agent.find({ isActive: true });
+  const agents = await Agent.find({ activeOnLeaderboard: true });
 
   const agentMap = new Map(
     agents.map((a) => [normalizeAgentName(a.agentName), a])
@@ -3385,7 +3385,7 @@ function setupCronJobs() {
 
   // Every 12 minutes, pinned to UTC
   cron.schedule(
-    "*/3 * * * *",
+    "*/10 * * * *",
     async () => {
       const now = new Date().toISOString();
       console.log(`🔔 [CRON TICK] Triggered at ${now} (UTC)`);
