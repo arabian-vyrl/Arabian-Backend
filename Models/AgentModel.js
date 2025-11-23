@@ -1912,8 +1912,8 @@ const agentSchema = new mongoose.Schema(
 agentSchema.index({ agentId: 1 }); // Index for sequence number
 agentSchema.index({ sequenceNumber: 1 }); // Index for sequence number
 agentSchema.index({ "properties.propertyId": 1 });
-// agentSchema.index({ "leaderboard.propertiesSold": -1 }); // Index for leaderboard sorting
-// agentSchema.index({ "leaderboard.totalCommission": -1 }); // Index for leaderboard sorting
+agentSchema.index({ "leaderboard.propertiesSold": -1 }); // Index for leaderboard sorting
+agentSchema.index({ "leaderboard.totalCommission": -1 }); // Index for leaderboard sorting
 
 // ——— Virtual fields for property counts ———
 agentSchema.virtual("totalProperties").get(function () {
@@ -2183,13 +2183,119 @@ agentSchema.methods.incrementLeaderboardMetric = function (metric, value = 1) {
   this.lastUpdated = new Date();
   return this;
 };
-agentSchema.statics.isRelistedProperty = function (propertyId) {
-  if (!propertyId) return false;
-  const segments = propertyId.split("-");
-  const lastSegment = segments[segments.length - 1];
-  // Relisted if: more than 3 segments AND last is purely numeric
-  return segments.length > 3 && /^\d+$/.test(lastSegment);
-};
+// agentSchema.statics.updateAllAgentsMonthlyProperties = async function () {
+//   try {
+//     console.log("📊 Updating active properties this month for all agents...");
+
+//     const agents = await this.find({ isActive: true });
+//     const updates = [];
+
+//     const now = new Date();
+//     const currentMonth = now.getUTCMonth();
+//     const currentYear = now.getUTCFullYear();
+
+//     let totalOriginal = 0;
+//     let totalRelisted = 0;
+//     let totalAddedThisMonth = 0;
+
+//     for (const agent of agents) {
+//       // Get all Live properties for this agent
+//       const liveProperties = (agent.properties || []).filter(
+//         (p) => p.status === "Live"
+//       );
+
+//       // ✅ FIXED: Correctly identify relisted properties
+//       // Original: PB-S-8136, PB-R-11160 (3 segments: prefix-type-number)
+//       // Relisted: PB-S-8136-1, PB-S-12907-2 (4+ segments: prefix-type-number-suffix)
+//       const originalProps = liveProperties.filter((p) => {
+//         const id = p.propertyId || "";
+//         const segments = id.split("-");
+//         const lastSegment = segments[segments.length - 1];
+
+//         // If it has more than 3 segments AND last segment is purely numeric, it's relisted
+//         const isRelisted = segments.length > 3 && /^\d+$/.test(lastSegment);
+//         return !isRelisted;
+//       });
+
+//       const relistedProps = liveProperties.filter((p) => {
+//         const id = p.propertyId || "";
+//         const segments = id.split("-");
+//         const lastSegment = segments[segments.length - 1];
+
+//         // Relisted = more than 3 segments AND last segment is purely numeric
+//         return segments.length > 3 && /^\d+$/.test(lastSegment);
+//       });
+
+//       // Calculate active properties added this month (only original properties)
+//       const count = agent.calculateActivePropertiesThisMonth();
+
+//       // Update the leaderboard field
+//       agent.leaderboard.activePropertiesThisMonth = count;
+//       agent.leaderboard.lastUpdated = new Date();
+
+//       updates.push(agent.save());
+
+//       // Enhanced logging - only show agents with properties
+//       if (liveProperties.length > 0) {
+//         console.log(
+//           `📍 Agent: ${agent.agentName} | ` +
+//             `Total Live: ${liveProperties.length} | ` +
+//             `Original: ${originalProps.length} | ` +
+//             `Relisted: ${relistedProps.length} | ` +
+//             `Added This Month: ${count}`
+//         );
+
+//         // ✅ Show original property IDs
+//         // if (originalProps.length > 0 && originalProps.length <= 10) {
+//         //   console.log(`   ✅ Original IDs: ${originalProps.map(p => p.propertyId).join(', ')}`);
+//         // }
+
+//         // // ✅ Show relisted property IDs only if they exist
+//         // if (relistedProps.length > 0 && relistedProps.length <= 10) {
+//         //   console.log(`   🔄 Relisted IDs: ${relistedProps.map(p => p.propertyId).join(', ')}`);
+//         // }
+//       }
+
+//       totalOriginal += originalProps.length;
+//       totalRelisted += relistedProps.length;
+//       totalAddedThisMonth += count;
+//     }
+
+//     await Promise.all(updates);
+
+//     console.log(`\n✅ Summary:`);
+//     console.log(`   - Updated ${agents.length} agents`);
+//     console.log(`   - Total original properties: ${totalOriginal}`);
+//     console.log(`   - Total relisted properties (excluded): ${totalRelisted}`);
+//     console.log(
+//       `   - Total properties added this month: ${totalAddedThisMonth}`
+//     );
+//     console.log(`   - Month: ${currentMonth + 1}/${currentYear}`);
+
+//     return {
+//       success: true,
+//       agentsUpdated: agents.length,
+//       month: currentMonth + 1,
+//       year: currentYear,
+//       stats: {
+//         totalOriginalProperties: totalOriginal,
+//         totalRelistedProperties: totalRelisted,
+//         totalAddedThisMonth: totalAddedThisMonth,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("❌ Error updating monthly properties:", error);
+//     throw error;
+//   }
+// };
+// Add this as a static method to the schema
+// agentSchema.statics.isRelistedProperty = function (propertyId) {
+//   if (!propertyId) return false;
+//   const segments = propertyId.split("-");
+//   const lastSegment = segments[segments.length - 1];
+//   // Relisted if: more than 3 segments AND last is purely numeric
+//   return segments.length > 3 && /^\d+$/.test(lastSegment);
+// };
 
 // You can also add this as an instance method if needed
 agentSchema.methods.getOriginalProperties = function () {
