@@ -14,11 +14,15 @@ const router = require("./Router/Routes");
 const cloudinary = require("cloudinary").v2;
 const cookieParser = require("cookie-parser");
 // Set up middlewares
-// app.use(cors({
-//   origin: ["http://localhost:5173", "https://arabiann.netlify.app/"], 
-//   credentials: true      
-// }));
-app.use(cors())
+app.set("trust proxy", 1);
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://arabiann.netlify.app"
+  ],
+  credentials: true,
+}));
+
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -111,12 +111,16 @@ const trackRefer = async (req, res) => {
       expiresIn: '1h'
     };
     const token = jwtToken.sign(payload, secretKey, options)
-  
+    const isProduction = process.env.NODE_ENV === "production";
+
+    console.log(isProduction)
+
     res.cookie("referalToken", token, {
-      httpOnly: true, 
-      secure: false, 
-      maxAge: 10 * 60 * 60 * 1000
-    });
+    httpOnly: true,
+    secure: isProduction,            
+    sameSite: isProduction ? "none" : "lax", 
+    maxAge: 10 * 60 * 60 * 1000,
+});
 
     return res.status(200).json({
       success: true,
