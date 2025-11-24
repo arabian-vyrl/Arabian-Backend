@@ -12,9 +12,13 @@ const ConnectDb = require("./Database/Db");
 const multer = require("multer");
 const router = require("./Router/Routes");
 const cloudinary = require("cloudinary").v2;
-
+const cookieParser = require("cookie-parser");
 // Set up middlewares
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://arabiann.netlify.app/"], 
+  credentials: true      
+}));
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

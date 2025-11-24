@@ -16,11 +16,10 @@ const CommunityGuides = require("../Controllers/CommunityGuideController");
 const Podcast = require("../Controllers/PodcastController");
 const HeroController = require("../Controllers/HeroContentController");
 const LeaderboardController = require("../Controllers/LeaderboardController");
-//
+const middleWareLoginReferral = require("../Middlewares/VerifyLoginReferralToken")
 
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
 
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
@@ -405,6 +404,9 @@ router.get("/agents/admin/performance", async (req, res) => {
   }
 });
 */
+router.post("/track-referrer", ReferProperties.trackRefer)
+router.get("/verify-referral-token", middleWareLoginReferral , ReferProperties.verifyReferrerToken )
+
 
 // Hero Section filter
 // router.get("/All-Hero-filters", AllFilter.specializedFilter);

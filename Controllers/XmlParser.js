@@ -620,16 +620,18 @@ const parseXmlFromUrl = async (req, res, next) => {
     /* ----------------------------- BULK UPSERT ----------------------------- */
 
     // preload existence
-    const ids = allPropertiesToProcess.map((p) => p.id);
+       const ids = allPropertiesToProcess.map(p => p.id);
 
+    // Find data form database through the SalesForce ids
     const existingProps = await Property.find(
       { id: { $in: ids } },
-      { id: 1, created_at: 1 }
+      { id: 1, created_at: 1, address_information: 1 }
     ).lean();
-    const existsMap = new Map(existingProps.map((p) => [p.id, p])); // store entire doc snippet
-    // build write ops; keep id->operation map for stats
+
+    const existsMap = new Map(existingProps.map(p => [p.id, p]));
+
     const propertyOps = [];
-    const mainOpById = new Map(); // id -> 'created' | 'updated' | 'skipped_no_update'
+    const mainOpById = new Map();
 
     for (const propertyData of allPropertiesToProcess) {
       const id = propertyData.id;
@@ -637,28 +639,40 @@ const parseXmlFromUrl = async (req, res, next) => {
       const existed = !!existing;
       const updateFlag = propertyData.general_listing_information?.updated;
 
-      // If this record exists and XML says "No" update,
-      // still bump created_at if it changed (to mirror Last_Website_Published_Date_Time).
-      if (existed && updateFlag === "No") {
+      if (existed && updateFlag === 'No') {
+        const updates = {};
+        let shouldUpdate = false;
         if (
-          propertyData.created_at && // we have a computed published date
-          propertyData.created_at !== existing.created_at // and it's different from DB
+          propertyData.created_at &&
+          propertyData.created_at !== existing.created_at
         ) {
+          updates.created_at = propertyData.created_at;
+          shouldUpdate = true;
+          console.log(`[${id}] 📅 Updating created_at:`, propertyData.created_at);
+        }
+        if (propertyData.address_information && Object.keys(propertyData.address_information).length > 0) {
+          updates.address_information = propertyData.address_information;
+          shouldUpdate = true;
+          console.log(`[${id}] 📍 Adding/Updating address_information:`, propertyData.address_information);
+        }
+        if (shouldUpdate) {
           propertyOps.push({
             updateOne: {
               filter: { id },
-              update: { $set: { created_at: propertyData.created_at } }, // <- only created_at
+              update: { $set: updates },
               upsert: false,
-            },
+            }
           });
-          mainOpById.set(id, "updated_created_at_only"); // for stats/logs
+          const updateFields = Object.keys(updates).join(' & ');
+          mainOpById.set(id, 'updated_partial');
+          console.log(`[${id}] ✏️  Queueing partial update: ${updateFields}`);
         } else {
-          mainOpById.set(id, "skipped_no_update");
+          mainOpById.set(id, 'skipped_no_update');
+          console.log(`[${id}] ⏭️  Skipped - no changes needed`);
         }
-        continue; // IMPORTANT: don't fall through to the full $set write
+        continue;
       }
 
-      // ...unchanged full $set upsert for inserts / updated === 'Yes'
       const $set = {
         created_at: propertyData.created_at,
         timestamp: propertyData.timestamp,
@@ -679,49 +693,57 @@ const parseXmlFromUrl = async (req, res, next) => {
           filter: { id },
           update: { $set, $setOnInsert: { id } },
           upsert: true,
-        },
+        }
       });
-      mainOpById.set(id, existed ? "updated" : "created");
+      const opType = existed ? 'updated' : 'created';
+      mainOpById.set(id, opType);
+      console.log(`[${id}] ${existed ? '🔄' : '✨'} Queueing full ${opType}`);
     }
 
     if (propertyOps.length) {
+      console.log(`\n🚀 Executing bulk write with ${propertyOps.length} operations...`);
       await Property.bulkWrite(propertyOps, { ordered: false });
+      console.log('✅ Bulk write completed successfully!\n');
+    } else {
+      console.log('⏭️  No operations to execute - all properties skipped\n');
     }
 
-    // Fold in main operation stats
+    // Stats tracking
     for (const propertyData of allPropertiesToProcess) {
       const id = propertyData.id;
       const op = mainOpById.get(id);
+
       if (!op) {
-        // Not written nor skipped properly (should be rare)
         processResults.failed++;
         processResults.failures.push({
           id,
-          status: propertyData.general_listing_information?.status || "Unknown",
+          status: propertyData.general_listing_information?.status || 'Unknown',
           classification: propertyData._classification,
-          error: "No main operation recorded",
+          error: 'No main operation recorded'
         });
+        console.log(`❌ [${id}] FAILED - no operation recorded`);
         continue;
       }
 
-      if (op === "created") {
+      if (op === 'created') {
         processResults.successful++;
         processResults.operations.created++;
         const lt = propertyData._classification?.listingType;
-        if (lt && processResults.byType[lt])
-          processResults.byType[lt].created++;
-      } else if (op === "updated") {
+        if (lt && processResults.byType[lt]) processResults.byType[lt].created++;
+        console.log(`✅ [${id}] Created`);
+      } else if (op === 'updated' || op === 'updated_partial') {
         processResults.successful++;
         processResults.operations.updated++;
         const lt = propertyData._classification?.listingType;
-        if (lt && processResults.byType[lt])
-          processResults.byType[lt].updated++;
-      } else if (op === "skipped_no_update") {
-        // you previously treated skip as success → keep same
+        if (lt && processResults.byType[lt]) processResults.byType[lt].updated++;
+        console.log(`✅ [${id}] Updated`);
+      } else if (op === 'skipped_no_update') {
         processResults.successful++;
         processResults.operations.skipped_no_update++;
+        console.log(`⏭️  [${id}] Skipped`);
       }
     }
+
 
     /* ----------------------- PARALLEL AGENT LINKING ----------------------- */
 

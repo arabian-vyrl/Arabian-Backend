@@ -5,14 +5,12 @@ const CommercialProperty = require("../Models/CommercialPropertyModel");
 
 const getSingleProperty = async (req, res) => {
   try {
-    // Get property ID and type from request parameters
     const PropertyId = req.query.id;
     const PropertyType = req.query.type;
     
     console.log("Property ID:", PropertyId);
     console.log("Property Type:", PropertyType);
     
-    // Validate required parameters
     if (!PropertyId || !PropertyType) {
       return res.status(400).json({
         success: false,
@@ -26,6 +24,7 @@ const getSingleProperty = async (req, res) => {
     if (PropertyType === "RS" || PropertyType=="Sale") {
       // Sale Property
       property = await SaleProperty.findOne({ id: PropertyId });
+      
       console.log("Searching in Sale collection:", property);
       
       if (property) {
