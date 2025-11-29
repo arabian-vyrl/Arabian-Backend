@@ -1,0 +1,59 @@
+[
+  {
+    "communityId": "downtown_dubai01",
+    "communityName": "downtown",
+    "communityHeading": "Downtown Dubai",
+    "communityTags": [
+      "Downtown",
+      "Dubai"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": false
+  },
+  {
+    "communityId": "dubai_01",
+    "communityName": "dubai",
+    "communityHeading": "Dubai",
+    "communityTags": [
+      "Dubai",
+      "City"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true
+  },
+  {
+    "communityId": "marina_dubai02",
+    "communityName": "dubai marina",
+    "communityHeading": "Dubai Marina",
+    "communityTags": [
+      "Dubai Marina",
+      "Dubai",
+      "Waterfront"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": false
+  },
+  {
+    "communityId": "Palm_jumeirah_01",
+    "communityName": "palm jumeirah",
+    "communityHeading": "Palm Jumeirah",
+    "communityTags": [
+      "Palm Jumeirah",
+      "Dubai",
+      "Island"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true
+  },
+  {
+    "communityId": "UAE_01",
+    "communityName": "uae",
+    "communityHeading": "United Arab Emirates",
+    "communityTags": [
+      "UAE",
+      "Country"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": false
+  }
+]

@@ -16,10 +16,13 @@ const CommunityGuides = require("../Controllers/CommunityGuideController");
 const Podcast = require("../Controllers/PodcastController");
 const HeroController = require("../Controllers/HeroContentController");
 const LeaderboardController = require("../Controllers/LeaderboardController");
-const middleWareLoginReferral = require("../Middlewares/VerifyLoginReferralToken")
+const middleWare = require("../Middlewares/VerifyLoginReferralToken");
+const propertyListForm = require("../Controllers/PropertyListForm")
+const propertyValuation = require("../Controllers/PropertyValuation")
 
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
 
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
@@ -56,7 +59,7 @@ const mainStorage = multer.diskStorage({
 const agentStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'agent-images', // Folder name in Cloudinary
+    folder: 'agent-images',
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
     transformation: [
       { width: 800, height: 800, crop: 'limit' }, // Max size
@@ -93,33 +96,17 @@ const upload = multer({
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
 });
 // Hero Content
-// router.get("/get-hero", HeroController.getHero);
-// router.post(
-//   "/add-replace",
-//   HeroController.upload.single("media"),
-//   HeroController.addOrReplaceHero
-// );
-// router.put(
-//   "/update",
-//   HeroController.upload.single("media"),
-//   HeroController.updateHero
-// );
-
 router.get("/get-hero", HeroController.getHero);
-
 router.post(
   "/add-replace",
-  HeroController.upload.single("media"), // field name: "media"
+  HeroController.upload.single("media"),
   HeroController.addOrReplaceHero
 );
-
 router.put(
   "/update",
-  HeroController.upload.single("media"), // field name: "media"
+  HeroController.upload.single("media"),
   HeroController.updateHero
 );
-
-
 
 // Contact us
 router.post("/Contact", ContactUs.createContact);
@@ -197,6 +184,9 @@ router.post(
   CommunityGuides.updateCommunityGuide
 );
 
+// Route for PropertyValuation
+
+
 // Community Guideline Api's
 // router.get("/GetCommunityGuides", CommunityGuides.GetAllCommunityGuides);
 // router.get("/SingleCommunityGuide", CommunityGuides.getSingleCommunityGuide);
@@ -234,7 +224,7 @@ router.post(
 // Your route is already correct!
 router.post(
   "/update-agent",
-  agentUpload.single("image"),  // ✅ Field name matches what frontend sends
+  agentUpload.single("image"), 
   AgentController.updateAgent
 );
 
@@ -262,15 +252,30 @@ router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
 router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
 
 
+// TrackRefer EndPoint
 
+// Adeel EndPionts
+router.post("/track-referrer", ReferProperties.trackRefer)
+router.get("/verify-referral-token", middleWare , ReferProperties.verifyReferrerToken )
+
+router.post("/propertyValuation", propertyValuation.createPropertyValuation)
+router.get("/get-property-valuations", propertyValuation.getPropertyValuations)
+router.delete("/delete-property-valuation/:id", propertyValuation.deletePropertyValuation)
+
+router.post("/list-property-form", propertyListForm.createPropertyListForm)
+router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm)
+router.delete("/delete-list-property-form/:id", propertyListForm.deletePropertyListForm)
+router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
+
+router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
+router.get("/get-community-guides/", CommunityGuides.getAllCommunityGuideInfo)
 
 // Leaderboard Agent
-
 // Search agents by name or email
 // router.get(
 //   "/agents/search",
 //   AgentController.searchAgents
-// );
+// );c
 
 // Get top performing agents
 // router.get(
@@ -404,9 +409,6 @@ router.get("/agents/admin/performance", async (req, res) => {
   }
 });
 */
-router.post("/track-referrer", ReferProperties.trackRefer)
-router.get("/verify-referral-token", middleWareLoginReferral , ReferProperties.verifyReferrerToken )
-
 
 // Hero Section filter
 // router.get("/All-Hero-filters", AllFilter.specializedFilter);

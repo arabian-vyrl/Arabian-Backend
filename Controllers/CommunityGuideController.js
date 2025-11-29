@@ -1,10 +1,85 @@
 const CommunityGuide = require("../Models/CommunityGuideModel");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs").promises;
+const fs = require('fs').promises;
 const fsSync = require("fs");
 
 // Configure multer storage for community guide files (images AND videos)
+
+const getAllCommunityGuideInfo = async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "../data/community.json");
+    const data = await fs.readFile(filePath, "utf-8");
+    const communities = JSON.parse(data);
+    res.status(200).json(communities);
+  } catch (error) {
+    console.error("Error reading community.json:", error);
+    res.status(500).json({ message: "Failed to get community info" });
+  }
+};
+
+const updateCommunityStatus = async (req, res) => {
+  const communityJsonPath = path.join(__dirname, '../data/community.json');
+
+  try {
+    const id = req.params.id;
+    const { published } = req.body; 
+    
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Community ID is required'
+      });
+    }
+
+    // Validate published value
+    if (typeof published !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'Published must be a boolean value'
+      });
+    }
+
+    const fileContent = await fs.readFile(communityJsonPath, 'utf8');
+    const communities = JSON.parse(fileContent);
+    
+    const communityIndex = communities.findIndex(
+      community => community.communityId === id
+    );
+
+    if (communityIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Community guide not found'
+      });
+    }
+
+    // Set specific value (not toggle)
+    communities[communityIndex].published = published;
+
+    await fs.writeFile(
+      communityJsonPath,
+      JSON.stringify(communities, null, 2),
+      'utf8'
+    );
+
+    console.log(`✅ Updated ${id}: published = ${communities[communityIndex].published}`);
+
+    res.json({
+      success: true,
+      message: 'Status updated successfully',
+      data: communities[communityIndex]
+    });
+  } catch (error) {
+    console.error('Error updating status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update status',
+      error: error.message
+    });
+  }
+};
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const communityGuidesDir = path.join(__dirname, "..", "uploads", "CommunityGuides");
@@ -631,9 +706,11 @@ const deleteCommunityGuide = async (req, res) => {
 module.exports = {
   createCommunityGuide,
   getAllCommunityGuides,
+  getAllCommunityGuideInfo,
   getSingleCommunityGuide,
   getPublishedCommunityGuides,
   updateCommunityGuide,
   deleteCommunityGuide,
   uploadMultiple,
+  updateCommunityStatus
 };

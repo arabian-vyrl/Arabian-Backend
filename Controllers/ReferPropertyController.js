@@ -14,6 +14,56 @@ require("dotenv").config()
 //   }
 // });
 
+// Update the refer Table to assign the Agent name and Agent ID:
+
+const agentUpdate = async (req, res) => {
+  try {
+    const { trackingCode } = req.params;
+    const { agentId, agentName } = req.body;
+
+    if (!agentId || !agentName) {
+      return res.status(400).json({
+        success: false,
+        message: "agent_id and agent_name are required",
+      });
+    }
+
+    const updatedDocument = await ReferralProperty.findOneAndUpdate(
+      { tracking_code: trackingCode }, 
+      {
+        $set: {
+          "agent_assign.agent_id": agentId,
+          "agent_assign.agent_name": agentName,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!updatedDocument) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found with this tracking code",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Agent assigned successfully",
+      data: updatedDocument,
+    });
+  } catch (error) {
+    console.error("Error updating agent:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while updating agent",
+      error: error.message,
+    });
+  }
+};
+
+
 const verifyReferrerToken = async (req, res) => {
   try {
     if (!req.user) {
@@ -111,16 +161,12 @@ const trackRefer = async (req, res) => {
       expiresIn: '1h'
     };
     const token = jwtToken.sign(payload, secretKey, options)
-    const isProduction = process.env.NODE_ENV === "production";
-
-    console.log(isProduction)
-
+  
     res.cookie("referalToken", token, {
-    httpOnly: true,
-    secure: isProduction,            
-    sameSite: isProduction ? "none" : "lax", 
-    maxAge: 10 * 60 * 60 * 1000,
-});
+      httpOnly: true, 
+      secure: false, 
+      maxAge: 10 * 60 * 60 * 1000
+    });
 
     return res.status(200).json({
       success: true,
@@ -505,11 +551,6 @@ const trackQUery = async (req, res) => {
         message: 'No referral found with this tracking code. Please check your code and try again.'
       });
     }
-
-    // Step 3: Log tracking access for audit
-    // awd
-
-    // Step 4: Prepare response data
     const progressData = {
       tracking_info: {
         tracking_code: referral.tracking_code,
@@ -526,12 +567,11 @@ const trackQUery = async (req, res) => {
 
       current_status: {
         status: referral.query_progress.status,
-        assigned_agent: referral.query_progress.assigned_agent || 'Not assigned yet',
+        assigned_agent: referral.agent_assign.agent_name || "Not Assigned Yet",
         last_updated: referral.query_progress.last_updated
       },
     };
 
-    // Step 5: Return progress information
     res.status(200).json({
       success: true,
       message: 'Query progress retrieved successfully',
@@ -677,8 +717,6 @@ const updateQueryProgress = async (req, res) => {
     });
   }
 };
-
-
 
 const deleteQuery = async (req, res) => {
   try {
@@ -921,6 +959,8 @@ async function sendCommissionNotificationEmail(referralData) {
   return transporter.sendMail(mailOptions);
 }
 
+
+
 // Export functions
 module.exports = {
   ReferProperty,
@@ -930,5 +970,6 @@ module.exports = {
   trackQUery,
   GetAllReferal,
   trackRefer, 
-  verifyReferrerToken
+  verifyReferrerToken,
+  agentUpdate
 };

@@ -13,6 +13,7 @@ const multer = require("multer");
 const router = require("./Router/Routes");
 const cloudinary = require("cloudinary").v2;
 const cookieParser = require("cookie-parser");
+
 // Set up middlewares
 app.set("trust proxy", 1);
 app.use(cors({
@@ -66,7 +67,7 @@ const upload = multer({
 });
 
 // Agents with salesforce sync cron job (CRON JOBS)
-setupCronJobs();
+// setupCronJobs();
 // schedulePropertySync();
 
 // Then mount your API routes

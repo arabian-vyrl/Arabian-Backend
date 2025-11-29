@@ -92,8 +92,18 @@ const referralPropertySchema = new mongoose.Schema(
         default: null,
       },
     },
-
-    // Progress Tracking
+    agent_assign: {
+      agent_name: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      agent_id: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+    },
     query_progress: {
       status: {
         type: String,

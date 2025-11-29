@@ -1,247 +1,184 @@
 // controllers/NewsController.js
 const News = require("../Models/NewsModel");
 const Agent = require("../Models/AgentModel");
-const multer = require("multer");
 const path = require("path");
-const fs = require("fs").promises;
-const fsSync = require("fs");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-// === Multer storage (uploads/News) ===
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const newsDir = path.join(__dirname, "..", "uploads", "News");
+/* ---------- Cloudinary Multer Storage (multi-field, same as Blog) ---------- */
+function ensureFilename(img) {
+  if (!img) return img;
+  if (img.filename) return img;
+  const fromPublicId = img.publicId || img.public_id;
+  if (fromPublicId) return { ...img, filename: fromPublicId };
+  if (img.url) {
+    const base = img.url.split("/").pop() || "";
+    const noQuery = base.split("?")[0];
+    const noExt = noQuery.replace(/\.[a-z0-9]+$/i, "");
+    return { ...img, filename: noExt || "unknown" };
+  }
+  return { ...img, filename: "unknown" };
+}
 
-    console.log("=== MULTER DESTINATION DEBUG (NEWS) ===");
-    console.log("__dirname:", __dirname);
-    console.log("Calculated newsDir:", newsDir);
-    console.log("Directory exists:", fsSync.existsSync(newsDir));
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
+const fileFilter = (_req, file, cb) => {
+  const ok = (file.mimetype || "").startsWith("image/");
+  if (!ok) return cb(new Error("Only image files are allowed!"), false);
+  cb(null, true);
+};
 
-    if (!fsSync.existsSync(newsDir)) {
-      fsSync.mkdirSync(newsDir, { recursive: true });
-      console.log("Created directory:", newsDir);
-    }
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const folder = "news"; // separate folder from blogs
+    const base =
+      (file.originalname || "image")
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/, "")
+        .replace(/[^\w]+/g, "-")
+        .slice(0, 50) || "image";
 
-    cb(null, newsDir);
-  },
-  filename: (req, file, cb) => {
-    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const filename = unique + "-" + file.originalname;
-
-    console.log("=== MULTER FILENAME DEBUG (NEWS) ===");
-    console.log("Generated filename:", filename);
-    console.log("Original name:", file.originalname);
-    console.log("Field name:", file.fieldname);
-
-    cb(null, filename);
+    const public_id = `${Date.now()}-${Math.round(
+      Math.random() * 1e6
+    )}-${base}`;
+    return {
+      folder,
+      public_id,
+      allowed_formats: ALLOWED_EXT,
+      resource_type: "image",
+      transformation: [{ quality: "auto:good", fetch_format: "auto" }],
+      overwrite: false,
+    };
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  console.log("=== FILE FILTER DEBUG (NEWS) ===");
-  console.log("File mimetype:", file.mimetype);
-  console.log("File fieldname:", file.fieldname);
-
-  if (file.mimetype.startsWith("image/")) {
-    console.log("File accepted");
-    cb(null, true);
-  } else {
-    console.log("File rejected - not an image");
-    cb(new Error("Only image files are allowed!"), false);
-  }
-};
-
-// ✅ Same fields as blog: coverImage + two body images
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB per file
+  limits: { fileSize: 6 * 1024 * 1024 }, // 6MB each
 }).fields([
   { name: "coverImage", maxCount: 1 },
   { name: "bodyImage1", maxCount: 1 },
   { name: "bodyImage2", maxCount: 1 },
 ]);
 
-// Helpers
+/* ---------- Helpers ---------- */
 const createImageData = (file) => {
   if (!file) return null;
   return {
+    url: file.path,
+    publicId: file.filename,
     filename: file.filename,
+    format: file.format,
+    size: file.size,
+    width: file.width,
+    height: file.height,
+    folder: file.folder,
     originalName: file.originalname,
     mimetype: file.mimetype,
-    size: file.size,
-    path: file.path,
   };
 };
 
-const deleteFileSafely = async (filePath) => {
-  if (!filePath) return;
+const destroyPublicId = async (publicId) => {
+  if (!publicId) return;
   try {
-    if (fsSync.existsSync(filePath)) {
-      await fs.unlink(filePath);
-      console.log("Deleted file:", filePath);
-    }
-  } catch (err) {
-    console.log("Could not delete file:", filePath, err.message);
+    await cloudinary.uploader.destroy(publicId, { invalidate: true });
+  } catch (e) {
+    console.warn("⚠️ Cloudinary destroy failed (news):", publicId, e.message);
   }
 };
 
-// === CREATE NEWS ===
+/* ---------- CREATE ---------- */
 const createNews = async (req, res) => {
   try {
-    console.log("=== NEWS CREATION START ===");
-    console.log("Request body keys:", Object.keys(req.body));
-    console.log("Request files:", req.files ? Object.keys(req.files) : "No files");
-
-    if (req.files) {
-      console.log("=== UPLOADED FILES DEBUG (NEWS) ===");
-      if (req.files.coverImage) console.log("Cover Image:", req.files.coverImage[0].filename);
-      if (req.files.bodyImage1) console.log("Body Image 1:", req.files.bodyImage1[0].filename);
-      if (req.files.bodyImage2) console.log("Body Image 2:", req.files.bodyImage2[0].filename);
-    }
-
     const { parsedData, agentId } = req.body;
-    console.log(agentId, "Agent ID");
 
     if (!parsedData) {
       return res.status(400).json({
         success: false,
         message: "parsedData is required",
-        received: { parsedData, agentId },
       });
     }
-
     if (!agentId) {
       return res.status(400).json({
         success: false,
         message: "agentId is required",
-        received: { parsedData: "present", agentId },
       });
     }
 
-    // Parse payload (JSON string or plain text → News structure)
+    // Parse parsedData (JSON or plain text → News.parseTextToNewsStructure)
     let newsData;
     try {
       if (typeof parsedData === "string") {
-        console.log("Parsing string data...");
         if (parsedData.trim().startsWith("{")) {
-          console.log("Detected JSON format");
           newsData = JSON.parse(parsedData);
         } else {
-          console.log("Detected plain text format, using text parser (News)");
           newsData = News.parseTextToNewsStructure(parsedData);
         }
       } else if (typeof parsedData === "object" && parsedData !== null) {
-        console.log("Data already parsed as object");
         newsData = parsedData;
       } else {
         throw new Error(`Invalid parsedData type: ${typeof parsedData}`);
       }
-    } catch (parseError) {
-      console.error("Parse error:", parseError.message);
+    } catch (e) {
       return res.status(400).json({
         success: false,
         message: "Failed to parse news data",
-        error: parseError.message,
-        receivedType: typeof parsedData,
-        receivedData: typeof parsedData === "string" ? parsedData.substring(0, 200) : "non-string",
+        error: e.message,
       });
     }
 
-    console.log("=== PARSED NEWS DATA ===");
-    console.log("News data keys:", Object.keys(newsData || {}));
-    console.log("Content title:", newsData?.content?.title);
-    console.log("Sections count:", newsData?.content?.sections?.length);
-
-    if (!newsData || typeof newsData !== "object") {
-      return res.status(400).json({
-        success: false,
-        message: "Parsed data must be an object",
-        received: newsData,
-      });
-    }
-
-    if (!newsData.content || !newsData.content.title) {
+    // Validate content/title
+    if (!newsData?.content?.title) {
       return res.status(400).json({
         success: false,
         message: "News content and title are required",
-        received: {
-          hasContent: !!newsData.content,
-          contentTitle: newsData.content?.title,
-          newsDataKeys: Object.keys(newsData),
-        },
       });
     }
-
-    if (!newsData.content.sections || !Array.isArray(newsData.content.sections)) {
+    if (!Array.isArray(newsData.content.sections)) {
       return res.status(400).json({
         success: false,
         message: "News content sections are required and must be an array",
       });
     }
 
-    // Find active agent by custom agentId (string)
-    console.log("Finding agent with custom agentId:", agentId);
-    const agent = await Agent.findOne({ agentId: agentId });
-
+    // Validate agent (by custom string agentId, same as Blog)
+    const agent = await Agent.findOne({ agentId });
     if (!agent) {
-      const sampleAgents = await Agent.find({ isActive: true }, "agentId agentName").limit(5);
-      return res.status(404).json({
-        success: false,
-        message: "Agent not found",
-        searchedFor: agentId,
-        availableAgents: sampleAgents.map((a) => ({ agentId: a.agentId, agentName: a.agentName })),
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "Agent not found" });
     }
-
     if (!agent.isActive) {
-      return res.status(400).json({
-        success: false,
-        message: "Agent is not active",
-        agentId: agentId,
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Agent is not active" });
     }
 
-    console.log("Agent found:", agent.agentName);
-    console.log("Agent Image URL:", agent.imageUrl);
+    // Handle images (Cloudinary URLs like Blog)
+    const coverImageData = req.files?.coverImage?.[0]
+      ? createImageData(req.files.coverImage[0])
+      : null;
+    const bodyImage1Data = req.files?.bodyImage1?.[0]
+      ? createImageData(req.files.bodyImage1[0])
+      : null;
+    const bodyImage2Data = req.files?.bodyImage2?.[0]
+      ? createImageData(req.files.bodyImage2[0])
+      : null;
 
-    // Cover image (required in model; use placeholder if none uploaded)
-    let coverImageData = null;
-    if (req.files && req.files.coverImage && req.files.coverImage[0]) {
-      console.log("Cover image uploaded:", req.files.coverImage[0].filename);
-      coverImageData = createImageData(req.files.coverImage[0]);
-    } else {
-      console.log("No cover image uploaded, using placeholder");
-      coverImageData = {
-        filename: "placeholder.jpg",
-        originalName: "placeholder.jpg",
-        mimetype: "image/jpeg",
-        size: 0,
-        path: "uploads/News/placeholder.jpg",
-      };
-    }
-
-    // Body images (to be inserted mid-article by client/UI)
-    const bodyImage1Data =
-      req.files && req.files.bodyImage1 && req.files.bodyImage1[0]
-        ? createImageData(req.files.bodyImage1[0])
-        : null;
-
-    const bodyImage2Data =
-      req.files && req.files.bodyImage2 && req.files.bodyImage2[0]
-        ? createImageData(req.files.bodyImage2[0])
-        : null;
-
-    console.log("Body Image 1:", bodyImage1Data ? bodyImage1Data.filename : "Not provided");
-    console.log("Body Image 2:", bodyImage2Data ? bodyImage2Data.filename : "Not provided");
+    // STATUS: same as Blog
+    const isDraft = newsData.status === "draft";
 
     // Create news doc
     const newNews = new News({
       originalId:
         newsData.id ||
-        `news_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        `news_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       metadata: {
-        title: newsData.metadata?.title || newsData.content?.title,
-        description: newsData.metadata?.description || newsData.seo?.metaDescription || "",
+        title: newsData.metadata?.title || newsData.content.title,
+        description:
+          newsData.metadata?.description || newsData.seo?.metaDescription || "",
         author: newsData.metadata?.author || agent.agentName,
         tags: newsData.metadata?.tags || [],
         category: newsData.metadata?.category || "",
@@ -265,56 +202,42 @@ const createNews = async (req, res) => {
         agentImage: agent.imageUrl,
       },
       image: coverImageData,
-      // Store body images in a sibling field (same shape as blog)
       bodyImages: {
         image1: bodyImage1Data,
         image2: bodyImage2Data,
       },
-      status: newsData.status || "draft",
-      isPublished: newsData.status === "published" || false,
+      status: isDraft ? "draft" : "published",
+      isPublished: !isDraft,
+      publishedAt: !isDraft ? new Date() : null,
     });
 
-    console.log("Saving news to database...");
     const savedNews = await newNews.save();
-    console.log("News saved with ID:", savedNews._id);
-    console.log("Body images saved:", {
-      image1: savedNews.bodyImages?.image1?.filename || "none",
-      image2: savedNews.bodyImages?.image2?.filename || "none",
-    });
 
-    // Link to agent (optional helper like blog’s addOrUpdateBlog)
+    // Optional: link to agent.news array (if helper exists)
     try {
-      const newsForAgent = {
-        newsId: savedNews._id,
-        title: savedNews.content.title,
-        slug: savedNews.metadata.slug,
-        image: savedNews.image,
-        isPublished: savedNews.isPublished,
-        publishedAt: savedNews.publishedAt,
-        createdAt: savedNews.createdAt,
-        updatedAt: savedNews.updatedAt,
-      };
-
       if (typeof agent.addOrUpdateNews === "function") {
-        agent.addOrUpdateNews(newsForAgent);
+        agent.addOrUpdateNews({
+          newsId: savedNews._id,
+          title: savedNews.content.title,
+          slug: savedNews.metadata.slug,
+          image: ensureFilename(savedNews.image),
+          isPublished: savedNews.isPublished,
+          publishedAt: savedNews.publishedAt,
+          createdAt: savedNews.createdAt,
+          updatedAt: savedNews.updatedAt,
+        });
         await agent.save({ validateBeforeSave: false });
-        console.log("News added to agent successfully");
       }
-    } catch (agentUpdateError) {
-      console.log(
-        "Warning: Could not update agent's news array:",
-        agentUpdateError.message
-      );
+    } catch (e) {
+      console.warn("Agent news link warning:", e.message);
     }
-
-    console.log("=== NEWS CREATION SUCCESS ===");
 
     res.status(201).json({
       success: true,
-      message: "News created successfully from parsed content",
+      message: "News created successfully",
       data: {
         news: savedNews,
-        stats: savedNews.getContentStats(),
+        stats: savedNews.getContentStats?.(),
         linkedAgent: {
           agentId: agent.agentId,
           agentName: agent.agentName,
@@ -324,244 +247,166 @@ const createNews = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("=== NEWS CREATION ERROR ===");
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-
-    if (req.files) {
-      if (req.files.coverImage && req.files.coverImage[0]) {
-        await deleteFileSafely(req.files.coverImage[0].path);
-      }
-      if (req.files.bodyImage1 && req.files.bodyImage1[0]) {
-        await deleteFileSafely(req.files.bodyImage1[0].path);
-      }
-      if (req.files.bodyImage2 && req.files.bodyImage2[0]) {
-        await deleteFileSafely(req.files.bodyImage2[0].path);
-      }
-    }
-
+    console.error("NEWS CREATE ERROR:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to create news from parsed content",
+      message: "Failed to create news",
       error: error.message,
-      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 };
 
-// === UPDATE NEWS ===
+/* ---------- UPDATE ---------- */
 const updateNews = async (req, res) => {
   try {
-    console.log("=== NEWS UPDATE START ===");
-    console.log("Request body keys:", Object.keys(req.body));
-    console.log("Request files:", req.files ? Object.keys(req.files) : "No files");
-
-    if (req.files) {
-      console.log("=== UPLOADED FILES DEBUG (NEWS) ===");
-      if (req.files.coverImage) console.log("New Cover Image:", req.files.coverImage[0].filename);
-      if (req.files.bodyImage1) console.log("New Body Image 1:", req.files.bodyImage1[0].filename);
-      if (req.files.bodyImage2) console.log("New Body Image 2:", req.files.bodyImage2[0].filename);
-    }
-
-    const { newsId, parsedData, agentId, removeBodyImage1, removeBodyImage2 } = req.body;
-
-    console.log("NewsId:", newsId);
-    console.log("New AgentId:", agentId);
-    console.log("Remove Body Image 1:", removeBodyImage1);
-    console.log("Remove Body Image 2:", removeBodyImage2);
+    const {
+      newsId,
+      parsedData,
+      agentId,
+      removeBodyImage1,
+      removeBodyImage2,
+    } = req.body;
 
     if (!newsId) {
-      return res.status(400).json({
-        success: false,
-        message: "newsId is required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "newsId is required" });
     }
 
     const news = await News.findById(newsId);
     if (!news) {
-      return res.status(404).json({
-        success: false,
-        message: "News not found",
-        newsId,
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "News not found" });
     }
 
-    console.log("News found:", news.content?.title || news.metadata?.title);
-    console.log("Current news author agentId:", news.author.agentId);
-
-    // Handle agent change
+    // Agent reassignment (same pattern as Blog)
     const oldAgentId = news.author.agentId;
     let agentChanged = false;
-
     if (agentId && agentId !== oldAgentId) {
-      console.log("=== AGENT CHANGE DETECTED (NEWS) ===");
-      console.log("Old Agent ID:", oldAgentId);
-      console.log("New Agent ID:", agentId);
-
-      const newAgent = await Agent.findOne({ agentId: agentId });
+      const newAgent = await Agent.findOne({ agentId });
       if (!newAgent) {
-        return res.status(404).json({
-          success: false,
-          message: "New agent not found",
-          requestedAgentId: agentId,
-        });
+        return res
+          .status(404)
+          .json({ success: false, message: "New agent not found" });
       }
-
       if (!newAgent.isActive) {
-        return res.status(400).json({
-          success: false,
-          message: "New agent is not active",
-          agentId: agentId,
-        });
+        return res
+          .status(400)
+          .json({ success: false, message: "New agent is not active" });
       }
-
-      console.log("New agent found:", newAgent.agentName);
-
       news.author.agentId = newAgent.agentId;
       news.author.agentName = newAgent.agentName;
       news.author.agentEmail = newAgent.email;
       news.author.agentImage = newAgent.imageUrl;
-
       agentChanged = true;
     }
 
-    // Parse payload and update
+    // Parse update content if provided
     if (parsedData) {
       let updateData;
-
       try {
         if (typeof parsedData === "string") {
-          console.log("Parsing string data...");
-          if (parsedData.trim().startsWith("{")) {
-            console.log("Detected JSON format");
-            updateData = JSON.parse(parsedData);
-          } else {
-            console.log("Detected plain text format, using text parser (News)");
-            updateData = News.parseTextToNewsStructure(parsedData);
-          }
-        } else if (typeof parsedData === "object" && parsedData !== null) {
-          console.log("Data already parsed as object");
+          updateData = parsedData.trim().startsWith("{")
+            ? JSON.parse(parsedData)
+            : News.parseTextToNewsStructure(parsedData);
+        } else if (typeof parsedData === "object") {
           updateData = parsedData;
         } else {
           throw new Error(`Invalid parsedData type: ${typeof parsedData}`);
         }
-      } catch (parseError) {
-        console.error("Parse error:", parseError.message);
+      } catch (e) {
         return res.status(400).json({
           success: false,
           message: "Failed to parse news data",
-          error: parseError.message,
-          receivedType: typeof parsedData,
+          error: e.message,
         });
       }
 
-      console.log("=== PARSED UPDATE DATA (NEWS) ===");
-      console.log("Update data keys:", Object.keys(updateData || {}));
-      console.log("Content title:", updateData?.content?.title);
-      console.log("Sections count:", updateData?.content?.sections?.length);
-
-      // Metadata
+      // metadata
       if (updateData.metadata) {
-        if (updateData.metadata.title) news.metadata.title = updateData.metadata.title;
-        if (updateData.metadata.description !== undefined) news.metadata.description = updateData.metadata.description;
-        if (updateData.metadata.author) news.metadata.author = updateData.metadata.author;
-        if (updateData.metadata.tags) {
-          news.metadata.tags = Array.isArray(updateData.metadata.tags) ? updateData.metadata.tags : [];
-        }
-        if (updateData.metadata.category !== undefined) news.metadata.category = updateData.metadata.category;
-        if (updateData.metadata.slug !== undefined) news.metadata.slug = updateData.metadata.slug;
+        const m = updateData.metadata;
+        if (m.title !== undefined) news.metadata.title = m.title;
+        if (m.description !== undefined)
+          news.metadata.description = m.description;
+        if (m.author !== undefined) news.metadata.author = m.author;
+        if (m.tags !== undefined)
+          news.metadata.tags = Array.isArray(m.tags) ? m.tags : [];
+        if (m.category !== undefined) news.metadata.category = m.category;
+        if (m.slug !== undefined) news.metadata.slug = m.slug;
       }
 
-      // Content
+      // content
       if (updateData.content) {
-        if (updateData.content.title) news.content.title = updateData.content.title;
-        if (updateData.content.sections && Array.isArray(updateData.content.sections)) {
-          news.content.sections = updateData.content.sections;
-        }
-        if (updateData.content.wordCount !== undefined) news.content.wordCount = updateData.content.wordCount;
-        if (updateData.content.readingTime !== undefined) news.content.readingTime = updateData.content.readingTime;
+        const c = updateData.content;
+        if (c.title !== undefined) news.content.title = c.title;
+        if (Array.isArray(c.sections)) news.content.sections = c.sections;
+        if (c.wordCount !== undefined) news.content.wordCount = c.wordCount;
+        if (c.readingTime !== undefined)
+          news.content.readingTime = c.readingTime;
       }
 
-      // SEO
+      // seo
       if (updateData.seo) {
-        if (updateData.seo.metaTitle !== undefined) news.seo.metaTitle = updateData.seo.metaTitle;
-        if (updateData.seo.metaDescription !== undefined) news.seo.metaDescription = updateData.seo.metaDescription;
-        if (updateData.seo.keywords) {
-          news.seo.keywords = Array.isArray(updateData.seo.keywords) ? updateData.seo.keywords : [];
-        }
+        const s = updateData.seo;
+        if (s.metaTitle !== undefined) news.seo.metaTitle = s.metaTitle;
+        if (s.metaDescription !== undefined)
+          news.seo.metaDescription = s.metaDescription;
+        if (s.keywords !== undefined)
+          news.seo.keywords = Array.isArray(s.keywords) ? s.keywords : [];
       }
 
-      // Status
-      if (updateData.status) {
+      // status
+      if (updateData.status === "published" || updateData.status === "draft") {
         news.status = updateData.status;
-
-        if (updateData.status === "published" && !news.isPublished) {
+        if (updateData.status === "published") {
           news.isPublished = true;
-          news.publishedAt = new Date();
-        } else if (updateData.status === "draft" && news.isPublished) {
+          if (!news.publishedAt) news.publishedAt = new Date();
+        } else {
           news.isPublished = false;
           news.publishedAt = null;
         }
       }
     }
 
-    // Cover image
-    if (req.files && req.files.coverImage && req.files.coverImage[0]) {
-      console.log("Updating cover image...");
-      if (news.image && news.image.path && news.image.filename !== "placeholder.jpg") {
-        await deleteFileSafely(news.image.path);
-      }
+    // Images (replace + destroy old on Cloudinary)
+    if (req.files?.coverImage?.[0]) {
+      if (news.image?.publicId) await destroyPublicId(news.image.publicId);
       news.image = createImageData(req.files.coverImage[0]);
-      console.log("Cover image updated:", req.files.coverImage[0].filename);
     }
 
-    // Body image 1
     if (removeBodyImage1 === "true" || removeBodyImage1 === true) {
-      console.log("Removing body image 1...");
-      if (news.bodyImages?.image1?.path) {
-        await deleteFileSafely(news.bodyImages.image1.path);
-      }
+      if (news.bodyImages?.image1?.publicId)
+        await destroyPublicId(news.bodyImages.image1.publicId);
       if (!news.bodyImages) news.bodyImages = {};
       news.bodyImages.image1 = null;
-      console.log("Body image 1 removed");
-    } else if (req.files && req.files.bodyImage1 && req.files.bodyImage1[0]) {
-      console.log("Updating body image 1...");
-      if (news.bodyImages?.image1?.path) {
-        await deleteFileSafely(news.bodyImages.image1.path);
-      }
+    } else if (req.files?.bodyImage1?.[0]) {
+      if (news.bodyImages?.image1?.publicId)
+        await destroyPublicId(news.bodyImages.image1.publicId);
       if (!news.bodyImages) news.bodyImages = {};
       news.bodyImages.image1 = createImageData(req.files.bodyImage1[0]);
-      console.log("Body image 1 updated:", req.files.bodyImage1[0].filename);
     }
 
-    // Body image 2
     if (removeBodyImage2 === "true" || removeBodyImage2 === true) {
-      console.log("Removing body image 2...");
-      if (news.bodyImages?.image2?.path) {
-        await deleteFileSafely(news.bodyImages.image2.path);
-      }
+      if (news.bodyImages?.image2?.publicId)
+        await destroyPublicId(news.bodyImages.image2.publicId);
       if (!news.bodyImages) news.bodyImages = {};
       news.bodyImages.image2 = null;
-      console.log("Body image 2 removed");
-    } else if (req.files && req.files.bodyImage2 && req.files.bodyImage2[0]) {
-      console.log("Updating body image 2...");
-      if (news.bodyImages?.image2?.path) {
-        await deleteFileSafely(news.bodyImages.image2.path);
-      }
+    } else if (req.files?.bodyImage2?.[0]) {
+      if (news.bodyImages?.image2?.publicId)
+        await destroyPublicId(news.bodyImages.image2.publicId);
       if (!news.bodyImages) news.bodyImages = {};
       news.bodyImages.image2 = createImageData(req.files.bodyImage2[0]);
-      console.log("Body image 2 updated:", req.files.bodyImage2[0].filename);
     }
 
-    console.log("Saving updated news...");
     await news.save();
-    console.log("News saved successfully");
 
+    // Update agent link arrays
     const newsForAgent = {
       newsId: news._id,
       title: news.content?.title || news.metadata?.title || "Untitled",
       slug: news.metadata?.slug || "",
-      image: news.image,
+      image: ensureFilename(news.image),
       isPublished: news.isPublished || false,
       publishedAt: news.publishedAt || null,
       createdAt: news.createdAt,
@@ -569,60 +414,51 @@ const updateNews = async (req, res) => {
     };
 
     if (agentChanged) {
-      console.log("=== HANDLING AGENT REASSIGNMENT (NEWS) ===");
-      // Remove from old agent
       try {
+        // old agent
         const oldAgent = await Agent.findOne({ agentId: oldAgentId });
         if (oldAgent) {
           if (Array.isArray(oldAgent.news)) {
             oldAgent.news = oldAgent.news.filter(
-              (n) => n.newsId.toString() !== news._id.toString()
+              (n) => String(n.newsId) !== String(news._id)
             );
           } else if (typeof oldAgent.removeNews === "function") {
             oldAgent.removeNews(news._id);
           }
           await oldAgent.save({ validateBeforeSave: false });
-          console.log("Removed news from old agent:", oldAgent.agentName);
         }
-      } catch (oldAgentError) {
-        console.log("Warning: Could not remove news from old agent:", oldAgentError.message);
+      } catch (e) {
+        console.warn("Old agent unlink warning (news):", e.message);
       }
-
-      // Add to new agent
       try {
         const newAgent = await Agent.findOne({ agentId: news.author.agentId });
-        if (newAgent && typeof newAgent.addOrUpdateNews === "function") {
+        if (newAgent?.addOrUpdateNews) {
           newAgent.addOrUpdateNews(newsForAgent);
           await newAgent.save({ validateBeforeSave: false });
-          console.log("Added news to new agent:", newAgent.agentName);
         }
-      } catch (newAgentError) {
-        console.log("Warning: Could not add news to new agent:", newAgentError.message);
+      } catch (e) {
+        console.warn("New agent link warning (news):", e.message);
       }
     } else {
-      // Update in current agent
       try {
-        const currentAgent = await Agent.findOne({ agentId: news.author.agentId });
-        if (currentAgent && typeof currentAgent.addOrUpdateNews === "function") {
+        const currentAgent = await Agent.findOne({
+          agentId: news.author.agentId,
+        });
+        if (currentAgent?.addOrUpdateNews) {
           currentAgent.addOrUpdateNews(newsForAgent);
           await currentAgent.save({ validateBeforeSave: false });
-          console.log("Updated news entry in current agent:", currentAgent.agentName);
         }
-      } catch (agentError) {
-        console.log("Warning: Could not update agent's news entry:", agentError.message);
+      } catch (e) {
+        console.warn("Agent news update warning:", e.message);
       }
     }
 
-    console.log("=== NEWS UPDATE SUCCESS ===");
-
     res.status(200).json({
       success: true,
-      message: agentChanged
-        ? "News updated and reassigned to new agent successfully"
-        : "News updated successfully",
+      message: agentChanged ? "News updated & reassigned" : "News updated",
       data: {
         news,
-        stats: news.getContentStats ? news.getContentStats() : undefined,
+        stats: news.getContentStats?.(),
         linkedAgent: {
           agentId: news.author.agentId,
           agentName: news.author.agentName,
@@ -632,54 +468,45 @@ const updateNews = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("=== NEWS UPDATE ERROR ===");
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-
-    if (req.files) {
-      if (req.files.coverImage && req.files.coverImage[0]) {
-        await deleteFileSafely(req.files.coverImage[0].path);
-      }
-      if (req.files.bodyImage1 && req.files.bodyImage1[0]) {
-        await deleteFileSafely(req.files.bodyImage1[0].path);
-      }
-      if (req.files.bodyImage2 && req.files.bodyImage2[0]) {
-        await deleteFileSafely(req.files.bodyImage2[0].path);
-      }
-    }
-
+    console.error("NEWS UPDATE ERROR:", error);
     res.status(500).json({
       success: false,
       message: "Failed to update news",
       error: error.message,
-      errorName: error.name,
-      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 };
 
-// === LIST / GET ===
+/* ---------- READS ---------- */
 const GetAllNews = async (req, res) => {
   try {
-    console.log("Fetching all news for cards display...");
+    const { showAll } = req.query;
 
-    const newsItems = await News.find({})
-      .populate("author.agentId", "agentName email imageUrl designation")
+    let filter = {};
+    if (showAll === "True") {
+      filter = {};
+    } else {
+      filter = { status: "published", isPublished: true };
+    }
+
+    const newsItems = await News.find(filter)
+      .populate({
+        path: "agentDetails",
+        select: "agentId agentName email imageUrl designation",
+      })
       .sort({ createdAt: -1 });
-
-    console.log(`Found ${newsItems.length} news items`);
 
     res.status(200).json({
       success: true,
-      message: "All news fetched successfully",
+      message: "News fetched successfully",
       totalNews: newsItems.length,
       data: newsItems,
     });
   } catch (error) {
-    console.error("Error fetching all news:", error.message);
+    console.error("GetAllNews error:", error.message);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch all news",
+      message: "Failed to fetch news",
       error: error.message,
     });
   }
@@ -688,27 +515,22 @@ const GetAllNews = async (req, res) => {
 const getSingleNews = async (req, res) => {
   try {
     const newsId = req.query.id;
-
-    console.log("News ID:", newsId);
-
     if (!newsId) {
-      return res.status(400).json({
-        success: false,
-        message: "News ID is required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "News ID is required" });
     }
 
-    const news = await News.findById(newsId).populate(
-      "author.agentId",
-      "agentName email imageUrl designation specialistAreas phone whatsapp description"
-    );
+    const news = await News.findById(newsId).populate({
+      path: "agentDetails",
+      select:
+        "agentId agentName email imageUrl designation specialistAreas phone whatsapp description",
+    });
 
-    if (!news) {
-      return res.status(404).json({
-        success: false,
-        message: "News not found",
-      });
-    }
+    if (!news)
+      return res
+        .status(404)
+        .json({ success: false, message: "News not found" });
 
     res.status(200).json({
       success: true,
@@ -716,7 +538,7 @@ const getSingleNews = async (req, res) => {
       data: news,
     });
   } catch (error) {
-    console.error("Error fetching news:", error.message);
+    console.error("getSingleNews error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch news",
@@ -728,41 +550,41 @@ const getSingleNews = async (req, res) => {
 const getNewsByTags = async (req, res) => {
   try {
     const { tags, limit = 6, excludeId } = req.query;
-
     if (!tags) {
       return res.status(400).json({
         success: false,
         message: "Tags are required. Pass tags as comma-separated values.",
-        example: "/api/news/by-tags?tags=dubai,uae,property&limit=6",
       });
     }
 
     const tagsArray = tags
       .split(",")
-      .map((tag) => tag.trim().toLowerCase())
-      .filter((tag) => tag.length > 0);
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
 
     const query = { "metadata.tags": { $in: tagsArray } };
     if (excludeId) query._id = { $ne: excludeId };
 
     const items = await News.find(query)
-      .populate("author.agentId", "agentName email imageUrl designation")
+      .populate({
+        path: "agentDetails",
+        select: "agentId agentName email imageUrl designation",
+      })
       .sort({ createdAt: -1 })
-      .limit(parseInt(limit));
+      .limit(parseInt(limit, 10));
 
-    const withScore = items.map((n) => {
-      const matchingTags = (n.metadata.tags || []).filter((t) =>
-        tagsArray.includes(t.toLowerCase())
-      );
-      return {
-        ...n.toObject(),
-        matchScore: matchingTags.length,
-        matchingTags,
-      };
-    });
-
-    withScore.sort((a, b) => b.matchScore - a.matchScore);
-    console.log(`Found ${withScore.length} news with matching tags`);
+    const withScore = items
+      .map((n) => {
+        const matchingTags = (n.metadata.tags || []).filter((t) =>
+          tagsArray.includes(String(t).toLowerCase())
+        );
+        return {
+          ...n.toObject(),
+          matchScore: matchingTags.length,
+          matchingTags,
+        };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore);
 
     res.status(200).json({
       success: true,
@@ -772,7 +594,7 @@ const getNewsByTags = async (req, res) => {
       data: withScore,
     });
   } catch (error) {
-    console.error("Error fetching news by tags:", error.message);
+    console.error("getNewsByTags error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch news by tags",
@@ -781,61 +603,54 @@ const getNewsByTags = async (req, res) => {
   }
 };
 
-// === DELETE ===
+/* ---------- DELETE ---------- */
 const deleteNews = async (req, res) => {
   try {
     const newsId = req.query.id || req.body.id;
-
-    console.log("News ID for deletion:", newsId);
-
     if (!newsId) {
-      return res.status(400).json({
-        success: false,
-        message: "News ID is required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "News ID is required" });
     }
 
     const news = await News.findById(newsId);
-    if (!news) {
-      return res.status(404).json({
-        success: false,
-        message: "News not found",
-      });
-    }
+    if (!news)
+      return res
+        .status(404)
+        .json({ success: false, message: "News not found" });
 
-    // Remove from agent (if your Agent model supports it)
-    const agent = await Agent.findById(news.author.agentId);
-    if (agent) {
-      if (typeof agent.removeNews === "function") {
-        agent.removeNews(news._id);
-      } else if (Array.isArray(agent.news)) {
-        agent.news = agent.news.filter((n) => n.newsId.toString() !== news._id.toString());
+    // Remove from agent.news
+    try {
+      const agent = await Agent.findOne({ agentId: news.author.agentId });
+      if (agent) {
+        if (typeof agent.removeNews === "function") {
+          agent.removeNews(news._id);
+        } else if (Array.isArray(agent.news)) {
+          agent.news = agent.news.filter(
+            (n) => String(n.newsId) !== String(news._id)
+          );
+        }
+        await agent.save({ validateBeforeSave: false });
       }
-      await agent.save();
-      console.log(`✅ News removed from agent ${agent.agentName}`);
+    } catch (e) {
+      console.warn("Agent unlink warning (news):", e.message);
     }
 
-    // Delete images
-    if (news.image && news.image.path && news.image.filename !== "placeholder.jpg") {
-      await deleteFileSafely(news.image.path);
-    }
-    if (news.bodyImages?.image1?.path) {
-      await deleteFileSafely(news.bodyImages.image1.path);
-      console.log("Deleted body image 1");
-    }
-    if (news.bodyImages?.image2?.path) {
-      await deleteFileSafely(news.bodyImages.image2.path);
-      console.log("Deleted body image 2");
-    }
+    // Destroy Cloudinary images
+    if (news.image?.publicId) await destroyPublicId(news.image.publicId);
+    if (news.bodyImages?.image1?.publicId)
+      await destroyPublicId(news.bodyImages.image1.publicId);
+    if (news.bodyImages?.image2?.publicId)
+      await destroyPublicId(news.bodyImages.image2.publicId);
 
     await News.findByIdAndDelete(newsId);
 
     res.status(200).json({
       success: true,
-      message: "News and all associated images deleted successfully",
+      message: "News and associated images deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting news:", error.message);
+    console.error("deleteNews error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to delete news",
@@ -844,33 +659,33 @@ const deleteNews = async (req, res) => {
   }
 };
 
-// === BY AGENT ===
+/* ---------- LIST BY AGENT ---------- */
 const getNewsByAgent = async (req, res) => {
   try {
     const { agentId } = req.params;
     const { published, page = 1, limit = 10 } = req.query;
 
-    if (!agentId) {
-      return res.status(400).json({
-        success: false,
-        message: "Agent ID is required",
-      });
-    }
+    if (!agentId)
+      return res
+        .status(400)
+        .json({ success: false, message: "Agent ID is required" });
 
-    let filter = { "author.agentId": agentId };
-    if (published !== undefined) {
-      filter.isPublished = published === "true";
-    }
+    const filter = { "author.agentId": agentId };
+    if (published !== undefined) filter.isPublished = published === "true";
 
-    const skip = (page - 1) * limit;
+    const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
 
-    const items = await News.find(filter)
-      .populate("author.agentId", "agentName email imageUrl designation")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
-
-    const total = await News.countDocuments(filter);
+    const [items, totalNews] = await Promise.all([
+      News.find(filter)
+        .populate({
+          path: "agentDetails",
+          select: "agentId agentName email imageUrl designation",
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit, 10)),
+      News.countDocuments(filter),
+    ]);
 
     res.status(200).json({
       success: true,
@@ -878,16 +693,16 @@ const getNewsByAgent = async (req, res) => {
       data: {
         news: items,
         pagination: {
-          currentPage: parseInt(page),
-          totalPages: Math.ceil(total / limit),
-          totalNews: total,
-          hasNext: page * limit < total,
-          hasPrev: page > 1,
+          currentPage: parseInt(page, 10),
+          totalPages: Math.ceil(totalNews / parseInt(limit, 10)),
+          totalNews,
+          hasNext: parseInt(page, 10) * parseInt(limit, 10) < totalNews,
+          hasPrev: parseInt(page, 10) > 1,
         },
       },
     });
   } catch (error) {
-    console.error("Error fetching agent news:", error.message);
+    console.error("getNewsByAgent error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch agent news",
@@ -896,14 +711,15 @@ const getNewsByAgent = async (req, res) => {
   }
 };
 
-// === AGENTS WITH NEWS (optional aggregate on Agent) ===
+/* ---------- AGENTS WITH NEWS ---------- */
 const getAgentsWithNews = async (req, res) => {
   try {
     const { limit = 20 } = req.query;
 
-    // If you have a static like Agent.findAgentsWithNews(limit)
     if (typeof Agent.findAgentsWithNews === "function") {
-      const agentsWithNews = await Agent.findAgentsWithNews(parseInt(limit));
+      const agentsWithNews = await Agent.findAgentsWithNews(
+        parseInt(limit, 10)
+      );
       return res.status(200).json({
         success: true,
         message: "Agents with news fetched successfully",
@@ -911,10 +727,9 @@ const getAgentsWithNews = async (req, res) => {
       });
     }
 
-    // Fallback (simple distinct)
     const agentIds = await News.distinct("author.agentId");
     const agents = await Agent.find({ agentId: { $in: agentIds } })
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .select("agentId agentName email imageUrl designation");
 
     res.status(200).json({
@@ -923,7 +738,7 @@ const getAgentsWithNews = async (req, res) => {
       data: agents,
     });
   } catch (error) {
-    console.error("Error fetching agents with news:", error.message);
+    console.error("getAgentsWithNews error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch agents with news",
@@ -932,47 +747,41 @@ const getAgentsWithNews = async (req, res) => {
   }
 };
 
-// === PUBLISH / UNPUBLISH ===
+/* ---------- PUBLISH TOGGLE ---------- */
 const toggleNewsPublishStatus = async (req, res) => {
   try {
     const { newsId } = req.params;
     const { publish } = req.body;
-
-    if (!newsId) {
-      return res.status(400).json({
-        success: false,
-        message: "News ID is required",
-      });
-    }
+    if (!newsId)
+      return res
+        .status(400)
+        .json({ success: false, message: "News ID is required" });
 
     const news = await News.findById(newsId);
-    if (!news) {
-      return res.status(404).json({
-        success: false,
-        message: "News not found",
-      });
-    }
+    if (!news)
+      return res
+        .status(404)
+        .json({ success: false, message: "News not found" });
 
-    let result;
-    if (publish === true || publish === "true") {
-      result = await news.publish();
-    } else {
-      result = await news.unpublish();
-    }
+    const result =
+      publish === true || publish === "true"
+        ? await news.publish()
+        : await news.unpublish();
 
-    const agent = await Agent.findById(news.author.agentId);
-    if (agent) {
-      const newsForAgent = {
-        newsId: news._id,
-        title: news.content?.title || news.metadata?.title || "",
-        slug: news.metadata?.slug || "",
-        isPublished: news.isPublished,
-        publishedAt: news.publishedAt,
-      };
-      if (typeof agent.addOrUpdateNews === "function") {
-        agent.addOrUpdateNews(newsForAgent);
-        await agent.save();
+    try {
+      const agent = await Agent.findOne({ agentId: news.author.agentId });
+      if (agent?.addOrUpdateNews) {
+        agent.addOrUpdateNews({
+          newsId: news._id,
+          title: news.content?.title || news.metadata?.title || "",
+          slug: news.metadata?.slug || "",
+          isPublished: news.isPublished,
+          publishedAt: news.publishedAt,
+        });
+        await agent.save({ validateBeforeSave: false });
       }
+    } catch (e) {
+      console.warn("Agent publish toggle link warning (news):", e.message);
     }
 
     res.status(200).json({
@@ -981,7 +790,7 @@ const toggleNewsPublishStatus = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error("Error toggling news publish status:", error.message);
+    console.error("toggleNewsPublishStatus error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to toggle news publish status",
@@ -991,6 +800,7 @@ const toggleNewsPublishStatus = async (req, res) => {
 };
 
 module.exports = {
+  upload,
   GetAllNews,
   getSingleNews,
   getNewsByTags,
@@ -1000,5 +810,4 @@ module.exports = {
   getNewsByAgent,
   getAgentsWithNews,
   toggleNewsPublishStatus,
-  upload, // same multer field map as blog
 };

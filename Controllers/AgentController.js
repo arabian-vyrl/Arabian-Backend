@@ -63,18 +63,31 @@ const createAgent = async (req, res) => {
     return res.status(400).json({ success: false, error: err.message });
   }
 };
+
 const getAgents = async (req, res) => {
   try {
-    const pipeline = [
-      { $match: { isActive: true } }, // Filter for active agents only
-      { $sort: { sequenceNumber: 1, agentName: 1 } },
+    let { isActive } = req.query;
+    // console.log(isActive, "IS-Active");
+    const pipeline = [];
 
-      // Inclusion-only projection + computed count
+    // Convert "true"/"false" to Boolean
+    //It will show agent with isActive true
+    if (isActive === "True") {
+      pipeline.push({ $match: { isActive: true } });
+      //It will show All agents
+    } else if (isActive === "False") {
+      null;
+    }
+    // If no query → do not push a $match (returns all)
+
+    pipeline.push(
+      { $sort: { sequenceNumber: 1, agentName: 1 } },
       {
         $project: {
           agentName: 1,
           agentLanguage: 1,
           designation: 1,
+          superAgent: 1,
           email: 1,
           whatsapp: 1,
           phone: 1,
@@ -87,15 +100,11 @@ const getAgents = async (req, res) => {
           sequenceNumber: 1,
           reraNumber: 1,
           activeOnLeaderboard: 1,
-
-          // computed count (from properties[])
           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
-
-          // NOTE: Do NOT put properties:0 or blogs:0 here.
-          // Not listing them means they are excluded.
+          blogsCount: { $size: { $ifNull: ["$blogs", []] } },
         },
-      },
-    ];
+      }
+    );
 
     const agents = await Agent.aggregate(pipeline).allowDiskUse(true);
 
@@ -225,7 +234,7 @@ const updateAgent = async (req, res) => {
         "agentLanguage",
         "isActive",
         "superAgent",
-        "activeOnLeaderboard", 
+        "activeOnLeaderboard",
       ];
 
       for (const field of allowedFields) {
