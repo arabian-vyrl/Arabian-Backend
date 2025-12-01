@@ -165,9 +165,9 @@ router.put("/UpdateBlog", Blogs.upload, Blogs.updateBlog);
 // News Routes
 router.get("/GetNews", News.GetAllNews);
 router.get("/SingleNews", News.getSingleNews);
-router.get("/DeleteNews", News.deleteNews);
+router.delete("/DeleteNews", News.deleteNews);
 router.post("/AddNews", News.upload, News.createNews);
-router.post("/UpdateNews", News.upload, News.updateNews);
+router.put("/UpdateNews", News.upload, News.updateNews);
 
 // Community Guideline
 router.get("/GetCommunityGuides", CommunityGuides.getAllCommunityGuides);
