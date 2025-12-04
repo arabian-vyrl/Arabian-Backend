@@ -1011,7 +1011,6 @@ const UniversalSpecializedFilter = async (req, res) => {
     const pipeline = [
       { $match: baseMatch },
 
-      // Numeric price (strip commas/currency -> double)
       {
         $addFields: {
           numericPrice: {
@@ -2095,8 +2094,11 @@ const getOffPlanAddressSuggestions = async (req, res) => {
 const filterByCommunity = async (req, res) => {
   try {
     const community = req.query.community;
-    const listingType = req.query.listingType || req.query.type || "Sale";
-    console.log("LT", listingType);
+    const listingTypeParam = req.query.listingType || req.query.type || "Sale";
+
+    const listingTypes = listingTypeParam.split(",").map(t => t.trim());
+    console.log("LT", listingTypes);
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
 
@@ -2107,9 +2109,10 @@ const filterByCommunity = async (req, res) => {
       });
     }
 
-    // Normalize listing type
-    const normalizedListingType =
-      listingType.charAt(0).toUpperCase() + listingType.slice(1).toLowerCase();
+    // Normalize listing types
+    const normalizedListingTypes = listingTypes.map(type =>
+      type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
+    );
 
     const searchWords = community
       .trim()
@@ -2121,22 +2124,50 @@ const filterByCommunity = async (req, res) => {
       return new RegExp(`\\b${escapedWord}\\b`, "i");
     });
 
-    // Build the query based on listing type
+    // Build the query based on listing types
     let listingTypeQuery;
 
-    if (normalizedListingType === "Offplan") {
-      // For OffPlan properties, check the completion_status field
+    if (normalizedListingTypes.length === 1 && normalizedListingTypes[0] === "Offplan") {
+      // For OffPlan properties only
       listingTypeQuery = {
         "custom_fields.completion_status": {
           $in: ["off_plan_primary", "off_plan_secondary"],
         },
       };
+    } else if (normalizedListingTypes.includes("Offplan")) {
+      // If Offplan is included with other types, need $or query
+      const offeringTypes = normalizedListingTypes
+        .filter(type => type !== "Offplan")
+        .map(type => type === "Sale" ? "RS" : "RR");
+
+      const orConditions = [];
+
+      // Add offplan condition
+      orConditions.push({
+        "custom_fields.completion_status": {
+          $in: ["off_plan_primary", "off_plan_secondary"],
+        },
+      });
+
+      // Add sale/rent conditions
+      if (offeringTypes.length > 0) {
+        orConditions.push({
+          offering_type: { $in: offeringTypes },
+          "custom_fields.completion_status": {
+            $nin: ["off_plan_primary", "off_plan_secondary"],
+          },
+        });
+      }
+
+      listingTypeQuery = { $or: orConditions };
     } else {
-      // For Sale/Rent properties, check the offering_type field
-      // AND ensure completion_status is NOT off-plan
-      const offeringType = normalizedListingType === "Sale" ? "RS" : "RR";
+      // For Sale and/or Rent properties (no Offplan)
+      const offeringTypes = normalizedListingTypes.map(type =>
+        type === "Sale" ? "RS" : "RR"
+      );
+
       listingTypeQuery = {
-        offering_type: offeringType,
+        offering_type: offeringTypes.length === 1 ? offeringTypes[0] : { $in: offeringTypes },
         "custom_fields.completion_status": {
           $nin: ["off_plan_primary", "off_plan_secondary"],
         },
@@ -2159,7 +2190,7 @@ const filterByCommunity = async (req, res) => {
     };
 
     console.log("Community search terms:", searchWords);
-    console.log("Listing type:", normalizedListingType);
+    console.log("Listing types:", normalizedListingTypes);
     console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
 
     const skip = (page - 1) * limit;
@@ -2170,7 +2201,7 @@ const filterByCommunity = async (req, res) => {
     if (totalCount === 0) {
       return res.status(200).json({
         success: true,
-        message: `No ${normalizedListingType.toLowerCase()} properties found in "${community}" community`,
+        message: `No ${normalizedListingTypes.join(" or ").toLowerCase()} properties found in "${community}" community`,
         pagination: {
           currentPage: page,
           totalPages: 0,
@@ -2182,7 +2213,7 @@ const filterByCommunity = async (req, res) => {
         count: 0,
         data: [],
         debug: {
-          listingType: normalizedListingType,
+          listingTypes: normalizedListingTypes,
           filterQuery: combinedQuery,
           searchTerms: searchWords,
         },
@@ -2196,14 +2227,12 @@ const filterByCommunity = async (req, res) => {
       .lean();
 
     console.log(
-      `Found ${
-        properties.length
-      } ${normalizedListingType.toLowerCase()} properties for page ${page} in "${community}" community`
+      `Found ${properties.length} ${normalizedListingTypes.join(" and ").toLowerCase()} properties for page ${page} in "${community}" community`
     );
 
     res.status(200).json({
       success: true,
-      message: `${normalizedListingType} properties in "${community}" community found successfully`,
+      message: `${normalizedListingTypes.join(" and ")} properties in "${community}" community found successfully`,
       pagination: {
         currentPage: page,
         totalPages: totalPages,
@@ -2214,11 +2243,11 @@ const filterByCommunity = async (req, res) => {
       },
       searchTerms: searchWords,
       searchField: "custom_fields.community",
-      listingType: normalizedListingType,
+      listingTypes: normalizedListingTypes,
       count: properties.length,
       data: properties,
       debug: {
-        listingType: normalizedListingType,
+        listingTypes: normalizedListingTypes,
         filterQuery: combinedQuery,
       },
     });
@@ -2259,8 +2288,6 @@ const filterByCommunityFlexible = async (req, res) => {
       const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       return new RegExp(`\\b${escapedWord}\\b`, "i");
     });
-
-    // Build query with flexible listing type matching
     const combinedQuery = {
       $and: [
         {

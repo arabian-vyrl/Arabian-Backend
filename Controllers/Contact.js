@@ -3,14 +3,14 @@ const Contact = require("../Models/ContactModel");
 // CREATE a new contact message
 const createContact = async (req, res) => {
   try {
-    const { firstName, lastName, email, telephone, message } = req.body;
+    const { firstName, lastName, email, telephone, message, source } = req.body;
 
     // Basic validation
-    if (!firstName || !lastName || !email || !telephone || !message) {
+    if (!firstName || !lastName || !email || !telephone || !message || !source) {
       return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
-    const contact = new Contact({ firstName, lastName, email, telephone, message });
+    const contact = new Contact({ firstName, lastName, email, telephone, message, source });
     await contact.save();
 
     res.status(201).json({ success: true, message: "Message sent successfully!", data: contact });

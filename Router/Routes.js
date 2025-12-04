@@ -19,6 +19,7 @@ const LeaderboardController = require("../Controllers/LeaderboardController");
 const middleWare = require("../Middlewares/VerifyLoginReferralToken");
 const propertyListForm = require("../Controllers/PropertyListForm")
 const propertyValuation = require("../Controllers/PropertyValuation")
+const offPlanListingForm = require("../Controllers/OffPlanController")
 
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -111,7 +112,7 @@ router.put(
 // Contact us
 router.post("/Contact", ContactUs.createContact);
 router.get("/GetContact", ContactUs.getContacts);
-router.get("/DeleteContact", ContactUs.deleteContact);
+router.delete("/DeleteContact", ContactUs.deleteContact);
 
 // Properties Api's
 // router.get("/all-properties", PropertyController.getAllProperties);
@@ -165,9 +166,9 @@ router.put("/UpdateBlog", Blogs.upload, Blogs.updateBlog);
 // News Routes
 router.get("/GetNews", News.GetAllNews);
 router.get("/SingleNews", News.getSingleNews);
-router.delete("/DeleteNews", News.deleteNews);
+router.get("/DeleteNews", News.deleteNews);
 router.post("/AddNews", News.upload, News.createNews);
-router.put("/UpdateNews", News.upload, News.updateNews);
+router.post("/UpdateNews", News.upload, News.updateNews);
 
 // Community Guideline
 router.get("/GetCommunityGuides", CommunityGuides.getAllCommunityGuides);
@@ -184,8 +185,9 @@ router.post(
   CommunityGuides.updateCommunityGuide
 );
 
-// Route for PropertyValuation
-
+router.post("/off-plan-form", offPlanListingForm.createOffPlanContact)
+router.get("/off-plan-contacts", offPlanListingForm.getOffPlanContacts)
+router.delete("/off-plan-contacts-delete/:id", offPlanListingForm.deleteOffPlanContact)
 
 // Community Guideline Api's
 // router.get("/GetCommunityGuides", CommunityGuides.GetAllCommunityGuides);
@@ -268,7 +270,7 @@ router.delete("/delete-list-property-form/:id", propertyListForm.deletePropertyL
 router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 
 router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
-router.get("/get-community-guides/", CommunityGuides.getAllCommunityGuideInfo)
+router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)
 
 // Leaderboard Agent
 // Search agents by name or email

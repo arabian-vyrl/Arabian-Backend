@@ -1,59 +1,472 @@
 [
   {
+    "communityId": "al_barari_01",
+    "communityName": "Al Barari",
+    "communityTags": [
+      "Al Barari",
+      "Dubai",
+      "Luxury Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/al-barari",
+    "communityDiscription": "Created by Al Barari Developers, Al Barari district is located in the green heart of Dubai and offers a rare combination of nature and comfort. This is a community for those who are looking for peace, a safe environment and a high standard of living for anyone looking to rent or buy property in Dubai"
+  },
+  {
+    "communityId": "al_furjan_01",
+    "communityName": "Al Furjan",
+    "communityTags": [
+      "Al Furjan",
+      "Dubai",
+      "Family Community"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/al-furjan",
+    "communityDiscription": "Developed by Nakheel, Al Furjan offers more than 4,000 villas, townhouses and apartments. Green streets and open spaces give peace and comfort. Families choose this area for safety and home warmth. Families choose Al-Furjan not only for comfort, but also for the atmosphere, for the morning silence, for the feeling of security, for the feeling of home. Buy property in  Dubai(/properties/for-sale) remains one of the most sought-after in Dubai."
+  },
+  {
+    "communityId": "arabian_ranches_01",
+    "communityName": "Arabian Ranches",
+    "communityTags": [
+      "Arabian Ranches",
+      "Dubai",
+      "Emaar"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/arabian-ranches ",
+    "communityDiscription": "Arabian Ranches offer a quiet escape from city life. Developed by Emaar, it features refined villas, lush surroundings, and a relaxed rhythm perfect for families and professionals. Whether you’re renting or looking to buy property in Dubai, Arabian Ranches gives you the feeling of a holiday resort and real home comfort."
+  },
+  {
+    "communityId": "business_bay01",
+    "communityName": "Business Bay",
+    "communityTags": [
+      "Business Bay",
+      "Dubai",
+      "Waterfront"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/business-bay",
+    "communityDiscription": "Business Bay is a modern mixed-use community in the centre of Dubai. The eye-catching skyline has earned this area the name “Manhattan of Dubai”."
+  },
+  {
+    "communityId": "city_walk_01",
+    "communityName": "City Walk",
+    "communityTags": [
+      "City Walk",
+      "Dubai",
+      "Modern Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/city-walk",
+    "communityDiscription": "City Walk by Meraas blends modern living with style and comfort, with premium homes, boutiques, and cafés. For anyone looking to rent or buy property in Dubai, it’s a top choice for families, professionals, and investors."
+  },
+  {
+    "communityId": "damac_hills01",
+    "communityName": "Damac Hills",
+    "communityTags": [
+      "Damac Hills",
+      "Dubai",
+      "Golf Community"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/damac-hills",
+    "communityDiscription": "One of the real estate projects in Dubai that practically everyone is aware of is Damac Hills. Located in the centre of the Dubailand area, it was developed by Damac Properties."
+  },
+  {
+    "communityId": "damac_hills_2_01",
+    "communityName": "Damac Hills 2",
+    "communityTags": [
+      "Damac Hills 2",
+      "Dubai",
+      "Modern Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/damac-hills-2",
+    "communityDiscription": "Damac Hills 2 offers the perfect mix of Dubai’s energy and countryside tranquility. Created by DAMAC Properties, it provides generous living spaces, lush surroundings, and a balanced lifestyle for families and working professionals. For anyone looking to rent or buy property in dubai."
+  },
+  {
     "communityId": "downtown_dubai01",
-    "communityName": "downtown",
-    "communityHeading": "Downtown Dubai",
+    "communityName": "Downtown Dubai",
     "communityTags": [
       "Downtown",
-      "Dubai"
-    ],
-    "backgroundImage": "/Assets/cg.jpg",
-    "published": false
-  },
-  {
-    "communityId": "dubai_01",
-    "communityName": "dubai",
-    "communityHeading": "Dubai",
-    "communityTags": [
       "Dubai",
-      "City"
+      "Luxury Living"
     ],
     "backgroundImage": "/Assets/cg.jpg",
-    "published": true
+    "published": true,
+    "pageURL": "/communities/dubai/downtown-dubai",
+    "communityDiscription": "Enjoy mornings with stunning skyscraper views, calm boulevards, and fast links to every part of Dubai. Downtown Dubai is perfect whether you want a family home or a high-yield investment. Trust our expert real estate brokers in Dubai to help you find the best property."
   },
   {
-    "communityId": "marina_dubai02",
-    "communityName": "dubai marina",
-    "communityHeading": "Dubai Marina",
+    "communityId": "dubai_creek_harbour01",
+    "communityName": "Dubai Creek Harbour",
+    "communityTags": [
+      "Dubai Creek Harbour",
+      "Dubai",
+      "Waterfront"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/dubai-creek-harbour",
+    "communityDiscription": "Emaar’s expansive development project, Dubai Creek Harbour, is located on the banks of the ancient Dubai Creek. There are modern towers, embankments, parks and views of the city center."
+  },
+  {
+    "communityId": "dubai_hills_01",
+    "communityName": "Dubai Hills",
+    "communityTags": [
+      "Dubai Hills",
+      "Dubai",
+      "Golf Community"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/dubai-hills",
+    "communityDiscription": "Dubai Hills Estate offers calm, green living. Tree-lined roads, open spaces, and a peaceful rhythm attract families seeking safety, balance, and comfort. Families rent, others buy property in dubai, drawn by balance: time to breathe, safety for children, evenings that stretch unhurried."
+  },
+  {
+    "communityId": "dubai_internet_city_01",
+    "communityName": "Dubai Internet City",
+    "communityTags": [
+      "Dubai Internet City",
+      "Dubai",
+      "Tech Hub"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/dubai-internet-city ",
+    "communityDiscription": "Dubai Internet City (DIC) moves to its own rhythm fast, focused, yet oddly calm. It’s where glass towers catch the morning light and ideas travel faster than the metro below. Created by TECOM Group, this district became Dubai’s brain of innovation, a meeting ground for global tech leaders, start-ups, and dreamers who build what comes next. For anyone planning to buy property in Dubai (hyperlink to /properties/for-sale/apartments),or rent near the city’s innovation corridor, DIC offers more than a convenient address; it's a front-row seat to progress, with the beach just beyond the skyline."
+  },
+  {
+    "communityId": "dubai_marina01",
+    "communityName": "Dubai Marina",
     "communityTags": [
       "Dubai Marina",
       "Dubai",
       "Waterfront"
     ],
     "backgroundImage": "/Assets/cg.jpg",
-    "published": false
+    "published": true,
+    "pageURL": "/communities/dubai/dubai-marina",
+    "communityDiscription": "One of Dubai's most popular residential and recreational areas is Dubai Marina. It continues to draw professionals, families, and foreign investors with its seaside lifestyle, opulent buildings, exciting nightlife, and close proximity to important corporate centres."
   },
   {
-    "communityId": "Palm_jumeirah_01",
-    "communityName": "palm jumeirah",
-    "communityHeading": "Palm Jumeirah",
+    "communityId": "dubai_science_park_01",
+    "communityName": "Dubai Science Park",
+    "communityTags": [
+      "Dubai Science Park",
+      "Dubai",
+      "Innovation Hub"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/dubai-science-park",
+    "communityDiscription": "Dubai Science Park feels different from most neighborhoods in Dubai, created by TECOM Group and Dubai Holding. For anyone looking to rent or buy property in dubai (hyperlink to /properties/for-sale), It offers a rare balance: the drive of innovation paired with the ease of everyday living"
+  },
+  {
+    "communityId": "dubai_south_01",
+    "communityName": "Dubai South",
+    "communityTags": [
+      "Dubai South",
+      "Dubai",
+      "Expo City"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/dubai-south",
+    "communityDiscription": "Dubai's real estate market is developing dynamically, South Dubai is a key urban development project with an area of 145 km2, designed as a single space for life, work and business. The area is located next to Al Maktoum Airport and plays the role of a strategic hub connecting the region's air and sea routes."
+  },
+  {
+    "communityId": "emaar_beachfront01",
+    "communityName": "Emaar Beachfront",
+    "communityTags": [
+      "Emaar Beachfront",
+      "Dubai",
+      "Beach Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "communities/dubai/emaar-beachfront",
+    "communityDiscription": "Emaar Beachfront is a modern luxury community on the shoreline, located within Dubai Harbour and brought to life by Emaar Properties. If you’ve been thinking about buying property in Dubai or perhaps renting a home by the sea, this place has a lot to offer."
+  },
+  {
+    "communityId": "emaar_oasis_01",
+    "communityName": "Emaar Oasis",
+    "communityTags": [
+      "Emaar Oasis",
+      "Dubai",
+      "Luxury Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/emaar-oasis",
+    "communityDiscription": "Emaar Oasis is a quiet corner of Dubai, where villas are surrounded by greenery and reflected in lagoons. Designed by Emaar Properties, the complex combines comfort, aesthetics, open spaces and elegant style, ideal for buying or buy property in Dubai"
+  },
+  {
+    "communityId": "emaar_south_01",
+    "communityName": "Emaar South",
+    "communityTags": [
+      "Emaar South",
+      "Dubai",
+      "Golf Community"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/emaar-south",
+    "communityDiscription": "Emaar South, developed by Emaar Properties, is a modern residential community located in Dubai South. Designed for a balanced lifestyle, it features spacious homes, open streets, and lush green fairways. The atmosphere is calm and refined, offering residents a peaceful setting surrounded by nature and contemporary comfort."
+  },
+  {
+    "communityId": "emirates_hills01",
+    "communityName": "Emirates Hills",
+    "communityTags": [
+      "Emirates Hills",
+      "Dubai",
+      "Luxury Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/emirates-hills",
+    "communityDiscription": "Emirates Hills is the quintessence of luxury living in Dubai. Closed territory, maximum privacy and impeccable style from Emaar"
+  },
+  {
+    "communityId": "jbr_01",
+    "communityName": "Jumeirah Beach Residence",
+    "communityTags": [
+      "JBR",
+      "Dubai",
+      "Beachfront"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/Jumeirah-beach-residence",
+    "communityDiscription": "Jumeirah Beach Residence or JBR lines Dubai’s coast where the city meets the sea. Sleek towers rise above soft sand, reflecting light that changes by the hour. Mornings begin quietly with coffee and waves; by evening, music and sea air fill the streets. People come to rent or buy property in Dubai, but they stay for the rhythm  a calm pulse between movement and rest, shaped by life on the water."
+  },
+  {
+    "communityId": "jebel_ali_01",
+    "communityName": "Jebel Ali",
+    "communityTags": [
+      "Jebel Ali",
+      "Dubai",
+      "Coastal Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/jebel-ali",
+    "communityDiscription": "Jebel Ali sits where Dubai leans into the sea, a landscape shaped by movement and intent. Here, shipping lanes brush against neighborhoods, and the sound of cranes blends with the hush of the tide. It’s a place built on contrast: commerce and calm, ambition and air. For anyone looking to buy property in Dubai (hyperlink to /properties/for-sale/villas). For rent by the waterfront, Jebel Ali offers more than space; it offers rhythm, renewal, and room to live a little slower."
+  },
+  {
+    "communityId": "jlt_01",
+    "communityName": "Jumeirah Lake Towers",
+    "communityTags": [
+      "JLT",
+      "Dubai",
+      "Lakeside Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/jumeirah-lake-towers",
+    "communityDiscription": "Jumeirah Lake Towers (JLT) where business towers catch the morning light, cafés spill onto shaded walkways, and families stroll past the water long after sunset. Developed by Dubai Multi Commodities Centre (DMCC), JLT grew from a simple commercial vision into one of Dubai’s most livable, diverse, and self-contained communities. For anyone looking to rent or buy property in dubai"
+  },
+  {
+    "communityId": "jumeirah_golf_estates01",
+    "communityName": "Jumeirah Golf Estates",
+    "communityTags": [
+      "Jumeirah Golf Estates",
+      "Dubai",
+      "Golf Community"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "communities/dubai/jumeirah-golf-estates",
+    "communityDiscription": "This is surely among Dubai's most prestigious residential communities. Moreover, it stands as one of the city's top luxury developments. As per the location details, the area has green golf courses and well-planned landscapes surrounding it. Regarding the surroundings, everything is properly designed with greenery. Jumeirah Golf Estates LLC project itself is known for luxury housing with spacious villas, modern townhouses and stylish apartments."
+  },
+  {
+    "communityId": "jumeirah_islands01",
+    "communityName": "Jumeirah Islands",
+    "communityTags": [
+      "Jumeirah Islands",
+      "Dubai",
+      "Luxury Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/jumeirah-islands",
+    "communityDiscription": "Dubai is renowned for its luxurious lifestyle, world-class communities, and sense of security. Built by the Nakheel developers, Jumeirah Islands is a beautiful community you would love. The more than 300-hectare property is surrounded by luxurious homes and features well-kept green areas and man-made lakes."
+  },
+  {
+    "communityId": "jumeirah_park_01",
+    "communityName": "Jumeirah Park",
+    "communityTags": [
+      "Jumeirah Park",
+      "Dubai",
+      "Family Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/jumeriah-park",
+    "communityDiscription": "Developed by Nakheel, Jumeirah Park was built around a simple idea space to breathe and light that feels personal. Families come here for peace and familiarity, often choosing to rent or buy property in Dubai, in this most serene neighborhood."
+  },
+  {
+    "communityId": "jvc_01",
+    "communityName": "Jumeirah Village Circle",
+    "communityTags": [
+      "JVC",
+      "Dubai",
+      "Community Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/jumeirah-village-circle",
+    "communityDiscription": "The Jumeirah Village Circle (JVC) is located between Al-Khail Road and Hessa Street. Designed by Nakheel, JVC creates a self-sufficient space with arched streets, mid-rise buildings and green courtyards. It gets quieter in the evening. There are family walks in the parks, and the cafe smells of fresh pastries and jasmine. The pace of life remains calm and steady.  It’s Dubai, but at a slower heartbeat. Many choose to rent or buy property in dubai here because JVC manages something rare; it feels both private and alive."
+  },
+  {
+    "communityId": "jvt_01",
+    "communityName": "Jumeirah Village Triangle",
+    "communityTags": [
+      "JVT",
+      "Dubai",
+      "Community Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/jumeriah-village-triangle",
+    "communityDiscription": "Developed by Nakheel Properties, Jumeirah Village Triangle (JVT) moves at a gentler pace, the air feels lighter, and mornings unfold in a calm rhythm. Tree-lined streets and rows of villas replace city noise with familiar moments: school drop-offs, evening jogs, and quiet weekends beneath the trees."
+  },
+  {
+    "communityId": "palm_jebel_ali_01",
+    "communityName": "Palm Jebel Ali",
+    "communityTags": [
+      "Palm Jebel Ali",
+      "Dubai",
+      "Island Living"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/palm-jebel-ali",
+    "communityDiscription": "Palm Jebel Ali combines comfort, nature and style. This is a modern area with spacious villas and a peaceful atmosphere where life flows smoothly and beautifully. For anyone looking to rent or buy property in dubai."
+  },
+  {
+    "communityId": "palm_jumeirah01",
+    "communityName": "Palm Jumeirah",
     "communityTags": [
       "Palm Jumeirah",
       "Dubai",
       "Island"
     ],
     "backgroundImage": "/Assets/cg.jpg",
-    "published": true
+    "published": true,
+    "pageURL": "/communities/dubai/palm-jumeirah",
+    "communityDiscription": "Extending into the Persian Gulf, Palm Jumeirah is Dubai's famous man-made island in the shape of a palm tree. The trunk, crescent, and fronds that make up its structure combine cutting-edge design with the sea's inherent beauty."
   },
   {
-    "communityId": "UAE_01",
-    "communityName": "uae",
-    "communityHeading": "United Arab Emirates",
+    "communityId": "the_greens_01",
+    "communityName": "The Greens",
     "communityTags": [
-      "UAE",
-      "Country"
+      "The Greens",
+      "Dubai",
+      "Community Living"
     ],
     "backgroundImage": "/Assets/cg.jpg",
-    "published": false
+    "published": true,
+    "pageURL": "/communities/dubai/the-greens",
+    "communityDiscription": "The Greens provides cost-effective, premium apartments in Dubai's central area. Moreover, these residential units combine quality living with convenient location access. Residents enjoy the beautiful gardens, jogging tracks, and swimming pools here. They have great shopping options at The Greens Souk, too. This location gives quick access to Media City, Internet City, Dubai Marina, and Mall of the Emirates, so you get the same convenience with strong rental demand."
+  },
+  {
+    "communityId": "the_lakes01",
+    "communityName": "The Lakes",
+    "communityTags": [
+      "The Lakes",
+      "Dubai",
+      "Lakeside Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/the-lakes",
+    "communityDiscription": "One of Dubai’s most established villa communities, The Lakes offers the perfect mix of greenery, security, and family-friendly design. Wide open landscapes and exclusive clubhouses bring together privacy and connection, while its location near Media City, Dubai Marina, and Emirates Hills ensures both calm living and long-term value."
+  },
+  {
+    "communityId": "the_meadows01",
+    "communityName": "The Meadows",
+    "communityTags": [
+      "The Meadows",
+      "Dubai",
+      "Family Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/the-meadows",
+    "communityDiscription": "A beautiful, quiet and peaceful neighbourhood in Dubai which was built by Emaar by the end of 2004. With nine sub-communities and over 1,800 villas, it’s a favorite for families and investors seeking space, safety, and convenience."
+  },
+  {
+    "communityId": "the_springs01",
+    "communityName": "The Springs",
+    "communityTags": [
+      "The Springs",
+      "Dubai",
+      "Townhouses"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/the-springs",
+    "communityDiscription": "The Springs is a gated community built for families, professionals, and investors who want peace without giving up city access. Designed around green spaces, private gardens, and lakes, it offers a suburban feel with modern convenience. It remains one of the most desirable communities, regularly recommended by experienced real estate agents in dubai for both living and investment."
+  },
+  {
+    "communityId": "tilal_al_furjan_01",
+    "communityName": "Tilal Al Furjan",
+    "communityTags": [
+      "Tilal Al Furjan",
+      "Dubai",
+      "Modern Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/tilal-al-furjan",
+    "communityDiscription": "Tilal Al Furjan, a project by Nakheel, sits quietly in one of Dubai’s most livable areas. The streets feel open, lined with trees that cast long shadows in the afternoon. Villas rise behind green fences, their windows catching the desert light. It's a peaceful but yet vibrant place where everyday life runs at its own pace."
+  },
+  {
+    "communityId": "tilal_al_ghaf01",
+    "communityName": "Tilal Al Ghaf",
+    "communityTags": [
+      "Tilal Al Ghaf",
+      "Dubai",
+      "Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": true,
+    "pageURL": "/communities/dubai/tilal-al-ghaf",
+    "communityDiscription": "Dubai real estate is rapidly expanding, and this area is a perfect illustration of such developments. Majid Al Futtaim designed this new city, which is centered around Lagoon Al Ghaf, white sandy beaches, and open natural spaces."
+  },
+  {
+    "communityId": "town_square01",
+    "communityName": "Town Square",
+    "communityTags": [
+      "Town Square",
+      "Dubai",
+      "Townhouses"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "published": false,
+    "pageURL": "/communities/dubai/town-square",
+    "communityDiscription": "Town Square Dubai is an area that immediately evokes a sense of comfort and friendliness. If you want to buy property in Dubai (hyperlink to /properties/for-sale (Sub Category) or are looking for affordable townhouses for rent in Dubai, it is worth paying attention here. The project from Nshama is conceived as a modern community where convenience, infrastructure and a real family atmosphere are combined. Families, young professionals, and those who decide to buy a house in Dubai for the first time feel comfortable here."
+  },
+  {
+    "communityId": "jumeirah_village_triangle_01",
+    "communityName": "Jumeirah Village Triangle",
+    "communityTags": [
+      "Jumeirah Village Triangle",
+      "Dubai",
+      "Villas"
+    ],
+    "backgroundImage": "/Assets/cg.jpg",
+    "metaTitle": "Jumeirah Village Triangle Community & Area Guide | Arabian Estates UAE",
+    "metaDescription": "JVT blends peaceful family living with green parks, modern villas, and easy Dubai access, offering comfort, community, and long-term value for residents.",
+    "published": true,
+    "pageURL": "/communities/dubai/jumeriah-village-triangle",
+    "communityDiscription": "Developed by Nakheel Properties, Jumeirah Village Triangle (JVT) moves at a gentler pace, the air feels lighter, and mornings unfold in a calm rhythm. Tree-lined streets and rows of villas replace city noise with familiar moments: school drop-offs, evening jogs, and quiet weekends beneath the trees. Families and professionals seeking a balanced, serene lifestyle in Dubai find JVT ideal for living, investing, or renting."
   }
 ]

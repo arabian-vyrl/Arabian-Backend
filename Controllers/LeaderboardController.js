@@ -1575,7 +1575,7 @@ async function getSalesforceToken() {
   try {
     const resp = await axios.post(SALESFORCE.tokenUrl, null, {
       params: {
-        grant_type: "password",
+        grant_type: "client_credentials",
         client_id: SALESFORCE.clientId,
         client_secret: SALESFORCE.clientSecret,
         username: SALESFORCE.username,
@@ -2312,7 +2312,7 @@ const GetSalesForceToken = async (req, res) => {
     console.log("WORKING");
     const resp = await axios.post(SALESFORCE.tokenUrl, null, {
       params: {
-        grant_type: "password",
+        grant_type: "client_credentials",
         client_id: SALESFORCE.clientId,
         client_secret: SALESFORCE.clientSecret,
         username: SALESFORCE.username,
