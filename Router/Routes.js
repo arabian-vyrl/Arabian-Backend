@@ -23,7 +23,7 @@ const offPlanListingForm = require("../Controllers/OffPlanController")
 
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
+const GetLocationRedin = require("../Controllers/GetLocationRedin")
 
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
@@ -271,6 +271,15 @@ router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 
 router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
 router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)
+
+
+
+
+router.get("/redin/location", GetLocationRedin.getLocationFromRedin)
+router.get("/extract-location-redin", GetLocationRedin.extractLocationFromRedin)
+router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData)
+
+router.get("/get-all-extracted-location", GetLocationRedin.getAllRedinLocationFromDatabase)
 
 // Leaderboard Agent
 // Search agents by name or email

@@ -646,7 +646,6 @@
 
 // module.exports = mongoose.model('Property', PropertySchema);
 
-
 const mongoose = require('mongoose');
 
 // Schema for Address Information
@@ -656,6 +655,38 @@ const AddressInformationSchema = new mongoose.Schema({
   latitude: String,
   longitude: String
 }, { _id: false });
+
+const SaveLocationFromRedinSchema = new mongoose.Schema(
+  {
+    location_id: {
+      type: Number,
+      required: true
+    },
+    property_location_id: {
+      type: Number,
+      required: true,
+      unique: true
+    },
+    property_name: {
+      type: String,
+      required: true
+    },
+    main_subtype_name: {
+      type: String,
+      required: true
+    },
+
+    main_type_name: {
+      type: String,
+      required: true
+    }
+  },
+  {
+    strict: false, 
+    timestamps: true,
+    _id: false
+  }
+);
 
 // Schema for General Listing Information
 const GeneralListingInformationSchema = new mongoose.Schema({
@@ -783,7 +814,6 @@ const PropertySchema = new mongoose.Schema({
     type: String, 
     required: true,
     unique: true,
-    // index: true  // ✅ INDEXED for fast lookups
   },
   
   // Base level fields for indexing
@@ -828,15 +858,20 @@ const PropertySchema = new mongoose.Schema({
   },
   qr_code: {
     type: String
+  },
+
+  redin_location: {
+    type: SaveLocationFromRedinSchema,
+    default: {}
   }
+
 }, {
   timestamps: true,
   strict: false
 });
 
-// ✅ INDEXES - Optimized for common queries
-PropertySchema.index({ id: 1 }); // Primary lookup by property ID
-PropertySchema.index({ offering_type: 1, property_type: 1 }); // Compound index for listing
+PropertySchema.index({ id: 1 }); 
+PropertySchema.index({ offering_type: 1, property_type: 1 }); 
 
 PropertySchema.methods.getFormattedPrice = function() {
   if (!this.general_listing_information.listingprice) return 'Price on request';
@@ -907,11 +942,9 @@ PropertySchema.statics.findPropertiesNeedingUpdate = function() {
 
 // Pre-save middleware
 PropertySchema.pre('save', function(next) {
-  // Sync QR code
   if (!this.qr_code && this.custom_fields?.qr_code) {
     this.qr_code = this.custom_fields.qr_code;
   }
-  
   next();
 });
 

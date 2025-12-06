@@ -14,7 +14,6 @@ const getSingleProperty = async (req, res) => {
         message: "Property ID & Property Type are required",
       });
     }
-
     const query = {
       id: PropertyId,
       listing_type: PropertyType,
@@ -119,6 +118,15 @@ const getSingleProperty = async (req, res) => {
       },
 
       qr_code: property.qr_code || property.custom_fields?.qr_code || "",
+
+
+      redin_location: {
+      location_id: property.redin_location?.location_id || null,
+      property_location_id: property.redin_location?.property_location_id || null,
+      property_name: property.redin_location?.property_name || "",
+      main_subtype_name: property.redin_location?.main_subtype_name || "",
+      main_type_name: property.redin_location?.main_type_name || "",
+      },
 
       _classification: property._classification || {
         type: property.listing_type,
