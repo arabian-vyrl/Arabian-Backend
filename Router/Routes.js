@@ -20,6 +20,9 @@ const middleWare = require("../Middlewares/VerifyLoginReferralToken");
 const propertyListForm = require("../Controllers/PropertyListForm")
 const propertyValuation = require("../Controllers/PropertyValuation")
 const offPlanListingForm = require("../Controllers/OffPlanController")
+const RentalYieldMortgageApproval = require("../Controllers/RentalYieldMortgageApproval")
+const MortgageApproval = require("../Controllers/MortgageApproval")
+const MortgageQuote = require("../Controllers/GetMorgageQuote")
 
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -168,7 +171,7 @@ router.get("/GetNews", News.GetAllNews);
 router.get("/SingleNews", News.getSingleNews);
 router.get("/DeleteNews", News.deleteNews);
 router.post("/AddNews", News.upload, News.createNews);
-router.post("/UpdateNews", News.upload, News.updateNews);
+router.put("/UpdateNews", News.upload, News.updateNews);
 
 // Community Guideline
 router.get("/GetCommunityGuides", CommunityGuides.getAllCommunityGuides);
@@ -278,8 +281,24 @@ router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)
 router.get("/redin/location", GetLocationRedin.getLocationFromRedin)
 router.get("/extract-location-redin", GetLocationRedin.extractLocationFromRedin)
 router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData)
-
+// Test
 router.get("/get-all-extracted-location", GetLocationRedin.getAllRedinLocationFromDatabase)
+
+
+
+router.post("/mortgage-quote", MortgageQuote.createMortgageQuote)
+router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes)
+router.delete("/delete-mortgage-quote/:id", MortgageQuote.deleteMortgageQuote)
+
+router.post("/mortgage-approval", MortgageApproval.createMortgageApproval);
+router.get("/get-all-mortgage-approvals", MortgageApproval.getMortgageApprovals);
+router.delete("/delete-mortgage-approval/:id", MortgageApproval.deleteMortgageApproval);
+
+router.post("/rental-yield-mortgage-approval", RentalYieldMortgageApproval.createRentalYieldApproval);
+router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
+router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
+
+
 
 // Leaderboard Agent
 // Search agents by name or email

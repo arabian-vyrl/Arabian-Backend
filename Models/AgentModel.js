@@ -1691,6 +1691,17 @@ const agentSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+     instagram: {
+      type: String,
+      trim: false,
+      default: "",
+    },
+    linkedin: {
+      type: String,
+      trim: false,
+      default: "",
+    },
+    
     imageUrl: {
       type: String,
       trim: true,

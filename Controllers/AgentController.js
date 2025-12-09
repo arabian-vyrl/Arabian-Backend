@@ -11,14 +11,13 @@ const clampInt = (v, def = 0) => {
 
 const createAgent = async (req, res) => {
   try {
-    // ✅ CLOUDINARY: Get the full Cloudinary URL from uploaded file
+
     let imageUrl = null;
     if (req.file) {
-      imageUrl = req.file.path; // Cloudinary returns full URL in req.file.path
+      imageUrl = req.file.path; 
       req.body.imageUrl = imageUrl;
     }
 
-    // Handle superAgent boolean
     if (req.body.superAgent !== undefined) {
       req.body.superAgent = isTruthy(req.body.superAgent);
     }
@@ -50,13 +49,12 @@ const createAgent = async (req, res) => {
       req.body.sequenceNumber = sequenceNumber;
     }
 
-    // Create agent with Cloudinary URL
     const agent = await Agent.create(req.body);
 
     return res.status(201).json({
       success: true,
       data: agent,
-      imageUrl: imageUrl, // ✅ Return Cloudinary URL for confirmation
+      imageUrl: imageUrl, 
     });
   } catch (err) {
     console.error("Create agent error:", err);
@@ -67,11 +65,8 @@ const createAgent = async (req, res) => {
 const getAgents = async (req, res) => {
   try {
     let { isActive } = req.query;
-    // console.log(isActive, "IS-Active");
     const pipeline = [];
 
-    // Convert "true"/"false" to Boolean
-    //It will show agent with isActive true
     if (isActive === "True") {
       pipeline.push({ $match: { isActive: true } });
       //It will show All agents
@@ -90,6 +85,8 @@ const getAgents = async (req, res) => {
           superAgent: 1,
           email: 1,
           whatsapp: 1,
+          instagram: 1,
+          linkedin: 1,
           phone: 1,
           imageUrl: 1,
           activeSaleListings: 1,
@@ -141,6 +138,8 @@ const getAgentByEmail = async (req, res) => {
         email: 1,
         phone: 1,
         whatsapp: 1,
+        instagram: 1,
+        linkedin: 1,
         activeSaleListings: 1,
         propertiesSoldLast15Days: 1,
         isActive: 1,
@@ -229,6 +228,8 @@ const updateAgent = async (req, res) => {
         "email",
         "phone",
         "whatsapp",
+        "instagram",
+         "linkedin",
         "activeSaleListings",
         "propertiesSoldLast15Days",
         "agentLanguage",
@@ -371,6 +372,9 @@ const updateAgent = async (req, res) => {
     });
   }
 };
+
+
+
 const getAgentsBySequence = async (req, res) => {
   try {
     const { activeOnly = "true" } = req.query;
