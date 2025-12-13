@@ -1094,43 +1094,59 @@
 // module.exports = {
 //   parseXmlFromUrl,
 //   schedulePropertySync,
-//   cleanupMissingProperties,
+//   cleanupMissingProperties, 
+
 // };
-
-
-
+// Dependencies
 const axios = require("axios");
 const xml2js = require("xml2js");
 const Property = require("../Models/PropertyModel");
 const Agent = require("../Models/AgentModel");
 const cron = require("node-cron");
 
-/* ------------------------- Helpers & Utilities ------------------------- */
+/* -------------------------------------------------------------------------- */
+/*                              Helpers & Utilities                           */
+/* -------------------------------------------------------------------------- */
 
-// Simple Mongo readiness check (prevents buffering timeouts)
+/**
+ * Check if MongoDB is ready for queries for a given Mongoose model.
+ * Avoids running logic while the DB is still connecting (which can cause buffering timeouts).
+ */
 const isMongoConnected = (model) => {
   try {
     // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
     return model?.db?.readyState === 1;
   } catch {
+    // If anything goes wrong reading readyState, treat as "not connected".
     return false;
   }
 };
 
-// Extract QR code URL from many shapes
+/**
+ * Extract a QR code URL from various possible XML shapes.
+ * The XML might place the URL as:
+ *  - a simple string
+ *  - qrCode.url as a string
+ *  - qrCode.url as an object with `_` or `$t`
+ *  - qrCode.url as an array of such items
+ */
 const extractQRCodeUrl = (qrCode) => {
   if (!qrCode) return "";
 
+  // If it's just a string, assume that's the URL.
   if (typeof qrCode === "string") return qrCode;
 
+  // If it's an object with a `url` field.
   if (qrCode.url) {
     if (typeof qrCode.url === "string") return qrCode.url;
 
+    // Sometimes xml2js maps text content to `_` or `$t`.
     if (typeof qrCode.url === "object") {
       if (qrCode.url._) return qrCode.url._;
       if (qrCode.url.$t) return qrCode.url.$t;
     }
 
+    // If `url` is an array, try the first element.
     if (Array.isArray(qrCode.url) && qrCode.url.length > 0) {
       const firstUrl = qrCode.url[0];
       if (typeof firstUrl === "string") return firstUrl;
@@ -1139,39 +1155,65 @@ const extractQRCodeUrl = (qrCode) => {
     }
   }
 
+  // Or directly on the object.
   if (qrCode._ || qrCode.$t) return qrCode._ || qrCode.$t;
 
   return "";
 };
 
-// Prefer Last_Website_Published_Date_Time, else fall back to root created_at attribute
-function getPublishedAtFromXml(property) {
+/**
+ * Prefer Last_Website_Published_Date_Time from general_listing_information,
+ * else fall back to the root-level `created_at` attribute (mapped by xml2js).
+ */
+const getPublishedAtFromXml = (property) => {
   const fromGLI =
     property?.general_listing_information?.Last_Website_Published_Date_Time;
-  const fromAttr = property?.created_at; // xml2js attr (mergeAttrs: true)
+  const fromAttr = property?.created_at; // xml2js attr (because of mergeAttrs: true)
+
   return (
     (fromGLI && String(fromGLI).trim()) ||
     (fromAttr && String(fromAttr).trim()) ||
     null
   );
-}
+};
 
-function parseXmlTsAsUTC(ts) {
+/**
+ * Parse a timestamp string from the XML into a JS Date (UTC).
+ * Expected format examples:
+ *   "2025-08-07 17:12:38"
+ *   "2025-08-07T17:12:38"
+ * We normalize it to "YYYY-MM-DDTHH:mm:ssZ".
+ */
+const parseXmlTsAsUTC = (ts) => {
   if (!ts || typeof ts !== "string") return null;
+
   const trimmed = ts.trim();
-  // "2025-08-07 17:12:38" -> "2025-08-07T17:12:38Z"
-  const iso = trimmed.includes("T") ? trimmed : trimmed.replace(" ", "T") + "Z";
+
+  // If it already has 'T', we assume ISO-like. Otherwise, inject 'T' and 'Z'.
+  const iso = trimmed.includes("T")
+    ? trimmed
+    : trimmed.replace(" ", "T") + "Z";
+
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? null : d;
-}
+};
 
-// Live checker
+/**
+ * Determine whether a property is currently "Live".
+ */
 const isPropertyLive = (propertyData) => {
   const status = propertyData.general_listing_information?.status;
   return status && status.toLowerCase() === "live";
 };
 
-// Classify listing type
+/**
+ * Classify the listing based on custom_fields:
+ * - OffPlan (for off_plan_primary / off_plan_secondary)
+ * - Rent (offering_type === "RR")
+ * - Sale (offering_type === "RS")
+ * - Commercial (offering_type === "CS" or "CR")
+ * - Fallback to Sale (if nothing matches)
+ */
 const determinePropertyType = (customFields) => {
   const offeringType = customFields?.offering_type;
   const completionStatus = customFields?.completion_status;
@@ -1207,19 +1249,24 @@ const determinePropertyType = (customFields) => {
     };
   }
 
+  // Default when we don’t have clear classification
   return {
     type: "Sale",
     listingType: "Sale",
-    reason: `Fallback - no clear classification found`,
+    reason: "Fallback - no clear classification found",
   };
 };
 
+/**
+ * Create an "agent-friendly" property entry to be stored inside Agent.properties[].
+ * This compresses the full property into a summary for agents + sets addedDate & lastUpdated.
+ */
 const createPropertyDataForAgent = (propertyData) => {
   const gi = propertyData.general_listing_information || {};
   const ai = propertyData.address_information || {};
   const cf = propertyData.custom_fields || {};
 
-  // Prefer GLI.Last_Website_Published_Date_Time → else fallback to propertyData.created_at (already mapped by you)
+  // Prefer GLI.Last_Website_Published_Date_Time → else fallback to propertyData.created_at
   const publishedAtString =
     (gi.Last_Website_Published_Date_Time &&
       String(gi.Last_Website_Published_Date_Time).trim()) ||
@@ -1229,6 +1276,7 @@ const createPropertyDataForAgent = (propertyData) => {
   const publishedAtDate = parseXmlTsAsUTC(publishedAtString);
 
   let agentListingType = propertyData.listing_type || "Sale";
+  // Human-friendly spacing for "Off Plan"
   if (agentListingType === "OffPlan") agentListingType = "Off Plan";
 
   return {
@@ -1242,28 +1290,39 @@ const createPropertyDataForAgent = (propertyData) => {
     bedrooms: gi.bedrooms || "0",
     bathrooms: gi.fullbathrooms || "0",
     area: gi.totalarea || "0",
+
+    // Location info resolved from both custom_fields and address_information
     location: {
       city: cf.city || ai.city || "",
       address: cf.propertyfinder_region || ai.address || "",
       community: cf.community || "",
       building: cf.property_name || "",
     },
+
     images: propertyData.listing_media?.images?.image || [],
     description: gi.description || "",
 
-    // These MUST mirror Last_Website_Published_Date_Time when present
-    addedDate: publishedAtDate || null, // Date
-    addedDateString: publishedAtString || "", // String
+    // These mirror Last_Website_Published_Date_Time / created_at
+    addedDate: publishedAtDate || null, // JS Date
+    addedDateString: publishedAtString || "", // human-readable string
 
-    // keep lastUpdated as you had it (it’s fine)
+    // lastUpdated still tracks when the property was last published/updated
     lastUpdated:
       parseXmlTsAsUTC(gi.Last_Website_Published_Date_Time) || new Date(),
   };
 };
 
+/**
+ * Link a single property to its listing agent.
+ * - Find the Agent by email.
+ * - Either update an existing property inside Agent.properties[]
+ *   or push a new property entry.
+ */
 const linkPropertyToAgent = async (propertyData) => {
   try {
     const listingAgent = propertyData.listing_agent;
+
+    // If there is no agent email, we cannot link anything.
     if (!listingAgent?.listing_agent_email) {
       return {
         success: false,
@@ -1273,7 +1332,10 @@ const linkPropertyToAgent = async (propertyData) => {
     }
 
     const agentEmail = listingAgent.listing_agent_email.toLowerCase().trim();
+
+    // Custom static method on Agent model to find an active agent by email.
     const existingAgent = await Agent.findByEmail(agentEmail);
+
     if (!existingAgent) {
       return {
         success: false,
@@ -1282,9 +1344,10 @@ const linkPropertyToAgent = async (propertyData) => {
       };
     }
 
+    // Build the compact property payload for the agent.
     const payload = createPropertyDataForAgent(propertyData);
 
-    // 1) Try update-in-place (positional operator) → force overwrite ALL fields incl. addedDate
+    // 1) Try to update an existing property entry (matched by propertyId)
     const upd = await Agent.updateOne(
       { _id: existingAgent._id, "properties.propertyId": propertyData.id },
       { $set: { "properties.$": payload } }
@@ -1299,7 +1362,7 @@ const linkPropertyToAgent = async (propertyData) => {
       };
     }
 
-    // 2) Not present → push a fresh record
+    // 2) If property not found in Agent, push a new one
     await Agent.updateOne(
       { _id: existingAgent._id },
       { $push: { properties: payload } }
@@ -1316,10 +1379,14 @@ const linkPropertyToAgent = async (propertyData) => {
   }
 };
 
-// Simple concurrency runner (no external deps)
+/**
+ * Simple concurrency runner without external deps.
+ * Runs at most `limit` workers in parallel over an array of items.
+ */
 const runWithConcurrency = async (items, limit, worker) => {
-  const out = new Array(items.length);
-  let idx = 0;
+  const out = new Array(items.length); // output array
+  let idx = 0; // shared index for workers
+
   const runners = Array(Math.min(limit, items.length))
     .fill(0)
     .map(async () => {
@@ -1329,15 +1396,26 @@ const runWithConcurrency = async (items, limit, worker) => {
         out[i] = await worker(items[i], i);
       }
     });
+
   await Promise.all(runners);
   return out;
 };
 
-/* ------------------------------- Controller ------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*                                  Controller                                */
+/* -------------------------------------------------------------------------- */
 
+/**
+ * Main controller:
+ * - Fetch XML feed from XML_URL.
+ * - Parse and normalize properties.
+ * - Bulk upsert into Property collection.
+ * - Link Live properties to agents.
+ * - Collect and return statistics.
+ */
 const parseXmlFromUrl = async (req, res, next) => {
   try {
-    // 🔐 Guard: avoid Mongoose buffering timeout if DB isn't ready
+    // Guard: avoid Mongoose buffering timeout if DB isn't ready
     if (!isMongoConnected(Property)) {
       console.error(
         "❌ parseXmlFromUrl aborted: MongoDB is not connected (properties collection)."
@@ -1352,13 +1430,15 @@ const parseXmlFromUrl = async (req, res, next) => {
     const xmlUrl = process.env.XML_URL;
     console.log(`Fetching XML from: ${xmlUrl}`);
 
+    // Fetch raw XML from remote URL
     const response = await axios.get(xmlUrl, {
       headers: { Accept: "application/xml" },
     });
 
+    // Configure xml2js parser
     const parser = new xml2js.Parser({
-      explicitArray: false,
-      mergeAttrs: true,
+      explicitArray: false, // don't wrap single elements in arrays
+      mergeAttrs: true, // merge attributes into the element object
       normalize: true,
       normalizeTags: false,
       trim: true,
@@ -1369,13 +1449,13 @@ const parseXmlFromUrl = async (req, res, next) => {
 
     let allProperties = [];
 
-    // Properties in result.list.property
+    // Most common structure: result.list.property
     if (result && result.list && result.list.property) {
       allProperties = Array.isArray(result.list.property)
         ? result.list.property
         : [result.list.property];
     } else {
-      // fallback: search anywhere
+      // Fallback: recursively search for an array that looks like properties
       const findPropertiesArray = (obj) => {
         for (const key in obj) {
           if (
@@ -1392,30 +1472,36 @@ const parseXmlFromUrl = async (req, res, next) => {
         }
         return null;
       };
+
       const propertiesArray = findPropertiesArray(result);
       if (propertiesArray) allProperties = propertiesArray;
     }
 
     console.log(`Found ${allProperties.length} properties in XML`);
 
-    // Transformer (maps created_at from Last_Website_Published_Date_Time)
+    /**
+     * Transform raw XML property object into a normalized structure
+     * that fits the Property model and internal structure.
+     */
     const transformPropertyData = (property) => {
       const classification = determinePropertyType(property.custom_fields);
 
       const transformedProperty = {
-        id: property.Id || property.id,
-        mode: "CREATE",
-        created_at: getPublishedAtFromXml(property), // <- critical mapping
+        id: property.Id || property.id, // property ID from XML
+        mode: "CREATE", // default mode; can be extended if needed
+        created_at: getPublishedAtFromXml(property), // timestamp mapping (critical)
         timestamp: property.timestamp,
 
-        // Base fields
+        // High-level classification fields
         offering_type: property.custom_fields?.offering_type || "RS",
         property_type:
           property.general_listing_information?.property_type || "apartment",
         listing_type: classification.listingType,
 
+        // Address information from XML
         address_information: property.address_information || {},
 
+        // General listing details
         general_listing_information: {
           listing_title:
             property.general_listing_information?.listing_title || "",
@@ -1433,12 +1519,14 @@ const parseXmlFromUrl = async (req, res, next) => {
           bedrooms: property.general_listing_information?.bedrooms || "0",
           fullbathrooms:
             property.general_listing_information?.fullbathrooms || "0",
+          // Some feeds repeat property type under different fields
           propertytype:
             property.general_listing_information?.property_type || "apartment",
           property:
             property.general_listing_information?.property_type || "apartment",
         },
 
+        // Listing agent info
         listing_agent: {
           listing_agent_email:
             property.listing_agent?.listing_agent_email || "",
@@ -1454,6 +1542,7 @@ const parseXmlFromUrl = async (req, res, next) => {
             "",
         },
 
+        // Custom fields, plus some remapped ones for easier querying
         custom_fields: {
           property_record_id: property.custom_fields?.property_record_id || "",
           permit_number: property.custom_fields?.permit_number || "",
@@ -1481,11 +1570,13 @@ const parseXmlFromUrl = async (req, res, next) => {
           availability_date: property.custom_fields?.availability_date || "",
           qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
 
+          // Extra aliases mapped for your app / front-end
           community_name: property.custom_fields?.community || "",
           tower_text: property.custom_fields?.property_name || "",
           pba__addresstext_pb:
             property.custom_fields?.propertyfinder_region || "",
 
+          // Derived completion status in human-readable words
           pba_uaefields__completion_status:
             property.custom_fields?.completion_status === "off_plan_primary" ||
             property.custom_fields?.completion_status === "off_plan_secondary"
@@ -1498,10 +1589,11 @@ const parseXmlFromUrl = async (req, res, next) => {
           plot_area: property.custom_fields?.plot_size || "0",
           completion_date: property.custom_fields?.availability_date || "",
 
+          // Merge all remaining custom fields WITHOUT overwriting the above
           ...Object.keys(property.custom_fields || {}).reduce((acc, key) => {
             if (
               !acc[key] &&
-              key !== "qr_code" &&
+              key !== "qr_code" && // we’ve already handled qr_code above
               property.custom_fields[key] !== undefined
             ) {
               acc[key] = property.custom_fields[key];
@@ -1510,24 +1602,38 @@ const parseXmlFromUrl = async (req, res, next) => {
           }, {}),
         },
 
+        // Images / media normalization
         listing_media: {
           images: {
             image: (() => {
               const images = property.listing_media?.images?.image;
               if (!images) return [];
+
+              // If it's already an array, normalize each element.
               if (Array.isArray(images)) {
                 return images
                   .map((img) => {
-                    if (typeof img === "string") return { title: "", url: img };
+                    // Plain string = URL
+                    if (typeof img === "string") {
+                      return { title: "", url: img };
+                    }
+
+                    // Object with img.url in various shapes
                     if (img.url) {
-                      if (typeof img.url === "string")
+                      // url as string
+                      if (typeof img.url === "string") {
                         return { title: img.title || "", url: img.url };
+                      }
+
+                      // url as array
                       if (Array.isArray(img.url)) {
                         return img.url.map((urlItem) => ({
                           title: urlItem.title || "",
                           url: urlItem._ || urlItem.$t || urlItem,
                         }));
                       }
+
+                      // url as object with `_` or `$t`
                       if (img.url._ || img.url.$t) {
                         return {
                           title: img.url.title || "",
@@ -1535,10 +1641,14 @@ const parseXmlFromUrl = async (req, res, next) => {
                         };
                       }
                     }
+
+                    // Fallback: return the object as-is
                     return img;
                   })
                   .flat();
               }
+
+              // If images is a single object, normalize similarly.
               if (images.url) {
                 if (Array.isArray(images.url)) {
                   return images.url.map((urlItem) => ({
@@ -1556,22 +1666,26 @@ const parseXmlFromUrl = async (req, res, next) => {
                   ];
                 }
               }
+
               return [];
             })(),
           },
         },
 
+        // Also keep qr_code at top-level for quick access
         qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
 
+        // Keep classification metadata around for debugging & stats
         _classification: classification,
       };
 
       return transformedProperty;
     };
 
+    // Map all raw XML properties to normalized objects.
     const transformedProperties = allProperties.map(transformPropertyData);
 
-    // Validity by mode (kept same)
+    // Filter by mode (you currently accept CREATE/CHANGE/NEW and skip others)
     const validProperties = transformedProperties.filter((property) => {
       const mode = property.mode;
       if (mode === "CREATE" || mode === "CHANGE" || mode === "NEW") return true;
@@ -1581,7 +1695,7 @@ const parseXmlFromUrl = async (req, res, next) => {
 
     console.log(`Processing ${validProperties.length} properties`);
 
-    // Separate by status (keep non-Live but mark as NonActive)
+    // Separate into live and non-live, but you still process both (non-live flagged as NonActive)
     const liveProperties = [];
     const nonLiveProperties = [];
 
@@ -1589,6 +1703,7 @@ const parseXmlFromUrl = async (req, res, next) => {
       if (isPropertyLive(property)) {
         liveProperties.push(property);
       } else {
+        // For non-live properties, mark classification as NonActive.
         property._classification = {
           type: "NonActive",
           listingType: "NonActive",
@@ -1603,8 +1718,9 @@ const parseXmlFromUrl = async (req, res, next) => {
     console.log(`Live properties: ${liveProperties.length}`);
     console.log(`Non-Live properties: ${nonLiveProperties.length}`);
 
-    // Results tracker (same shape as before)
+    // Stats tracker to return back to client and logs
     const missingAgentsSet = new Set();
+
     const processResults = {
       totalAttempted: validProperties.length,
       livePropertiesAttempted: liveProperties.length,
@@ -1638,8 +1754,9 @@ const parseXmlFromUrl = async (req, res, next) => {
       },
     };
 
-    // Aggregate stats by completion/offering/fallbacks
+    // Aggregate classification stats (completion_status, offering_type, fallback reasons)
     const allPropertiesToProcess = [...liveProperties, ...nonLiveProperties];
+
     for (const property of allPropertiesToProcess) {
       const completionStatus = property.custom_fields?.completion_status;
       const offeringType = property.custom_fields?.offering_type;
@@ -1651,11 +1768,13 @@ const parseXmlFromUrl = async (req, res, next) => {
             completionStatus
           ] || 0) + 1;
       }
+
       if (offeringType) {
         processResults.classificationStats.byOfferingType[offeringType] =
           (processResults.classificationStats.byOfferingType[offeringType] ||
             0) + 1;
       }
+
       if (classification && classification.reason.includes("Fallback")) {
         processResults.classificationStats.fallbacks++;
       }
@@ -1663,19 +1782,19 @@ const parseXmlFromUrl = async (req, res, next) => {
 
     /* ----------------------------- BULK UPSERT ----------------------------- */
 
-    // preload existence
+    // Preload existing properties from DB by their Salesforce ids
     const ids = allPropertiesToProcess.map((p) => p.id);
 
-    // Find data form database through the SalesForce ids
     const existingProps = await Property.find(
       { id: { $in: ids } },
       { id: 1, created_at: 1, address_information: 1 }
     ).lean();
 
+    // Map for quick existence lookup.
     const existsMap = new Map(existingProps.map((p) => [p.id, p]));
 
-    const propertyOps = [];
-    const mainOpById = new Map();
+    const propertyOps = []; // bulk operations array
+    const mainOpById = new Map(); // "created"/"updated"/"skipped_no_update"/"updated_partial"
 
     for (const propertyData of allPropertiesToProcess) {
       const id = propertyData.id;
@@ -1683,9 +1802,12 @@ const parseXmlFromUrl = async (req, res, next) => {
       const existed = !!existing;
       const updateFlag = propertyData.general_listing_information?.updated;
 
+      // If property existed and XML says "updated = No", only update specific fields if necessary.
       if (existed && updateFlag === "No") {
         const updates = {};
         let shouldUpdate = false;
+
+        // If created_at changed, update it.
         if (
           propertyData.created_at &&
           propertyData.created_at !== existing.created_at
@@ -1697,6 +1819,8 @@ const parseXmlFromUrl = async (req, res, next) => {
             propertyData.created_at
           );
         }
+
+        // If address_information has content, update that too.
         if (
           propertyData.address_information &&
           Object.keys(propertyData.address_information).length > 0
@@ -1708,6 +1832,7 @@ const parseXmlFromUrl = async (req, res, next) => {
             propertyData.address_information
           );
         }
+
         if (shouldUpdate) {
           propertyOps.push({
             updateOne: {
@@ -1716,8 +1841,10 @@ const parseXmlFromUrl = async (req, res, next) => {
               upsert: false,
             },
           });
+
           const updateFields = Object.keys(updates).join(" & ");
           mainOpById.set(id, "updated_partial");
+
           console.log(
             `[${id}] ✏️  Queueing partial update: ${updateFields}`
           );
@@ -1725,9 +1852,12 @@ const parseXmlFromUrl = async (req, res, next) => {
           mainOpById.set(id, "skipped_no_update");
           console.log(`[${id}] ⏭️  Skipped - no changes needed`);
         }
+
+        // Skip full update since we've handled the partial logic.
         continue;
       }
 
+      // Full upsert (create or update)
       const $set = {
         created_at: propertyData.created_at,
         timestamp: propertyData.timestamp,
@@ -1750,11 +1880,14 @@ const parseXmlFromUrl = async (req, res, next) => {
           upsert: true,
         },
       });
+
       const opType = existed ? "updated" : "created";
       mainOpById.set(id, opType);
+
       console.log(`[${id}] ${existed ? "🔄" : "✨"} Queueing full ${opType}`);
     }
 
+    // Execute bulkWrite if there is any operation
     if (propertyOps.length) {
       console.log(
         `\n🚀 Executing bulk write with ${propertyOps.length} operations...`
@@ -1765,7 +1898,7 @@ const parseXmlFromUrl = async (req, res, next) => {
       console.log("⏭️  No operations to execute - all properties skipped\n");
     }
 
-    // Stats tracking
+    // Update stats based on mainOpById map
     for (const propertyData of allPropertiesToProcess) {
       const id = propertyData.id;
       const op = mainOpById.get(id);
@@ -1785,31 +1918,40 @@ const parseXmlFromUrl = async (req, res, next) => {
       if (op === "created") {
         processResults.successful++;
         processResults.operations.created++;
+
         const lt = propertyData._classification?.listingType;
-        if (lt && processResults.byType[lt])
+        if (lt && processResults.byType[lt]) {
           processResults.byType[lt].created++;
+        }
+
         console.log(`✅ [${id}] Created`);
       } else if (op === "updated" || op === "updated_partial") {
         processResults.successful++;
         processResults.operations.updated++;
+
         const lt = propertyData._classification?.listingType;
-        if (lt && processResults.byType[lt])
+        if (lt && processResults.byType[lt]) {
           processResults.byType[lt].updated++;
+        }
+
         console.log(`✅ [${id}] Updated`);
       } else if (op === "skipped_no_update") {
         processResults.successful++;
         processResults.operations.skipped_no_update++;
+
         console.log(`⏭️  [${id}] Skipped`);
       }
     }
 
     /* ----------------------- PARALLEL AGENT LINKING ----------------------- */
 
+    // Only Live properties are linked to agents.
     const liveForLinking = allPropertiesToProcess.filter(
       (p) =>
         (p.general_listing_information?.status || "").toLowerCase() === "live"
     );
 
+    // Link properties to agents with concurrency of 10
     const agentResults = await runWithConcurrency(
       liveForLinking,
       10,
@@ -1823,10 +1965,11 @@ const parseXmlFromUrl = async (req, res, next) => {
 
         try {
           const res = await linkPropertyToAgent(propertyData);
+
           if (res.success) {
             return { id: propertyData.id, outcome: res.operation };
           } else {
-            // collect "agent_not_found" details in missingAgentsSet
+            // If agent not found, track it in missingAgentsSet for reporting.
             if (res.operation === "agent_not_found") {
               missingAgentsSet.add(
                 JSON.stringify({
@@ -1848,7 +1991,11 @@ const parseXmlFromUrl = async (req, res, next) => {
                 })
               );
             }
-            return { id: propertyData.id, outcome: res.operation || "failed" };
+
+            return {
+              id: propertyData.id,
+              outcome: res.operation || "failed",
+            };
           }
         } catch (e) {
           return { id: propertyData.id, outcome: "failed", error: e.message };
@@ -1856,7 +2003,7 @@ const parseXmlFromUrl = async (req, res, next) => {
       }
     );
 
-    // fold agent results into counters/logs
+    // Aggregate agent linking results into counters.
     for (const r of agentResults) {
       if (r.outcome === "property_added")
         processResults.operations.agentPropertiesAdded++;
@@ -1876,6 +2023,7 @@ const parseXmlFromUrl = async (req, res, next) => {
 
     /* ----------------------------- Missing Agents ----------------------------- */
 
+    // De-duplicate missing agents and group by email
     const missingAgentsList = Array.from(missingAgentsSet).map((item) =>
       JSON.parse(item)
     );
@@ -1890,11 +2038,13 @@ const parseXmlFromUrl = async (req, res, next) => {
           properties: [],
         };
       }
+
       acc[agent.email].propertyCount++;
       acc[agent.email].properties.push({
         propertyId: agent.propertyId,
         status: agent.propertyStatus,
       });
+
       return acc;
     }, {});
 
@@ -1939,6 +2089,7 @@ const parseXmlFromUrl = async (req, res, next) => {
       }
     }
 
+    // Final HTTP response
     return res.status(200).json({
       success: true,
       message:
@@ -1972,77 +2123,29 @@ const parseXmlFromUrl = async (req, res, next) => {
   }
 };
 
-/* ------------------------------- Scheduler ------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*                                 Scheduler                                  */
+/* -------------------------------------------------------------------------- */
 
-// Cron job for every 2 hours — call controller directly (no HTTP call)
-// const schedulePropertySync = () => {
-//   const TZ = process.env.CRON_TZ || "Etc/UTC";
-//   cron.schedule(
-//     "*/2 * * * *",
-//     async () => {
-//       const startedAt = new Date().toISOString();
-//       console.log(`🔄 [${startedAt}] Starting scheduled property sync...`);
-
-//       const fakeReq = {};
-//       const fakeRes = {
-//         _status: 200,
-//         status(code) {
-//           this._status = code;
-//           return this;
-//         },
-//         json(payload) {
-//           try {
-//             const summary = {
-//               success: payload?.success,
-//               totalPropertiesInXml: payload?.totalPropertiesInXml,
-//               processedProperties: payload?.processedProperties,
-//               liveProperties: payload?.liveProperties,
-//               nonLiveProperties: payload?.nonLiveProperties,
-//               skippedProperties: payload?.skippedProperties,
-//             };
-//             console.log(
-//               `✅ [${new Date().toISOString()}] Property sync completed:`,
-//               summary
-//             );
-//           } catch (e) {
-//             console.log(
-//               `✅ [${new Date().toISOString()}] Property sync completed.`
-//             );
-//           }
-//           return payload;
-//         },
-//       };
-
-//       try {
-//         await parseXmlFromUrl(fakeReq, fakeRes);
-//       } catch (error) {
-//         console.error(
-//           `❌ [${new Date().toISOString()}] Property sync failed:`,
-//           error.message
-//         );
-//       }
-//     },
-//     { timezone: TZ }
-//   );
-
-//   console.log("⏰ Property sync scheduler initialized - Running every 2 hours");
-// };
-
-
+/**
+ * Schedule the property sync + cleanup to run at:
+ *  - 00:00
+ *  - 12:00
+ *  - 15:00
+ * in the configured timezone.
+ *
+ * It first runs parseXmlFromUrl, then cleanupMissingProperties.
+ */
 const schedulePropertySync = () => {
   const TZ = process.env.CRON_TZ || "Etc/UTC";
 
-  // Runs at:
-  // - 00:00 (midnight)
-  // - 12:00 (noon)
-  // - 15:00 (3 PM)
   cron.schedule(
-    "0 0,12,15 * * *",
+    "0 0,12,15 * * *", // cron expression
     async () => {
       const startedAt = new Date().toISOString();
       console.log(`🔄 [${startedAt}] Starting scheduled property sync...`);
 
-      // Fake Express req/res for main XML parse
+      // Fake Express req/res for parseXmlFromUrl
       const fakeReq = {};
       const fakeRes = {
         _status: 200,
@@ -2074,17 +2177,17 @@ const schedulePropertySync = () => {
       };
 
       try {
-        // 1️⃣ MAIN SYNC: Parse + upsert properties + link to agents
+        // 1️⃣ MAIN SYNC: Parse XML + upsert properties + link agents
         await parseXmlFromUrl(fakeReq, fakeRes);
 
         console.log(
           `🧹 [${new Date().toISOString()}] Starting cleanupMissingProperties AFTER successful parse...`
         );
 
-        // 2️⃣ CLEANUP: Remove properties not present in XML + unlink from agents
+        // 2️⃣ CLEANUP: Delete properties not present in XML & unlink from agents
         const cleanupReq = {
           query: {
-            dryRun: "0",       // real deletions (change to "1" if you ever want cron-dry-run)
+            dryRun: "0", // real deletions; set "1" to test
             returnIds: "0",
           },
         };
@@ -2131,10 +2234,17 @@ const schedulePropertySync = () => {
   );
 };
 
+/* -------------------------------------------------------------------------- */
+/*            Cleanup: delete properties missing from latest XML              */
+/* -------------------------------------------------------------------------- */
 
-// Deleting function for properties not in the XML file
+/**
+ * Helper: fetch ALL property IDs from the XML and return as a Set<string>.
+ * Used by cleanupMissingProperties to know which DB properties are "orphaned".
+ */
 async function fetchAllXmlPropertyIds() {
   console.log("🔎 Searching ids in XML...");
+
   const xmlUrl = process.env.XML_URL;
   if (!xmlUrl) throw new Error("XML_URL is not configured");
 
@@ -2161,6 +2271,7 @@ async function fetchAllXmlPropertyIds() {
       ? result.list.property
       : [result.list.property];
   } else {
+    // Fallback: search recursively for property-like arrays
     const findPropertiesArray = (obj) => {
       for (const key in obj) {
         if (
@@ -2168,9 +2279,9 @@ async function fetchAllXmlPropertyIds() {
           obj[key].length > 0 &&
           obj[key][0] &&
           (obj[key][0].Id || obj[key][0].general_listing_information)
-        )
+        ) {
           return obj[key];
-        else if (typeof obj[key] === "object" && obj[key] !== null) {
+        } else if (typeof obj[key] === "object" && obj[key] !== null) {
           const found = findPropertiesArray(obj[key]);
           if (found) return found;
         }
@@ -2189,13 +2300,26 @@ async function fetchAllXmlPropertyIds() {
       if (norm) xmlIdSet.add(norm);
     }
   }
+
   console.log(`📦 XML has ${xmlIdSet.size} ids.`);
   return xmlIdSet;
 }
 
+/**
+ * Delete DB properties that are no longer present in the XML
+ * and unlink them from Agent.properties.
+ *
+ * Query params:
+ *  - dryRun=1 → only report how many would be deleted, but don't delete.
+ *  - returnIds=1 → include sample IDs in response.
+ *  - progressEvery → how often to log progress while scanning.
+ *  - sampleCap → how many IDs to show in response sample.
+ *  - deleteChunkSize → how many IDs per deleteMany chunk.
+ *  - agentChunkSize → how many IDs per Agent.updateMany chunk.
+ */
 const cleanupMissingProperties = async (req, res) => {
   try {
-    // 🔐 Guard: avoid buffering timeout if DB isn't connected
+    // Guard: ensure both Property and Agent collections are connected
     if (!isMongoConnected(Property) || !isMongoConnected(Agent)) {
       console.error(
         "❌ cleanupMissingProperties aborted: MongoDB is not connected."
@@ -2208,24 +2332,26 @@ const cleanupMissingProperties = async (req, res) => {
     }
 
     console.log("🧹 Deleter function running!");
-    const dryRun = String(req.query?.dryRun ?? "0") === "1";
-    const returnIds = String(req.query?.returnIds ?? "0") === "1"; // include sample ids in HTTP response
-    const progressEvery = Number(req.query?.progressEvery ?? 5000); // log frequency
-    const sampleCap = Number(req.query?.sampleCap ?? 100); // how many ids to echo in response
-    const deleteChunkSize = Number(req.query?.deleteChunkSize ?? 5000); // delete in chunks
-    const agentChunkSize = Number(req.query?.agentChunkSize ?? 5000); // $pull in chunks
 
-    // 1) XML ids as a Set
+    // Parse query params with defaults
+    const dryRun = String(req.query?.dryRun ?? "0") === "1";
+    const returnIds = String(req.query?.returnIds ?? "0") === "1";
+    const progressEvery = Number(req.query?.progressEvery ?? 5000);
+    const sampleCap = Number(req.query?.sampleCap ?? 100);
+    const deleteChunkSize = Number(req.query?.deleteChunkSize ?? 5000);
+    const agentChunkSize = Number(req.query?.agentChunkSize ?? 5000);
+
+    // 1) Get all property IDs from XML (as a Set)
     const xmlIds = await fetchAllXmlPropertyIds();
 
-    // 2) Stream DB ids via cursor (fast & low memory)
+    // 2) Stream DB property IDs via a cursor to avoid loading everything into memory
     const cursor = Property.find({}, { id: 1 })
       .lean()
       .cursor({ batchSize: 5000 });
 
-    const missing = [];
-    let scanned = 0;
-    let printedCount = 0;
+    const missing = []; // IDs present in DB but not in XML
+    let scanned = 0; // total scanned from DB
+    let printedCount = 0; // limit how many "missing" logs we spam
 
     console.time("⏱️ missing-diff");
     for await (const doc of cursor) {
@@ -2233,9 +2359,11 @@ const cleanupMissingProperties = async (req, res) => {
       const id = typeof doc?.id === "string" ? doc.id.trim() : null;
       if (!id) continue;
 
+      // If the ID is not in the XML set, it is a candidate for deletion.
       if (!xmlIds.has(id)) {
         missing.push(id);
-        // Log first few missing immediately so you can SEE progress
+
+        // Log the first few missing IDs for visibility.
         if (printedCount < 10) {
           console.log(`❗ Missing found: ${id}`);
           printedCount++;
@@ -2250,7 +2378,7 @@ const cleanupMissingProperties = async (req, res) => {
     }
     console.timeEnd("⏱️ missing-diff");
 
-    // 3) Nothing to do?
+    // 3) If there are no missing IDs, DB and XML are in sync.
     if (missing.length === 0) {
       console.log(
         `✅ DB is in sync. Scanned ${scanned} docs, XML=${xmlIds.size}`
@@ -2263,7 +2391,7 @@ const cleanupMissingProperties = async (req, res) => {
       });
     }
 
-    // If DRY RUN: preview + return a small sample
+    // 4) If this is a dry run, just report counts and a sample of IDs.
     if (dryRun) {
       console.log(
         `🟡 DRY-RUN: would delete ${missing.length} properties. Example:`,
@@ -2283,43 +2411,53 @@ const cleanupMissingProperties = async (req, res) => {
       });
     }
 
-    // 4) EXECUTE: delete in CHUNKS (avoid giant single op stalls)
+    // 5) Actually delete from Property collection in chunks.
     let deletedTotal = 0;
     console.time("⏱️ delete-properties");
+
     for (let i = 0; i < missing.length; i += deleteChunkSize) {
       const chunk = missing.slice(i, i + deleteChunkSize);
       const delRes = await Property.deleteMany({ id: { $in: chunk } });
+
       deletedTotal += delRes?.deletedCount ?? 0;
+
       console.log(
         `🗑️ Deleted chunk ${i}-${i + chunk.length - 1} (size=${
           chunk.length
         }) → removed ${delRes?.deletedCount ?? 0}`
       );
     }
+
     console.timeEnd("⏱️ delete-properties");
 
-    // 5) Unlink from agents in CHUNKS
+    // 6) Unlink those IDs from Agent documents (properties propertyId)
     let agentsUpdatedTotal = 0;
     console.time("⏱️ unlink-agents");
+
     for (let i = 0; i < missing.length; i += agentChunkSize) {
       const chunk = missing.slice(i, i + agentChunkSize);
+
       const pullRes = await Agent.updateMany(
         {},
         { $pull: { properties: { propertyId: { $in: chunk } } } }
       );
+
       agentsUpdatedTotal += pullRes?.modifiedCount ?? 0;
+
       console.log(
         `🔗 Unlinked chunk ${i}-${i + chunk.length - 1} (size=${
           chunk.length
         }) → agents modified ${pullRes?.modifiedCount ?? 0}`
       );
     }
+
     console.timeEnd("⏱️ unlink-agents");
 
-    // 6) Done
+    // 7) Respond with deletion summary.
     console.log(
       `✅ Cleanup complete. Deleted ${deletedTotal}, agent docs updated ${agentsUpdatedTotal}.`
     );
+
     return res.status(200).json({
       success: true,
       message:
@@ -2343,6 +2481,10 @@ const cleanupMissingProperties = async (req, res) => {
     });
   }
 };
+
+/* -------------------------------------------------------------------------- */
+/*                                   Exports                                  */
+/* -------------------------------------------------------------------------- */
 
 module.exports = {
   parseXmlFromUrl,

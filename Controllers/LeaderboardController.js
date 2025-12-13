@@ -79,7 +79,7 @@
 //   try {
 //     const resp = await axios.post(SALESFORCE.tokenUrl, null, {
 //       params: {
-//         grant_type: "password",
+//         grant_type: "client_credentials",
 //         client_id: SALESFORCE.clientId,
 //         client_secret: SALESFORCE.clientSecret,
 //         username: SALESFORCE.username,
@@ -157,6 +157,18 @@
 //   return { targetY: y, targetM: m };
 // }
 
+// /** ───────────────────────────────────────────────────────────────────────────
+//  *  Target month/year meta helper (1-based month + ISO)
+//  *  ─────────────────────────────────────────────────────────────────────────── */
+// function buildTargetUTCMeta(targetY, targetM) {
+//   return {
+//     year: targetY,
+//     monthIndex0: targetM, // keep 0-based for debugging/backwards compatibility
+//     month: targetM + 1, // 1-based for UI (1–12)
+//     isoMonth: `${targetY}-${String(targetM + 1).padStart(2, "0")}`,
+//   };
+// }
+
 // // --- helpers ---
 // function parseUtcDate(s) {
 //   if (!s) return null;
@@ -220,7 +232,7 @@
 //   ]);
 
 //   const monthlyDealsRaw = dealsMonthlyResp?.data?.deals || [];
-//   const ytdDealsRaw = dealsYtdResp?.data?.deals || [];
+//   let ytdDealsRaw = dealsYtdResp?.data?.deals || [];
 //   const commissionsRaw = commissionsResp?.data?.commissions || [];
 //   const viewingsRaw = viewingsResp?.data?.viewings || [];
 //   const listingsRaw = listingsResp?.data?.listings || []; // based on sample payload
@@ -492,6 +504,7 @@
 //   return {
 //     targetY,
 //     targetM,
+//     targetUTC: buildTargetUTCMeta(targetY, targetM),
 //     agents,
 //     agentMap,
 //     metricsByKey,
@@ -521,7 +534,6 @@
 //     },
 //   };
 // }
-
 
 // /** ───────────────────────────────────────────────────────────────────────────
 //  *  Apply snapshot via bulkWrite
@@ -624,6 +636,7 @@
 //     return {
 //       targetY,
 //       targetM,
+//       targetUTC: buildTargetUTCMeta(targetY, targetM),
 //       agentsTouched: 0,
 //       meta,
 //     };
@@ -649,6 +662,7 @@
 //   return {
 //     targetY,
 //     targetM,
+//     targetUTC: buildTargetUTCMeta(targetY, targetM),
 //     agentsTouched,
 //     meta,
 //   };
@@ -802,7 +816,7 @@
 //     console.log("WORKING");
 //     const resp = await axios.post(SALESFORCE.tokenUrl, null, {
 //       params: {
-//         grant_type: "password",
+//         grant_type: "client_credentials",
 //         client_id: SALESFORCE.clientId,
 //         client_secret: SALESFORCE.clientSecret,
 //         username: SALESFORCE.username,
@@ -1158,7 +1172,7 @@
 //       note: "Deals assigned using deal_agent, deal_agent_1 and deal_agent_2 (referrers excluded). Month inclusion = createddate in target UTC month.",
 //       data: {
 //         period: month,
-//         targetUTC: { year: targetY, monthIndex0: targetM },
+//         targetUTC: buildTargetUTCMeta(targetY, targetM),
 //         totalDealsReturnedByAPI: monthlyDealsRaw.length,
 //         totalDealsCountedAfterStrictFilter: monthlyDeals.length,
 //         agentsUpdated,
@@ -1318,7 +1332,7 @@
 //       success: true,
 //       message: `Synced ${filteredCount} commission records for current month (UTC) based on business logic dates.`,
 //       data: {
-//         targetUTC: { year: targetY, monthIndex0: targetM },
+//         targetUTC: buildTargetUTCMeta(targetY, targetM),
 //         totalCommissionRecordsReturned: commissions.length,
 //         currentMonthRecords: filteredCount,
 //         agentsWithCommission: agentsUpdated,
@@ -1418,7 +1432,7 @@
 //       message: `Synced ${viewings.length} viewings for current UTC month.`,
 //       note: "Single dataset from Salesforce. Strict UTC month matching on 'start'. Agents without viewings set with safe-zero guard.",
 //       data: {
-//         targetUTC: { year: targetY, monthIndex0: targetM },
+//         targetUTC: buildTargetUTCMeta(targetY, targetM),
 //         totalViewings: viewings.length,
 //         agentsUpdated,
 //         agentViewings: Array.from(counts.entries())
@@ -1493,13 +1507,31 @@
 
 
 
-// Monthly and yearly changes 
+// Monthly and yearly changes / leaderboard + cron syncing
+
 const axios = require("axios");
 const Agent = require("../Models/AgentModel");
 const cron = require("node-cron");
 
-// This will check if another cron is running , if so it will block this local cron job
+// ─────────────────────────────────────────────────────────────────────────────
+// Global lock to prevent overlapping cron runs
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * masterSyncRunning:
+ *  - true  → some sync job is already running
+ *  - false → safe to start a new sync
+ *
+ * You use this to avoid concurrent runs of the same heavy sync logic.
+ */
 let masterSyncRunning = false;
+
+/**
+ * runAllSyncsLocked(fnName, fn)
+ * - Wraps a sync function `fn` in a simple mutex.
+ * - If something else is already running, it logs and returns { skipped: true }.
+ * - Otherwise, sets the lock, runs the function, and always releases the lock.
+ */
 async function runAllSyncsLocked(fnName, fn) {
   if (masterSyncRunning) {
     console.log(`⏳ [SYNC LOCK] ${fnName} skipped; another sync is running.`);
@@ -1513,27 +1545,48 @@ async function runAllSyncsLocked(fnName, fn) {
   }
 }
 
-// Cache last stable leaderboard response so UI sees consistent data during cron
+// ─────────────────────────────────────────────────────────────────────────────
+// Leaderboard cache (for stability while cron runs)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * lastLeaderboardCache:
+ *  - Keeps a ready-to-serve snapshot of leaderboard data.
+ *  - Used when:
+ *      - cron is running (so UI doesn’t see a half-updated state)
+ *      - or DB fails temporarily (fallback).
+ */
 let lastLeaderboardCache = null;
 let lastLeaderboardCacheAt = null;
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Name normalization
+ *  Name normalization helper (for matching Salesforce names to Agents)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * normalizeAgentName(name)
+ * - Converts a name into a canonical form:
+ *   1) converts to string
+ *   2) normalizes unicode (NFKD) and strips diacritics
+ *   3) lowercases everything
+ *   4) collapses multiple spaces into single space
+ *   5) removes non-word characters (punctuation)
+ */
 function normalizeAgentName(name) {
   if (!name) return "";
   return String(name)
-    .normalize("NFKD") // strip diacritics where possible
-    .replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")   // remove diacritic marks
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, " ")
-    .replace(/[^\w\s]/g, "");
+    .replace(/\s+/g, " ")              // collapse whitespace
+    .replace(/[^\w\s]/g, "");          // remove punctuation/symbols
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Salesforce / HTTP
+ *  Salesforce / HTTP setup
  *  ─────────────────────────────────────────────────────────────────────────── */
+
 const SALESFORCE = {
   tokenUrl: process.env.SALESFORCE_TOKEN_URL,
   baseUrl: "https://arabianestates.my.salesforce.com",
@@ -1543,13 +1596,21 @@ const SALESFORCE = {
   password: process.env.SALESFORCE_PASSWORD,
 };
 
+// Preconfigured axios instance for Salesforce REST calls
 const axiosSF = axios.create({
   baseURL: SALESFORCE.baseUrl,
   timeout: 30_000,
   headers: { Accept: "application/json", "Content-Type": "application/json" },
 });
 
-// Simple retry helper for transient errors
+/**
+ * withRetry(fn, { retries, delayMs })
+ * - Simple generic retry wrapper for transient errors.
+ * - Retries on:
+ *   - HTTP 429
+ *   - HTTP 5xx
+ *   - common network error codes
+ */
 async function withRetry(fn, { retries = 2, delayMs = 600 } = {}) {
   let lastErr;
   for (let i = 0; i <= retries; i++) {
@@ -1559,18 +1620,26 @@ async function withRetry(fn, { retries = 2, delayMs = 600 } = {}) {
       lastErr = err;
       const status = err?.response?.status;
       const code = err?.code;
+
       const retryable =
         status === 429 ||
         (status >= 500 && status < 600) ||
         ["ECONNRESET", "ETIMEDOUT", "ENOTFOUND", "EAI_AGAIN"].includes(code);
+
       if (!retryable || i === retries) break;
+
+      // Exponential-ish backoff: 600ms, 1200ms, ...
       await new Promise((r) => setTimeout(r, delayMs * (i + 1)));
     }
   }
   throw lastErr;
 }
 
-// OAuth2 token
+/**
+ * getSalesforceToken()
+ * - Uses OAuth2 client credentials to obtain an access token from Salesforce.
+ * - Reads credentials & token URL from env.
+ */
 async function getSalesforceToken() {
   try {
     const resp = await axios.post(SALESFORCE.tokenUrl, null, {
@@ -1589,9 +1658,13 @@ async function getSalesforceToken() {
   }
 }
 
-// Apex REST GET with token + retry
+/**
+ * sfGet(pathname, params?)
+ * - Helper to GET Salesforce Apex REST with automatic token + retry.
+ */
 async function sfGet(pathname, params = {}) {
   const token = await getSalesforceToken();
+
   return withRetry(() =>
     axiosSF.get(pathname, {
       params,
@@ -1601,38 +1674,70 @@ async function sfGet(pathname, params = {}) {
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  UTC date helpers (critical for month/year boundaries)
+ *  UTC date helper functions (used for strict month boundaries)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * toUtcDate(input)
+ * - Converts a string or Date into a Date object interpreted as UTC.
+ * - If string has no explicit timezone, appends "Z" (UTC).
+ */
 function toUtcDate(input) {
   if (!input) return null;
   if (input instanceof Date) return input;
   const s = String(input);
-  // If lacks TZ info, assume UTC (append 'Z')
+
+  // If string already contains timezone info, keep it; else assume UTC
   const hasTZ = /[zZ]|[+\-]\d{2}:\d{2}$/.test(s);
   const d = new Date(hasTZ ? s : `${s}Z`);
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
+/**
+ * isSameUtcMonth(dateLike, targetY, targetM)
+ * - Returns true if given date is in the same UTC year & month.
+ *   targetM is 0-based (0..11).
+ */
 function isSameUtcMonth(dateLike, targetY, targetM) {
   const d = toUtcDate(dateLike);
   if (!d) return false;
-  return d.getUTCFullYear() === targetY && d.getUTCMonth() === targetM; // 0..11
+  return d.getUTCFullYear() === targetY && d.getUTCMonth() === targetM;
 }
 
+/**
+ * utcTodayStart()
+ * - Returns a Date set to today's UTC midnight.
+ */
 function utcTodayStart() {
   const d = new Date();
   d.setUTCHours(0, 0, 0, 0);
   return d;
 }
+
+/**
+ * allowZeroingNow()
+ * - Safe-guard for zeroing metrics:
+ *   Returns false for first 45 minutes of UTC day (to avoid wiping data
+ *   too early around rollover times).
+ */
 function allowZeroingNow() {
   const now = new Date();
   const minsFromMidnight = now.getUTCHours() * 60 + now.getUTCMinutes();
-  return minsFromMidnight > 45; // skip zeroing in first 45 minutes of UTC day
+  return minsFromMidnight > 45;
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Month resolver (for manual deals endpoint)
+ *  Month resolver (for manual endpoints)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * resolveMonthUTC(monthParam)
+ * - Accepts:
+ *   - "this_month" (default)
+ *   - "last_month"
+ *   - "YYYY-MM" (e.g. "2025-03")
+ * - Returns { targetY, targetM }  where targetM is 0-based.
+ */
 function resolveMonthUTC(monthParam = "this_month") {
   const now = new Date();
   let y = now.getUTCFullYear();
@@ -1648,30 +1753,44 @@ function resolveMonthUTC(monthParam = "this_month") {
   } else if (/^\d{4}-\d{2}$/.test(monthParam)) {
     const [yy, mm] = monthParam.split("-").map(Number);
     y = yy;
-    m = mm - 1;
+    m = mm - 1; // convert 1-based to 0-based
   }
   return { targetY: y, targetM: m };
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Target month/year meta helper (1-based month + ISO)
+ *  Month/year meta builder (1-based month + ISO)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * buildTargetUTCMeta(targetY, targetM)
+ * - Returns helper metadata for UI / logs:
+ *   - monthIndex0: 0-based
+ *   - month: 1-based
+ *   - isoMonth: "YYYY-MM"
+ */
 function buildTargetUTCMeta(targetY, targetM) {
   return {
     year: targetY,
-    monthIndex0: targetM, // keep 0-based for debugging/backwards compatibility
-    month: targetM + 1, // 1-based for UI (1–12)
+    monthIndex0: targetM,
+    month: targetM + 1,
     isoMonth: `${targetY}-${String(targetM + 1).padStart(2, "0")}`,
   };
 }
 
-// --- helpers ---
+// Additional helper to parse generic date strings safely (not heavily used here)
 function parseUtcDate(s) {
   if (!s) return null;
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
 
+/**
+ * amountNumber(raw)
+ * - Normalizes numeric amounts:
+ *   - If string, removes commas/spaces then casts to Number.
+ *   - Else casts directly, falling back to 0.
+ */
 function amountNumber(raw) {
   return typeof raw === "string" ? Number(raw.replace(/[, ]/g, "")) : Number(raw) || 0;
 }
@@ -1679,6 +1798,7 @@ function amountNumber(raw) {
 /** ───────────────────────────────────────────────────────────────────────────
  *  Commission effective date helper (shared)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
 const COMMISSION_CONTRACT_DATE_TYPES = new Set([
   "Landlord Commission",
   "Landlord Referral Commission",
@@ -1686,25 +1806,34 @@ const COMMISSION_CONTRACT_DATE_TYPES = new Set([
   "Tenant Referral",
 ]);
 
+/**
+ * getEffectiveDateForCommission(c)
+ * - For some commission record types:
+ *   use offer_contract_date
+ * - For all others:
+ *   use from_f_startdate
+ */
 function getEffectiveDateForCommission(c) {
   const recordType = c?.record_type;
 
-  // For these types: use offer_contract_date
   if (COMMISSION_CONTRACT_DATE_TYPES.has(recordType)) {
     return c.offer_contract_date || null;
   }
 
-  // For all other record types: use from_f_startdate
   return c.from_f_startdate;
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Leaderboard snapshot builder (current UTC month)
+ *  Leaderboard snapshot builder for current UTC month
+ *  - Fetches all SF data
+ *  - Aggregates metrics per agent
+ *  - Does NOT write to DB (that’s applyLeaderboardSnapshot)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
 async function buildLeaderboardSnapshotCurrentMonth() {
   const nowUTC = new Date();
   const targetY = nowUTC.getUTCFullYear();
-  const targetM = nowUTC.getUTCMonth(); // 0..11
+  const targetM = nowUTC.getUTCMonth();
 
   console.log(
     `🔄 [LEADERBOARD SNAPSHOT] Building for UTC ${targetY}-${String(
@@ -1712,7 +1841,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     ).padStart(2, "0")}`
   );
 
-  // 1) Pull all required Salesforce datasets in parallel  ⭐ ADDED listingsAPI
+  // 1) Call all relevant SF endpoints in parallel, including listingsAPI
   const [
     dealsMonthlyResp,
     dealsYtdResp,
@@ -1727,29 +1856,32 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     sfGet("/services/apexrest/listingsAPI"),
   ]);
 
+  // Normalize raw responses
   const monthlyDealsRaw = dealsMonthlyResp?.data?.deals || [];
-  let ytdDealsRaw = dealsYtdResp?.data?.deals || [];
+  const ytdDealsRaw = dealsYtdResp?.data?.deals || [];
   const commissionsRaw = commissionsResp?.data?.commissions || [];
   const viewingsRaw = viewingsResp?.data?.viewings || [];
-  const listingsRaw = listingsResp?.data?.listings || []; // based on sample payload
+  const listingsRaw = listingsResp?.data?.listings || [];
 
-  // 2) Load all active agents once
+  // 2) Load all active leaderboard agents from Mongo
   const agents = await Agent.find({ activeOnLeaderboard: true });
 
+  // Map agents by normalized name for matching against SF data
   const agentMap = new Map(
     agents.map((a) => [normalizeAgentName(a.agentName), a])
   );
 
-  // NEW: map by email for listings lookup (adjust field if your schema uses a different name)
+  // Map agents by email for listings mapping
   const agentEmailMap = new Map(
     agents
-      .filter((a) => a.email) // 🔴 if your schema uses agentEmail, change this line
+      .filter((a) => a.email)
       .map((a) => [a.email.trim().toLowerCase(), a])
   );
 
-  // 3) Snapshot metrics per agent (keyed by normalized name)
+  // 3) Metrics map: per normalized agent name
   const metricsByKey = new Map();
 
+  // Initializes metrics entry lazily
   const ensureMetrics = (key) => {
     let m = metricsByKey.get(key);
     if (!m) {
@@ -1758,16 +1890,16 @@ async function buildLeaderboardSnapshotCurrentMonth() {
         totalCommission: 0,
         viewings: 0,
         lastDealDate: null,
-        // ⭐ NEW
-        activePropertiesThisMonth: 0,
+        activePropertiesThisMonth: 0, // NEW via listingsAPI
       };
       metricsByKey.set(key, m);
     }
     return m;
   };
 
-  /* ───────────── DEALS: propertiesSold + lastDealDate ───────────── */
+  /* ───────────── DEALS: propertiesSold (monthly) + lastDealDate (YTD) ────── */
 
+  // Filter monthly deals strictly by current UTC month
   const monthlyDeals = monthlyDealsRaw.filter((d) =>
     isSameUtcMonth(d?.createddate, targetY, targetM)
   );
@@ -1775,7 +1907,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
   const unmatchedMonthly = [];
   const unmatchedYtd = [];
 
-  // ✅ MIRRORED LOGIC: use deal_agent, deal_agent_1, deal_agent_2 + dedupe
+  // Collect all deal agent names (main + additional) and dedupe within a deal
   const namesFromDeal = (deal) => {
     const nameCandidates = [];
     if (deal.deal_agent) nameCandidates.push(deal.deal_agent);
@@ -1791,7 +1923,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     ];
   };
 
-  // Monthly deal counts
+  // Monthly counts → leaderboard.propertiesSold
   for (const deal of monthlyDeals) {
     const names = namesFromDeal(deal);
     if (!names.length) continue;
@@ -1807,7 +1939,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     }
   }
 
-  // YTD lastDealDate
+  // YTD deals used only for lastDealDate
   for (const deal of ytdDealsRaw) {
     const names = namesFromDeal(deal);
     if (!names.length) continue;
@@ -1865,6 +1997,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 
   const unmatchedViewingOwners = new Set();
 
+  // Restrict to current UTC month on 'start'
   const currentMonthViewings = viewingsRaw.filter((v) =>
     isSameUtcMonth(v?.start, targetY, targetM)
   );
@@ -1882,27 +2015,18 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     }
   }
 
-  /* ───────────── LISTINGS: activePropertiesThisMonth (new endpoint) ───────────── */
+  /* ───────────── LISTINGS: activePropertiesThisMonth ───────────── */
 
-  // Relisted IDs example:
-  //   Original: "PB-S-15856"   -> 2 hyphens, 3 segments
-  //   Relisted: "PB-S-15857-2" -> 3 hyphens, 4 segments, last purely numeric
+  // Helper: detect relisted IDs based on extra numeric segment at end
   const isRelistedId = (id) => {
     if (!id) return false;
-
-    const segments = id.split("-"); // "PB-S-15856" -> 3, "PB-S-15857-2" -> 4
-
-    // Original IDs: 2 hyphens → 3 segments (PB-S-15856)
-    // Relisted IDs: 3 hyphens → 4 segments (PB-S-15857-2) with numeric last segment
-    if (segments.length <= 3) {
-      return false;
-    }
-
+    const segments = id.split("-");
+    if (segments.length <= 3) return false;
     const lastSegment = segments[segments.length - 1];
-    return /^\d+$/.test(lastSegment); // relisted only if last part is purely numeric
+    return /^\d+$/.test(lastSegment);
   };
 
-  // Base id helper: "PB-S-15857-2" → "PB-S-15857"
+  // Helper: base ID = first 3 segments
   const getBaseId = (id) => {
     if (!id) return null;
     const segments = id.split("-");
@@ -1915,8 +2039,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
   let totalActivePropsThisMonth = 0;
   const unmatchedListingEmails = new Set();
 
-  // Track which base property IDs we've already counted per agent
-  // key = normalized agent name, value = Set of baseIds
+  // For deduping per agent: map normalizedName → Set(baseIds)
   const listingsPerAgentBaseIds = new Map();
 
   console.log("📊 Processing listingsAPI for activePropertiesThisMonth...");
@@ -1931,20 +2054,20 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 
     if (!pfDateRaw) continue;
 
-    // "2025-11-20 14:29:17" → Date
+    // Convert "YYYY-MM-DD HH:mm:ss" → Date (UTC)
     const pfDate = new Date(pfDateRaw.replace(" ", "T") + "Z");
     if (!pfDate || Number.isNaN(pfDate.getTime())) continue;
 
-    // 1) PF_Published_Date in current month (UTC)
+    // 1) Only same UTC month as target
     if (!isSameUtcMonth(pfDate, targetY, targetM)) continue;
 
-    // 2) status Live only
+    // 2) Only Live listings
     if (status !== "Live") continue;
 
-    // 3) skip relisted IDs (we only want the original base property)
+    // 3) Skip relisted IDs (we only count originals)
     if (isRelistedId(id)) continue;
 
-    // 4) match agent by email
+    // 4) Match agent via email
     if (!email) {
       unmatchedListingEmails.add("(missing email)");
       continue;
@@ -1961,7 +2084,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     const key = normalizeAgentName(agent.agentName);
     if (!key) continue;
 
-    // 5) get base ID and de-dupe per agent
+    // 5) Base ID & per-agent dedupe
     const baseId = getBaseId(id);
     if (!baseId) continue;
 
@@ -1971,15 +2094,16 @@ async function buildLeaderboardSnapshotCurrentMonth() {
       listingsPerAgentBaseIds.set(key, baseIdSet);
     }
 
-    // If we've already counted this property for this agent, skip
     if (baseIdSet.has(baseId)) {
+      // Already counted this property for this agent
       continue;
     }
     baseIdSet.add(baseId);
 
-    // 6) increment leaderboard metric via name key
+    // 6) Increment activePropertiesThisMonth metric
     const m = ensureMetrics(key);
-    m.activePropertiesThisMonth = (m.activePropertiesThisMonth || 0) + 1;
+    m.activePropertiesThisMonth =
+      (m.activePropertiesThisMonth || 0) + 1;
 
     totalListingsMatched++;
     totalActivePropsThisMonth++;
@@ -1997,6 +2121,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
     );
   }
 
+  // Return all snapshot data (nothing written to DB here)
   return {
     targetY,
     targetM,
@@ -2032,8 +2157,9 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Apply snapshot via bulkWrite
+ *  Apply snapshot to DB (bulkWrite)
  *  ─────────────────────────────────────────────────────────────────────────── */
+
 async function applyLeaderboardSnapshot(snapshot) {
   const {
     targetY,
@@ -2050,6 +2176,7 @@ async function applyLeaderboardSnapshot(snapshot) {
   const ops = [];
   let agentsTouched = 0;
 
+  // Loop over all agents in map and compute final leaderboard values
   for (const [key, agent] of agentMap.entries()) {
     const m = metricsByKey.get(key) || {
       propertiesSold: 0,
@@ -2093,8 +2220,7 @@ async function applyLeaderboardSnapshot(snapshot) {
       $set["leaderboard.viewings"] = viewings;
     }
 
-    // ⭐ IMPORTANT: always overwrite activePropertiesThisMonth from snapshot
-    // This ensures ONLY the cron snapshot controls this field, no stale values.
+    // Always overwrite activePropertiesThisMonth from snapshot (no stale values)
     $set["leaderboard.activePropertiesThisMonth"] = activeProps;
 
     if (m.lastDealDate) {
@@ -2164,26 +2290,31 @@ async function applyLeaderboardSnapshot(snapshot) {
   };
 }
 
+/**
+ * syncLeaderboardCoreCurrentMonth()
+ * - Orchestrates snapshot build + apply for current month.
+ * - After writing to DB, it also refreshes the leaderboard cache.
+ */
 async function syncLeaderboardCoreCurrentMonth() {
   const snapshot = await buildLeaderboardSnapshotCurrentMonth();
   const result = await applyLeaderboardSnapshot(snapshot);
   
-  // 🔥 CRITICAL: Update cache ONLY after successful DB write
-  // This ensures the cache is always populated with the latest committed data
+  // Update cache AFTER DB write is successful
   try {
     await updateLeaderboardCache();
     console.log("✅ [CACHE] Leaderboard cache updated successfully");
   } catch (cacheError) {
     console.error("⚠️ [CACHE] Failed to update cache:", cacheError.message);
-    // Don't throw - cache update failure shouldn't stop the sync
+    // Don't fail the sync because of cache problems
   }
   
   return result;
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Update leaderboard cache from DB (called after successful bulkWrite)
+ *  Update leaderboard cache from DB
  *  ─────────────────────────────────────────────────────────────────────────── */
+
 async function updateLeaderboardCache() {
   const pipeline = [
     {
@@ -2217,6 +2348,7 @@ async function updateLeaderboardCache() {
     { $sort: { _commission: -1, _tieSeq: 1 } },
   ];
 
+  // Aggregate all leaderboard agents sorted by commission then sequence
   const allAgents = await Agent.aggregate(pipeline).allowDiskUse(true);
 
   const globalTotalCommission = allAgents.reduce(
@@ -2224,6 +2356,7 @@ async function updateLeaderboardCache() {
     0
   );
 
+  // Flatten agents into lightweight leaderboard objects
   const agentsWithPositions = allAgents.map((agent, index) => ({
     position: index + 1,
     name: agent.agentName,
@@ -2241,10 +2374,10 @@ async function updateLeaderboardCache() {
     agentId: agent.agentId,
   }));
 
-  // Store complete leaderboard data in cache
+  // Store complete leaderboard in in-memory cache
   lastLeaderboardCache = {
     success: true,
-    allAgents: agentsWithPositions, // Store all agents for pagination
+    allAgents: agentsWithPositions,
     globalTotalCommission,
     cachedAt: new Date(),
   };
@@ -2253,14 +2386,15 @@ async function updateLeaderboardCache() {
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Cron orchestration (now using parser-style leaderboard snapshot)
+ *  Cron orchestration
  *  ─────────────────────────────────────────────────────────────────────────── */
+
 async function runAllSyncs() {
   return runAllSyncsLocked("master-sync", async () => {
     console.log("⏰ [CRON] Starting scheduled Salesforce sync job...");
     const t0 = Date.now();
     try {
-      // 1) Build & apply leaderboard snapshot in one shot (cache updated inside)
+      // Single unified snapshot-style sync (deals, commissions, viewings, listings)
       const leaderboardResult = await syncLeaderboardCoreCurrentMonth();
 
       const sec = ((Date.now() - t0) / 1000).toFixed(2);
@@ -2277,19 +2411,25 @@ async function runAllSyncs() {
 }
 
 let cronScheduled = false;
+
+/**
+ * setupCronJobs()
+ * - Registers a cron job to run every 12 minutes (UTC).
+ * - Uses runAllSyncs() (which is lock-protected).
+ * - Also triggers an immediate initial sync at startup.
+ */
 function setupCronJobs() {
   if (cronScheduled) {
     console.log("ℹ️  Cron already scheduled; skipping duplicate registration.");
     return;
   }
 
-  // Every 12 minutes, pinned to UTC
   cron.schedule(
-    "*/12 * * * *",
+    "*/12 * * * *", // every 12 minutes
     async () => {
       const now = new Date().toISOString();
       console.log(`🔔 [CRON TICK] Triggered at ${now} (UTC)`);
-      await runAllSyncs(); // mutex-protected, snapshot-style
+      await runAllSyncs();
     },
     { timezone: "UTC" }
   );
@@ -2297,16 +2437,16 @@ function setupCronJobs() {
   cronScheduled = true;
   console.log("✅ Cron job scheduled: Salesforce sync will run every 12 minutes (UTC)");
 
-  // Optional immediate run (also mutex-protected)
+  // Optional immediate run at app startup
   console.log("🚀 Running initial sync on startup...");
   runAllSyncs();
 }
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  API Handlers Manual FUncitons
+ *  API Handlers (manual + leaderboard)
  *  ─────────────────────────────────────────────────────────────────────────── */
 
-// Manual: OAuth token (useful for diagnostics; don't expose publicly)
+// Manual: raw Salesforce token endpoint (for diagnostics)
 const GetSalesForceToken = async (req, res) => {
   try {
     console.log("WORKING");
@@ -2327,14 +2467,19 @@ const GetSalesForceToken = async (req, res) => {
   }
 };
 
-// Leaderboard (sorts by totalCommission desc, with seq tiebreaker)
+/**
+ * getLeaderboardAgents
+ * - Public API endpoint returning leaderboard agents with pagination.
+ * - Prefers in-memory cache while sync is running (or on DB failure).
+ * - Always sorted by totalCommission desc, then sequenceNumber.
+ */
 const getLeaderboardAgents = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
     const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
     const skip = (page - 1) * limit;
 
-    // 🔥 CRITICAL: Serve from cache while sync is running
+    // Serve from cache while master sync is in progress
     if (masterSyncRunning && lastLeaderboardCache) {
       console.log(
         "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
@@ -2362,7 +2507,7 @@ const getLeaderboardAgents = async (req, res) => {
       });
     }
 
-    // Normal flow: query database directly
+    // Normal: query DB (same aggregation as cache builder)
     const pipeline = [
       {
         $match: {
@@ -2443,7 +2588,7 @@ const getLeaderboardAgents = async (req, res) => {
       cached: false,
     });
   } catch (err) {
-    // 🔥 Fallback to cache if DB query fails and cache exists
+    // Fallback to in-memory cache if DB query fails
     if (lastLeaderboardCache) {
       console.log("⚠️ [LEADERBOARD] DB error, falling back to cached data");
       
@@ -2479,14 +2624,19 @@ const getLeaderboardAgents = async (req, res) => {
 };
 
 /** ───────────────────────────────────────────────────────────────────────────
- *  Manual sync endpoints (kept for debugging / analytics)
+ *  Manual sync endpoints (deals / commissions / viewings)
  *  ─────────────────────────────────────────────────────────────────────────── */
 
+/**
+ * syncAgentDealsFromSalesforce
+ * - Manually syncs ONLY deals metrics:
+ *   - propertiesSold for given month
+ *   - lastDealDate + lastDealDays (YTD)
+ */
 const syncAgentDealsFromSalesforce = async (req, res) => {
   try {
     const { month = "this_month" } = req.query;
 
-    // Reuse the same helpers you used for commissions sync
     const { targetY, targetM } = resolveMonthUTC(month);
 
     console.log(
@@ -2495,9 +2645,7 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
       ).padStart(2, "0")}`
     );
 
-    // Fetch deals:
-    // - monthly: for counting deals in the selected month
-    // - ytd (or this_year): for lastDealDate (latest in the calendar year)
+    // Fetch monthly deals and YTD deals
     const [monthlyDealsResp, ytdDealsResp] = await Promise.all([
       sfGet("/services/apexrest/deals", { month }),
       sfGet("/services/apexrest/deals", { month: "ytd" }),
@@ -2506,7 +2654,7 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
     const monthlyDealsRaw = monthlyDealsResp?.data?.deals || [];
     const ytdDealsRaw = ytdDealsResp?.data?.deals || [];
 
-    // Strict month filter (createddate ONLY), same rule as commissions
+    // Strict filter on createddate for this month
     const monthlyDeals = monthlyDealsRaw.filter((d) =>
       isSameUtcMonth(d.createddate, targetY, targetM)
     );
@@ -2516,18 +2664,16 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
       agents.map((a) => [normalizeAgentName(a.agentName), a])
     );
 
-    // ===== MONTHLY DEAL COUNTS =====
+    // Maps: monthly counts + YTD last deal date
     const dealCountsByAgent = new Map();
     const unmatchedMonthly = [];
 
     for (const deal of monthlyDeals) {
-      // ✅ UPDATED LOGIC: Use deal_agent, deal_agent_1, deal_agent_2
       const nameCandidates = [];
       if (deal.deal_agent) nameCandidates.push(deal.deal_agent);
       if (deal.deal_agent_1) nameCandidates.push(deal.deal_agent_1);
       if (deal.deal_agent_2) nameCandidates.push(deal.deal_agent_2);
 
-      // Clean + dedupe per deal to avoid double-counting same agent
       const names = [
         ...new Set(
           nameCandidates
@@ -2536,7 +2682,6 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
         ),
       ];
 
-      // If no agent fields, skip this deal
       if (names.length === 0) continue;
 
       for (const nm of names) {
@@ -2549,13 +2694,11 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
       }
     }
 
-    // ===== YTD LAST DEAL DATE =====
     const ytdDeals = ytdDealsRaw;
     const agentLastDealDateYTD = new Map();
     const unmatchedYtd = [];
 
     for (const deal of ytdDeals) {
-      // ✅ UPDATED LOGIC: Use deal_agent, deal_agent_1, deal_agent_2
       const nameCandidates = [];
       if (deal.deal_agent) nameCandidates.push(deal.deal_agent);
       if (deal.deal_agent_1) nameCandidates.push(deal.deal_agent_1);
@@ -2569,7 +2712,6 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
         ),
       ];
 
-      // If no agent fields, skip this deal
       if (names.length === 0) continue;
 
       const created = deal.createddate;
@@ -2591,8 +2733,7 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
       }
     }
 
-    // ===== UPDATE AGENTS (DEAL METRICS ONLY) =====
-    // Calculate days using UTC midnight for consistency
+    // Compute days since last deal (UTC-based)
     const todayUTC = new Date();
     todayUTC.setUTCHours(0, 0, 0, 0);
 
@@ -2604,21 +2745,15 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
       const dealCount = dealCountsByAgent.get(key) || 0;
       const lastDealDate = agentLastDealDateYTD.get(key) || null;
 
-      // Calculate days properly using UTC dates
       let lastDealDays = null;
       if (lastDealDate) {
         const dealDateUTC = new Date(lastDealDate);
         dealDateUTC.setUTCHours(0, 0, 0, 0);
-
-        // Calculate difference in days
         const diffMs = todayUTC.getTime() - dealDateUTC.getTime();
         lastDealDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-        // Ensure it's never negative
         lastDealDays = Math.max(0, lastDealDays);
       }
 
-      // Prepare bulk update operation
       ops.push({
         updateOne: {
           filter: { _id: agent._id },
@@ -2645,7 +2780,6 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
       if (dealCount > 0) agentsUpdated++;
     }
 
-    // Execute bulk update (safe & fast)
     if (ops.length) {
       await Agent.bulkWrite(ops, { ordered: false });
     }
@@ -2688,6 +2822,11 @@ const syncAgentDealsFromSalesforce = async (req, res) => {
   }
 };
 
+/**
+ * syncAgentCommissionsFromSalesforce
+ * - Manual endpoint for syncing ONLY commissions for current UTC month.
+ * - Uses the same effective date logic as the snapshot.
+ */
 const syncAgentCommissionsFromSalesforce = async (req, res) => {
   try {
     const nowUTC = new Date();
@@ -2708,7 +2847,7 @@ const syncAgentCommissionsFromSalesforce = async (req, res) => {
       agents.map((a) => [normalizeAgentName(a.agentName), a])
     );
 
-    // 🔹 Record types that should use offer_contract_date for month mapping
+    // These are defined earlier as COMMISSION_CONTRACT_DATE_TYPES
     const CONTRACT_DATE_TYPES = new Set([
       "Landlord Commission",
       "Landlord Referral Commission",
@@ -2716,16 +2855,11 @@ const syncAgentCommissionsFromSalesforce = async (req, res) => {
       "Tenant Referral",
     ]);
 
-    // Funcion to check record type and get appropriate date to map monthly commission for agent
     const getEffectiveDateForCommission = (c) => {
       const recordType = c?.record_type;
-
-      // For these types: use offer_contract_date
       if (CONTRACT_DATE_TYPES.has(recordType)) {
         return c.offer_contract_date || null;
       }
-
-      // For all other record types: use from_f_startdate
       return c.from_f_startdate;
     };
 
@@ -2776,7 +2910,10 @@ const syncAgentCommissionsFromSalesforce = async (req, res) => {
       const raw = c.commission_amount_excl_vat ?? c.total_commissions ?? 0;
       const amount = amountNumber(raw);
 
-      commissionsByAgent.set(key, (commissionsByAgent.get(key) || 0) + amount);
+      commissionsByAgent.set(
+        key,
+        (commissionsByAgent.get(key) || 0) + amount
+      );
     }
 
     const canZero = allowZeroingNow();
@@ -2849,6 +2986,10 @@ const syncAgentCommissionsFromSalesforce = async (req, res) => {
   }
 };
 
+/**
+ * syncAgentViewingsFromSalesforce
+ * - Manual endpoint for syncing ONLY viewings for current UTC month.
+ */
 const syncAgentViewingsFromSalesforce = async (req, res) => {
   try {
     const nowUTC = new Date();
@@ -2956,7 +3097,12 @@ const syncAgentViewingsFromSalesforce = async (req, res) => {
   }
 };
 
-// This is working differently from model method; it triggers a full recalculation , but on cron it is working differently no model method is being triggerd
+/**
+ * updateMonthlyPropertiesForAllAgents
+ * - Manual endpoint that triggers Agent.updateAllAgentsMonthlyProperties()
+ *   (your model method) to recalculate monthly property counts.
+ * - Separate from the cron snapshot logic (which uses listingsAPI + base IDs).
+ */
 const updateMonthlyPropertiesForAllAgents = async (req, res) => {
   try {
     console.log("📊 Starting monthly properties update...");
@@ -2980,8 +3126,12 @@ const updateMonthlyPropertiesForAllAgents = async (req, res) => {
   }
 };
 
+/** ───────────────────────────────────────────────────────────────────────────
+ *  Exports
+ *  ─────────────────────────────────────────────────────────────────────────── */
+
 module.exports = {
-  // Leaderboard
+  // Leaderboard API
   getLeaderboardAgents,
 
   // Manual sync endpoints
@@ -2992,10 +3142,10 @@ module.exports = {
   // Monthly properties manual
   updateMonthlyPropertiesForAllAgents,
 
-  // Token diagnostic
+  // Token diagnostic (raw helper + express handler)
   getSalesforceToken: getSalesforceToken, // not an express handler
-  GetSalesForceToken, // express handler for tests
+  GetSalesForceToken,                     // express handler for tests / manual
 
-  // Cron
+  // Cron setup
   setupCronJobs,
 };

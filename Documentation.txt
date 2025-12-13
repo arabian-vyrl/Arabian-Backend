@@ -1,0 +1,40 @@
+1-Parse xml
+Fetches the XML feed from process.env.XML_URL and parses it into JSON using xml2js.
+Normalizes each raw XML property into a clean JS object (classification, media, custom fields, listing/agent info).
+Splits properties into Live vs Non-Live, then bulk upserts them into the Property collection using bulkWrite.
+For all Live properties, links them to agents (create/update embedded Agent.properties[]) and tracks missing agents.
+Returns a detailed JSON response with counts, operation stats, classification breakdown, and missing-agent summary.
+
+2-Main Universal Filter (Main funciton for property fetching)
+Accepts query params (listingType, price/size range, bedrooms, bathrooms, propertyType, address, developer, amenities, furnishing, sortBy, page, limit) and normalizes everything.
+Builds a base $match for simple fields and then runs a MongoDB aggregation pipeline to compute derived values like numericPrice, numericArea, numericBedrooms, isFurnished, and amenitiesArr.
+Applies numeric filters (price and size), boolean furnishing filters, and amenity filters (currently ALL selected amenities must exist) on top of that.
+Sorts results based on sortBy (newest, price high/low, bedrooms high/low), and uses $facet to return both paginated docs and an accurate total count in one query.
+Responds with a structured JSON payload including result data, pagination info, and an echo of the active filters + sort description, and fails gracefully with a detailed error object on issues.
+
+3-Agent controller
+Creates agents with optional Cloudinary image uploads, superAgent/activeOnLeaderboard booleans, and a unique sequenceNumber with validation.
+Fetches agents in multiple ways:
+getAgents: full list with optional isActive filter, sorted by sequence and name, and including derived counts for properties and blogs.
+getAgentById: query via agentId.
+getAgentByEmail: query via email with a focused field projection.
+getAgentsBySequence: sorted list by sequence, optionally only active agents.
+Updates agents with:
+Safe field whitelisting, type normalization (ints/booleans/JSON), email uniqueness checks.
+Smart sequence number swapping via Agent.swapSequenceNumbers.
+Cloudinary cleanup for old images when a new one is uploaded.
+Deletes agents by agentId and attempts to delete any associated local image file (if you’re storing locally instead of Cloudinary).
+Error handling is consistent: clear HTTP status codes, specific messages for validation/uniqueness issues, and safe fallbacks for non-critical operations (like image deletion).
+
+4-Leaderboard  
+Implements a mutex-protected cron workflow (runAllSyncsLocked) so that Salesforce sync jobs never overlap.
+Pulls multiple Salesforce datasets in parallel (deals, commissions, viewings, listingsAPI) and merges them into a per-agent metrics snapshot for the current UTC month.
+Uses robust date logic in UTC to avoid month-boundary bugs and to decide which records count toward this month’s leaderboard.
+Handles relisted property IDs smartly (via getBaseId + isRelistedId) to only count original properties for activePropertiesThisMonth.
+Writes leaderboard metrics into MongoDB using a single Agent.bulkWrite, which is efficient and consistent.
+Maintains an in-memory leaderboard cache and serves it:
+While cron is running (to avoid half-updated data)
+As a fallback if DB queries fail.
+Exposes manual sync endpoints for deals, commissions, and viewings so you can debug or force recalculations without waiting for cron.
+Exposes a manual monthly properties updater using your Agent.updateAllAgentsMonthlyProperties() model method, which is separate from the cron logic.
+Provides a clean, paginated leaderboard API (getLeaderboardAgents) that’s already shaped for frontend usage: position, name, image, metrics, properties count, etc.
