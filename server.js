@@ -19,6 +19,8 @@ app.set("trust proxy", 1);
 app.use(cors({
   origin: [
     "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
     "https://arabiann.netlify.app"
   ],
   credentials: true,
@@ -67,8 +69,8 @@ const upload = multer({
 });
 
 // Agents with salesforce sync cron job (CRON JOBS)
-setupCronJobs();
-schedulePropertySync();
+// setupCronJobs();
+// schedulePropertySync();
 
 // Then mount your API routes
 app.use("/", router);
