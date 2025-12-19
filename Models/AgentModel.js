@@ -1292,6 +1292,10 @@ const agentSchema = new mongoose.Schema(
           type: String,
           trim: true,
         },
+        description: {
+          type: String,
+          trim: true,
+      },
         // Image field for blog
         imageUrl: { type: String, trim: true, default: null },
         isPublished: {
@@ -1721,7 +1725,7 @@ agentSchema.methods.addOrUpdateBlog = function (blogData) {
     this.blogs[existingBlogIndex].title = blogData.title;
     this.blogs[existingBlogIndex].slug = blogData.slug;
     this.blogs[existingBlogIndex].imageUrl = blogData.imageUrl || null;
-
+    this.blogs[existingBlogIndex].description = blogData.description || null;
     this.blogs[existingBlogIndex].isPublished = blogData.isPublished;
     this.blogs[existingBlogIndex].publishedAt = blogData.publishedAt;
     this.blogs[existingBlogIndex].createdAt =
@@ -1736,6 +1740,7 @@ agentSchema.methods.addOrUpdateBlog = function (blogData) {
     const newBlogEntry = {
       blogId: blogData.blogId,
       title: blogData.title,
+      description: blogData.description,
       slug: blogData.slug,
       imageUrl: blogData.imageUrl || null,
       isPublished: blogData.isPublished,

@@ -1,8 +1,8 @@
 const PropertyValuation = require("../Models/PropertyValuationModel");
-
+const salesforceService = require("../services/SalesforceService");
 // CREATE a new property valuation request
 const createPropertyValuation = async (req, res) => {
-    console.log("This is the request Data", req)
+  console.log("This is the request Data", req.body);
   try {
     const {
       firstName,
@@ -12,11 +12,11 @@ const createPropertyValuation = async (req, res) => {
       preferredDate,
       preferredTime,
       propertyAddress,
-      
+
       // Step 1 Fields
       communityTowerName,
       relation,
-      
+
       // Step 2 Fields
       propertyType,
       numberOfBedrooms,
@@ -25,19 +25,19 @@ const createPropertyValuation = async (req, res) => {
       floor,
       views,
       upgrades,
-      
+
       name,
       email,
-    
+
       // Optional
-      currentStep
+      currentStep,
     } = req.body;
-    
 
     if (!firstName || !lastName || !phone || !preferredDate || !preferredTime) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "First Name, Last Name, Phone, Preferred Date and Preferred Time are required." 
+      return res.status(400).json({
+        success: false,
+        message:
+          "First Name, Last Name, Phone, Preferred Date and Preferred Time are required.",
       });
     }
 
@@ -60,35 +60,64 @@ const createPropertyValuation = async (req, res) => {
       upgrades,
       name,
       email,
-      currentStep: currentStep || 1
+      currentStep: currentStep || 1,
     });
 
     await propertyValuation.save();
-
-    res.status(201).json({ 
-      success: true, 
-      message: "Property valuation request submitted successfully!", 
-      data: propertyValuation 
+    res.status(201).json({
+      success: true,
+      message: "Property valuation request submitted successfully!",
+      data: propertyValuation,
     });
+
+    const salesforceData = {
+      firstName: propertyValuation.firstName,
+      last_name: propertyValuation.lastName,
+      tele_phone: propertyValuation.phone,
+      telephone: propertyValuation.telephone,
+      preferredDate: propertyValuation.preferredDate,
+      preferredTime: propertyValuation.preferredTime,
+      propertyAddress: propertyValuation.propertyAddress,
+      communityTowerName: propertyValuation.communityTowerName,
+      relation: propertyValuation.relation,
+      propertyType: propertyValuation.propertyType,
+      numberOfBedrooms: propertyValuation.numberOfBedrooms,
+      numberOfBathrooms: propertyValuation.numberOfBathrooms,
+      unitSize: propertyValuation.unitSize,
+      floor: propertyValuation.floor,
+      views: propertyValuation.views,
+      upgrades: propertyValuation.upgrades,
+      name: propertyValuation.name,
+      email: propertyValuation.email,
+      currentStep: propertyValuation.currentStep,
+    };
+
+    salesforceService.syncWithRetry(
+      PropertyValuation,
+      propertyValuation._id,
+      salesforceData
+    );
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };
 
-// GET all property valuation requests
+
 const getPropertyValuations = async (req, res) => {
   try {
-    const propertyValuations = await PropertyValuation.find().sort({ createdAt: -1 });
+    const propertyValuations = await PropertyValuation.find().sort({
+      createdAt: -1,
+    });
     res.status(200).json({ success: true, data: propertyValuations });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };
@@ -98,17 +127,17 @@ const getPropertyValuationById = async (req, res) => {
   try {
     const propertyValuation = await PropertyValuation.findById(req.params.id);
     if (!propertyValuation) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Property valuation request not found." 
+      return res.status(404).json({
+        success: false,
+        message: "Property valuation request not found.",
       });
     }
     res.status(200).json({ success: true, data: propertyValuation });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };
@@ -121,24 +150,24 @@ const updatePropertyValuation = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    
+
     if (!propertyValuation) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Property valuation request not found." 
+      return res.status(404).json({
+        success: false,
+        message: "Property valuation request not found.",
       });
     }
-    
-    res.status(200).json({ 
-      success: true, 
-      message: "Property valuation updated successfully.", 
-      data: propertyValuation 
+
+    res.status(200).json({
+      success: true,
+      message: "Property valuation updated successfully.",
+      data: propertyValuation,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };
@@ -146,22 +175,24 @@ const updatePropertyValuation = async (req, res) => {
 // DELETE a property valuation by ID
 const deletePropertyValuation = async (req, res) => {
   try {
-    const propertyValuation = await PropertyValuation.findByIdAndDelete(req.params.id);
+    const propertyValuation = await PropertyValuation.findByIdAndDelete(
+      req.params.id
+    );
     if (!propertyValuation) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Property valuation request not found." 
+      return res.status(404).json({
+        success: false,
+        message: "Property valuation request not found.",
       });
     }
-    res.status(200).json({ 
-      success: true, 
-      message: "Property valuation deleted successfully." 
+    res.status(200).json({
+      success: true,
+      message: "Property valuation deleted successfully.",
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };

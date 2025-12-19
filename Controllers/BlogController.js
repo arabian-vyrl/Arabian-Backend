@@ -57,7 +57,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 6 * 1024 * 1024 }, // 6MB each
+  limits: { fileSize: 10 * 1024 * 1024 }, 
 }).fields([
   { name: "coverImage", maxCount: 1 },
   { name: "bodyImage1", maxCount: 1 },
@@ -206,6 +206,8 @@ const createBlog = async (req, res) => {
         agentName: agent.agentName,
         agentEmail: agent.email,
         agentImage: agent.imageUrl,
+        agentInstagramURL: agent.instagram, 
+        agentLinkedinURL: agent.linkedin
       },
       image: coverImageData, // cover
       bodyImages: {
@@ -227,6 +229,7 @@ const createBlog = async (req, res) => {
         agent.addOrUpdateBlog({
           blogId: savedBlog._id,
           title: savedBlog.content.title,
+          description: savedBlog.metadata.description,
           slug: savedBlog.metadata.slug,
           imageUrl: savedBlog.image,
           isPublished: savedBlog.isPublished,
@@ -407,6 +410,7 @@ const updateBlog = async (req, res) => {
     const blogForAgent = {
       blogId: blog._id,
       title: blog.content?.title || blog.metadata?.title || "Untitled",
+      description: blog.metadata?.description || blog.content?.title || "Untitled",
       slug: blog.metadata?.slug || "",
       // imageUrl: pickImageUrl(blog.image),
       imageUrl: blog.image,
@@ -545,13 +549,14 @@ const getSingleBlog = async (req, res) => {
 const getBlogsByTags = async (req, res) => {
   try {
     const { tags, limit = 6, excludeId } = req.query;
+
+    console.log("This is the tags", tags)
     if (!tags) {
       return res.status(400).json({
         success: false,
         message: "Tags are required. Pass tags as comma-separated values.",
       });
     }
-
     const tagsArray = tags
       .split(",")
       .map((t) => t.trim().toLowerCase())
@@ -743,6 +748,7 @@ const toggleBlogPublishStatus = async (req, res) => {
         agent.addOrUpdateBlog({
           blogId: blog._id,
           title: blog.content?.title || blog.metadata?.title || "",
+          description: blog.metadata?.description,
           slug: blog.metadata?.slug || "",
           isPublished: blog.isPublished,
           publishedAt: blog.publishedAt,

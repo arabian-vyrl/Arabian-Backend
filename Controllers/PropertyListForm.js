@@ -1,62 +1,75 @@
 const PropertyListModel = require("../Models/PropertyListModel");
+const salesforceService = require("../services/SalesforceService");
 
 const createPropertyListForm = async (req, res) => {
-
-  console.log(req.body)
+  console.log(req.body);
   try {
     const {
       firstName,
       lastName,
-      phone,
       telephone,
+      email,
       preferredDate,
       preferredTime,
       address,
     } = req.body;
 
-    if (!firstName || !lastName || !phone || !telephone) {
+    if (!firstName || !lastName || !telephone || !email) {
       return res.status(400).json({
         success: false,
-        message: "First Name, Last Name, Phone, and Telephone are required."
+        message: "First Name, Last Name, Phone, and email are required.",
       });
     }
     const propertyList = new PropertyListModel({
       firstName,
       lastName,
-      phone,
       telephone,
+      email,
       preferredDate,
       preferredTime,
-      address
+      address,
     });
 
-    console.log("This is the propertyList", propertyList)
+    console.log("This is the propertyList", propertyList);
     await propertyList.save();
 
     res.status(201).json({
       success: true,
       message: "Property list request submitted successfully!",
-      data: propertyList
+      data: propertyList,
     });
+
+    const salesforceData = {
+      firstName: propertyList.firstName,
+      last_name: propertyList.lastName,
+      tele_phone: propertyList.telephone,
+      email: propertyList.phone,
+      preferredDate: propertyList.preferredDate,
+      preferredTime: propertyList.preferredTime,
+      address: propertyList.address,
+    };
+    salesforceService.syncWithRetry(PropertyListModel, propertyList._id, salesforceData);
 
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Server error.",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
 const getPropertyListsForm = async (req, res) => {
   try {
-    const propertyLists = await PropertyListModel.find().sort({ createdAt: -1 });
+    const propertyLists = await PropertyListModel.find().sort({
+      createdAt: -1,
+    });
     res.status(200).json({ success: true, data: propertyLists });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };
@@ -65,39 +78,41 @@ const getPropertyListFormById = async (req, res) => {
   try {
     const propertyList = await PropertyListModel.findById(req.params.id);
     if (!propertyList) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Property list request not found." 
+      return res.status(404).json({
+        success: false,
+        message: "Property list request not found.",
       });
     }
     res.status(200).json({ success: true, data: propertyList });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };
 
 const deletePropertyListForm = async (req, res) => {
   try {
-    const propertyList = await PropertyListModel.findByIdAndDelete(req.params.id);
+    const propertyList = await PropertyListModel.findByIdAndDelete(
+      req.params.id
+    );
     if (!propertyList) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Property list request not found." 
+      return res.status(404).json({
+        success: false,
+        message: "Property list request not found.",
       });
     }
-    res.status(200).json({ 
-      success: true, 
-      message: "Property list deleted successfully." 
+    res.status(200).json({
+      success: true,
+      message: "Property list deleted successfully.",
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error.", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server error.",
+      error: error.message,
     });
   }
 };

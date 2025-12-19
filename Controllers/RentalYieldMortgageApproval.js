@@ -1,4 +1,5 @@
 const RentalYieldApproval = require("../Models/RentalYieldApprovalModel");
+const salesforceService = require("../services/SalesforceService");
 
 const createRentalYieldApproval = async (req, res) => {
   try {
@@ -17,7 +18,6 @@ const createRentalYieldApproval = async (req, res) => {
       currency,
       source,
     } = req.body;
-
 
     if (
       !fullName ||
@@ -50,7 +50,7 @@ const createRentalYieldApproval = async (req, res) => {
       grossYield,
       netROI,
       currency,
-      source
+      source,
     });
 
     await approval.save();
@@ -60,6 +60,27 @@ const createRentalYieldApproval = async (req, res) => {
       message: "Rental yield approval request submitted successfully!",
       data: approval,
     });
+
+    const salesforceData = {
+      last_name: approval.fullName,
+      email: approval.email,
+      tele_phone: approval.phone,
+      propertyPrice: approval.propertyPrice,
+      annualRentalIncome: approval.annualRentalIncome,
+      serviceCharges: approval.serviceCharges,
+      additionalAnnualCosts: approval.additionalAnnualCosts,
+      netAnnualRent: approval.netAnnualRent,
+      grossYield: approval.grossYield,
+      netROI: approval.netROI,
+      currency: approval.currency,
+      source: approval.source,
+    };
+
+    salesforceService.syncWithRetry(
+      RentalYieldApproval,
+      approval._id,
+      salesforceData
+    );
   } catch (error) {
     console.error("Error saving rental yield approval:", error);
     res.status(500).json({

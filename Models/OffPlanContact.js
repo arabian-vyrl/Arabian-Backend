@@ -6,7 +6,8 @@ const OffPlanContactSchema = new mongoose.Schema({
   mobile:      { type: String, required: true, trim: true },
   projectName: { type: String, required: true, trim: true },
   budgetRange: { type: String, trim: true },
-  source:      { type: String, trim: true }, 
+  source:      { type: String, trim: true },
+  salesforceSynced:{type: Boolean, default: false },
   createdAt:   { type: Date, default: Date.now }
 });
 

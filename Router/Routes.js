@@ -23,11 +23,11 @@ const offPlanListingForm = require("../Controllers/OffPlanController")
 const RentalYieldMortgageApproval = require("../Controllers/RentalYieldMortgageApproval")
 const MortgageApproval = require("../Controllers/MortgageApproval")
 const MortgageQuote = require("../Controllers/GetMorgageQuote")
-
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const GetLocationRedin = require("../Controllers/GetLocationRedin")
-
+const DashboardLoginAuthController = require("../Controllers/DashboardLoginAuthController")
+const AdminAuthMiddleware  = require("../Middlewares/Auth")
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
 
@@ -88,16 +88,16 @@ const fileFilter = (req, file, cb) => {
 
 // Agent-specific upload middleware
 const agentUpload = multer({
-  storage: agentStorage, // Using Cloudinary storage
+  storage: agentStorage, 
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 15 * 1024 * 1024 }, 
 });
 
 // General upload middleware (for blogs, news, hero content, etc.)
 const upload = multer({
   storage: mainStorage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  limits: { fileSize: 15 * 1024 * 1024 }, // 2MB limit
 });
 // Hero Content
 router.get("/get-hero", HeroController.getHero);
@@ -169,7 +169,8 @@ router.put("/UpdateBlog", Blogs.upload, Blogs.updateBlog);
 // News Routes
 router.get("/GetNews", News.GetAllNews);
 router.get("/SingleNews", News.getSingleNews);
-router.get("/DeleteNews", News.deleteNews);
+router.delete("/DeleteNews", News.deleteNews);
+router.get("/GetNewsByTag", News.getNewsByTags);
 router.post("/AddNews", News.upload, News.createNews);
 router.put("/UpdateNews", News.upload, News.updateNews);
 
@@ -256,8 +257,8 @@ router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
 // Manual Testing
 router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
 
-
 // TrackRefer EndPoint
+
 
 // Adeel EndPionts
 router.post("/track-referrer", ReferProperties.trackRefer)
@@ -275,16 +276,10 @@ router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
 router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)
 
-
-
-
 router.get("/redin/location", GetLocationRedin.getLocationFromRedin)
 router.get("/extract-location-redin", GetLocationRedin.extractLocationFromRedin)
 router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData)
-// Test
 router.get("/get-all-extracted-location", GetLocationRedin.getAllRedinLocationFromDatabase)
-
-
 
 router.post("/mortgage-quote", MortgageQuote.createMortgageQuote)
 router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes)
@@ -299,6 +294,9 @@ router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRen
 router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
 
 
+
+router.post("/auth/login", DashboardLoginAuthController.login)
+router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
 
 // Leaderboard Agent
 // Search agents by name or email
@@ -445,6 +443,7 @@ router.get("/agents/admin/performance", async (req, res) => {
 
 // Property Listing route (Post Route for listing property)
 router.post("/list-property", ListProperty);
+// router.get("/get-sale-force-token", GenerateSaleForceToken.generateSaleForceToken)
 
 // Will Run Cors, main parser route
 router.get("/parse-xml", ParseXml.parseXmlFromUrl);

@@ -2116,19 +2116,160 @@ const SortProperties = async (req, res) => {
 /*                         Address Suggestions (Resale)                       */
 /* -------------------------------------------------------------------------- */
 
+// const getAddressSuggestions = async (req, res) => {
+//   try {
+//     // listing_type is the top-level field used & indexed in Property
+//     const listingType =
+//       req.query.listing_type ||
+//       req.query.listingType ||
+//       req.query.type ||
+//       "Sale";
+
+//     // Prefix typed by user (autocomplete text)
+//     const prefix = req.query.prefix;
+
+//     // Max suggestions to return (defaults to 8)
+//     const maxSuggestions = parseInt(req.query.limit) || 8;
+
+//     console.log(
+//       `Getting address suggestions for listing_type: "${listingType}"`
+//     );
+
+//     if (!prefix) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Prefix parameter is required",
+//       });
+//     }
+
+//     if (prefix.length < 2) {
+//       // Too short to search meaningfully
+//       return res.json({
+//         success: true,
+//         message: "Prefix too short",
+//         data: [],
+//         debug: {
+//           listingType: listingType,
+//           prefix: prefix,
+//         },
+//       });
+//     }
+
+//     console.log(
+//       `Getting address suggestions for prefix: "${prefix}" from ${listingType} properties`
+//     );
+
+//     // Build query: filter by listing_type and region field with prefix regex
+//     const query = {
+//       listing_type: listingType,
+//       "custom_fields.propertyfinder_region": {
+//         $regex: new RegExp(`\\b${prefix}`, "i"),
+//       },
+//     };
+
+//     // Fetch properties that match the region, but only some fields
+//     const properties = await Property.find(query)
+//       .limit(5) // get a few docs; we will parse addresses inside them
+//       .select("custom_fields.pba__addresstext_pb listing_type")
+//       .lean();
+
+//     console.log(
+//       `Found ${properties.length} ${listingType} properties matching query`
+//     );
+
+//     // Use Set to ensure unique suggestions
+//     const suggestions = new Set();
+
+//     // Helper to process one full address text into candidate parts
+//     const processAddress = (fullAddress) => {
+//       if (!fullAddress) return;
+
+//       // Split by common delimiters: comma, slash, dash, pipe, underscore
+//       const addressParts = fullAddress
+//         .split(/[,\/\-_|]+/)
+//         .map((part) => part.trim());
+
+//       for (const part of addressParts) {
+//         if (part && part.length >= 2) {
+//           // If part matches the prefix at a word boundary
+//           if (
+//             part
+//               .toLowerCase()
+//               .match(new RegExp(`\\b${prefix.toLowerCase()}`))
+//           ) {
+//             suggestions.add(part);
+
+//             // Stop early if we reached the cap
+//             if (suggestions.size >= maxSuggestions) return;
+//           }
+//         }
+//       }
+//     };
+
+//     // Process each property's address field
+//     properties.forEach((property) => {
+//       if (property.custom_fields?.pba__addresstext_pb) {
+//         processAddress(property.custom_fields.pba__addresstext_pb);
+//       }
+//     });
+
+//     // Convert Set to array
+//     let suggestionsArray = Array.from(suggestions);
+
+//     // Sort suggestions:
+//     // 1) ones starting with prefix
+//     // 2) by length (shorter first)
+//     // 3) alphabetically
+//     suggestionsArray.sort((a, b) => {
+//       const aExact = a.toLowerCase().startsWith(prefix.toLowerCase());
+//       const bExact = b.toLowerCase().startsWith(prefix.toLowerCase());
+
+//       if (aExact && !bExact) return -1;
+//       if (!aExact && bExact) return 1;
+
+//       if (a.length !== b.length) return a.length - b.length;
+
+//       return a.localeCompare(b);
+//     });
+
+//     // Trim to maxSuggestions
+//     suggestionsArray = suggestionsArray.slice(0, maxSuggestions);
+
+//     console.log(
+//       `Returning ${suggestionsArray.length} suggestions for ${listingType} properties`
+//     );
+
+//     res.status(200).json({
+//       success: true,
+//       message: `Found ${suggestionsArray.length} address suggestions for "${prefix}" from ${listingType} properties`,
+//       count: suggestionsArray.length,
+//       listingType: listingType,
+//       data: suggestionsArray,
+//       debug: {
+//         listingType: listingType,
+//         prefix: prefix,
+//         totalPropertiesFound: properties.length,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error in getAddressSuggestions:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to get address suggestions",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 const getAddressSuggestions = async (req, res) => {
   try {
-    // listing_type is the top-level field used & indexed in Property
     const listingType =
       req.query.listing_type ||
       req.query.listingType ||
       req.query.type ||
       "Sale";
-
-    // Prefix typed by user (autocomplete text)
     const prefix = req.query.prefix;
-
-    // Max suggestions to return (defaults to 8)
     const maxSuggestions = parseInt(req.query.limit) || 8;
 
     console.log(
@@ -2143,7 +2284,6 @@ const getAddressSuggestions = async (req, res) => {
     }
 
     if (prefix.length < 2) {
-      // Too short to search meaningfully
       return res.json({
         success: true,
         message: "Prefix too short",
@@ -2159,22 +2299,40 @@ const getAddressSuggestions = async (req, res) => {
       `Getting address suggestions for prefix: "${prefix}" from ${listingType} properties`
     );
 
-    // Build query: filter by listing_type and region field with prefix regex
-    const query = {
-      listing_type: listingType,
-      "custom_fields.propertyfinder_region": {
-        $regex: new RegExp(`\\b${prefix}`, "i"),
-      },
+    const generateAbbreviation = (text) => {
+      if (!text) return "";
+      const words = text.trim().split(/\s+/).filter(Boolean);
+      return words.map(word => word.charAt(0).toUpperCase()).join("");
     };
 
-    // Fetch properties that match the region, but only some fields
+    const matchesPrefixOrAbbreviation = (text, searchPrefix) => {
+      if (!text) return false;
+
+      const lowerText = text.toLowerCase();
+      const lowerPrefix = searchPrefix.toLowerCase();
+      if (lowerText.match(new RegExp(`\\b${lowerPrefix}`))) {
+        return true;
+      }
+
+      // Check if abbreviation matches prefix
+      const abbreviation = generateAbbreviation(text);
+      if (abbreviation.toLowerCase().startsWith(lowerPrefix)) {
+        return true;
+      }
+
+      return false;
+    };
+    const query = {
+      listing_type: listingType,
+    };
+
     const properties = await Property.find(query)
-      .limit(5) // get a few docs; we will parse addresses inside them
-      .select("custom_fields.pba__addresstext_pb listing_type")
+      .limit(100) 
+      .select("custom_fields.pba__addresstext_pb custom_fields.propertyfinder_region listing_type")
       .lean();
 
     console.log(
-      `Found ${properties.length} ${listingType} properties matching query`
+      `Found ${properties.length} ${listingType} properties in database`
     );
 
     // Use Set to ensure unique suggestions
@@ -2191,16 +2349,12 @@ const getAddressSuggestions = async (req, res) => {
 
       for (const part of addressParts) {
         if (part && part.length >= 2) {
-          // If part matches the prefix at a word boundary
-          if (
-            part
-              .toLowerCase()
-              .match(new RegExp(`\\b${prefix.toLowerCase()}`))
-          ) {
+          // Check if part matches the prefix or its abbreviation
+          if (matchesPrefixOrAbbreviation(part, prefix)) {
             suggestions.add(part);
 
-            // Stop early if we reached the cap
-            if (suggestions.size >= maxSuggestions) return;
+            // Stop early if we reached a reasonable cap
+            if (suggestions.size >= maxSuggestions * 3) return;
           }
         }
       }
@@ -2211,24 +2365,45 @@ const getAddressSuggestions = async (req, res) => {
       if (property.custom_fields?.pba__addresstext_pb) {
         processAddress(property.custom_fields.pba__addresstext_pb);
       }
+      // Also check region field
+      if (property.custom_fields?.propertyfinder_region) {
+        processAddress(property.custom_fields.propertyfinder_region);
+      }
     });
 
     // Convert Set to array
     let suggestionsArray = Array.from(suggestions);
 
     // Sort suggestions:
-    // 1) ones starting with prefix
-    // 2) by length (shorter first)
-    // 3) alphabetically
+    // 1) Exact prefix match at start (highest priority)
+    // 2) Abbreviation match (second priority)
+    // 3) Word boundary match (third priority)
+    // 4) By length (shorter first)
+    // 5) Alphabetically
     suggestionsArray.sort((a, b) => {
-      const aExact = a.toLowerCase().startsWith(prefix.toLowerCase());
-      const bExact = b.toLowerCase().startsWith(prefix.toLowerCase());
+      const lowerPrefix = prefix.toLowerCase();
 
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
+      const aStartsWithPrefix = a.toLowerCase().startsWith(lowerPrefix);
+      const bStartsWithPrefix = b.toLowerCase().startsWith(lowerPrefix);
 
+      const aAbbreviation = generateAbbreviation(a).toLowerCase();
+      const bAbbreviation = generateAbbreviation(b).toLowerCase();
+
+      const aAbbreviationMatch = aAbbreviation.startsWith(lowerPrefix);
+      const bAbbreviationMatch = bAbbreviation.startsWith(lowerPrefix);
+
+      // Prioritize exact start matches
+      if (aStartsWithPrefix && !bStartsWithPrefix) return -1;
+      if (!aStartsWithPrefix && bStartsWithPrefix) return 1;
+
+      // Then prioritize abbreviation matches
+      if (aAbbreviationMatch && !bAbbreviationMatch) return -1;
+      if (!aAbbreviationMatch && bAbbreviationMatch) return 1;
+
+      // Then by length (shorter first)
       if (a.length !== b.length) return a.length - b.length;
 
+      // Finally alphabetically
       return a.localeCompare(b);
     });
 
@@ -2249,6 +2424,7 @@ const getAddressSuggestions = async (req, res) => {
         listingType: listingType,
         prefix: prefix,
         totalPropertiesFound: properties.length,
+        abbreviationMatching: true,
       },
     });
   } catch (error) {

@@ -1,15 +1,19 @@
 const OffPlanContact = require("../Models/OffPlanContact");
-
+const salesforceService = require("../services/SalesforceService");
 // CREATE a new off-plan contact message
 const createOffPlanContact = async (req, res) => {
   try {
-    const { fullName, email, mobile, projectName, budgetRange, source } = req.body;
+    const { fullName, email, mobile, projectName, budgetRange, source } =
+      req.body;
 
     // Basic validation
     if (!fullName || !email || !mobile || !projectName) {
       return res
         .status(400)
-        .json({ success: false, message: "Full Name, Email, Mobile, and Project Name are required." });
+        .json({
+          success: false,
+          message: "Full Name, Email, Mobile, and Project Name are required.",
+        });
     }
 
     const contact = new OffPlanContact({
@@ -18,7 +22,7 @@ const createOffPlanContact = async (req, res) => {
       mobile,
       projectName,
       budgetRange,
-      source
+      source,
     });
 
     await contact.save();
@@ -26,13 +30,24 @@ const createOffPlanContact = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Off-plan contact submitted successfully!",
-      data: contact
+      data: contact,
     });
+
+
+    const salesforceData = {
+      last_name: contact.fullName,
+      email: contact.email,
+      tele_phone: contact.mobile,
+      projectName: contact.projectName,
+      budgetRange: contact.budgetRange,
+      source: contact.source,
+    };
+    salesforceService.syncWithRetry(OffPlanContact, contact._id, salesforceData);
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Server error.",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -43,7 +58,9 @@ const getOffPlanContacts = async (req, res) => {
     const contacts = await OffPlanContact.find().sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: contacts });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error.", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error.", error: error.message });
   }
 };
 
@@ -54,19 +71,18 @@ const deleteOffPlanContact = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({
         success: false,
-        message: "Contact not found."
+        message: "Contact not found.",
       });
     }
     res.json({
       success: true,
-      message: "Contact deleted successfully."
+      message: "Contact deleted successfully.",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -74,5 +90,5 @@ const deleteOffPlanContact = async (req, res) => {
 module.exports = {
   createOffPlanContact,
   getOffPlanContacts,
-  deleteOffPlanContact
+  deleteOffPlanContact,
 };

@@ -1,4 +1,5 @@
 const MortgageQuote = require("../Models/MortgageQuoteModel");
+const salesforceService = require("../services/SalesforceService");
 
 const createMortgageQuote = async (req, res) => {
   try {
@@ -27,7 +28,7 @@ const createMortgageQuote = async (req, res) => {
       valuationFee,
       conveyancerFee,
       mortgagePurchaseCosts,
-      source
+      source,
     } = req.body;
 
     // Log incoming data for debugging
@@ -35,37 +36,53 @@ const createMortgageQuote = async (req, res) => {
 
     // Validate required fields
     const missingFields = [];
-    
+
     if (!fullName) missingFields.push("fullName");
     if (!email) missingFields.push("email");
     if (!phone) missingFields.push("phone");
     if (!requestMessage) missingFields.push("requestMessage");
     if (!propertyTitle) missingFields.push("propertyTitle");
     if (!propertyLink) missingFields.push("propertyLink");
-    if (purchasePrice === undefined || purchasePrice === null) missingFields.push("purchasePrice");
-    if (downpaymentPercentage === undefined || downpaymentPercentage === null) missingFields.push("downpaymentPercentage");
-    if (downPayment === undefined || downPayment === null) missingFields.push("downPayment");
-    if (loanAmount === undefined || loanAmount === null) missingFields.push("loanAmount");
-    if (interestRate === undefined || interestRate === null) missingFields.push("interestRate");
-    if (loanDuration === undefined || loanDuration === null) missingFields.push("loanDuration");
-    if (monthlyPayment === undefined || monthlyPayment === null) missingFields.push("monthlyPayment");
-    if (amountRequiredUpfront === undefined || amountRequiredUpfront === null) missingFields.push("amountRequiredUpfront");
+    if (purchasePrice === undefined || purchasePrice === null)
+      missingFields.push("purchasePrice");
+    if (downpaymentPercentage === undefined || downpaymentPercentage === null)
+      missingFields.push("downpaymentPercentage");
+    if (downPayment === undefined || downPayment === null)
+      missingFields.push("downPayment");
+    if (loanAmount === undefined || loanAmount === null)
+      missingFields.push("loanAmount");
+    if (interestRate === undefined || interestRate === null)
+      missingFields.push("interestRate");
+    if (loanDuration === undefined || loanDuration === null)
+      missingFields.push("loanDuration");
+    if (monthlyPayment === undefined || monthlyPayment === null)
+      missingFields.push("monthlyPayment");
+    if (amountRequiredUpfront === undefined || amountRequiredUpfront === null)
+      missingFields.push("amountRequiredUpfront");
     if (!currency) missingFields.push("currency");
-    if (landDeptFee === undefined || landDeptFee === null) missingFields.push("landDeptFee");
-    if (agencyFeeBase === undefined || agencyFeeBase === null) missingFields.push("agencyFeeBase");
-    if (agencyFee === undefined || agencyFee === null) missingFields.push("agencyFee");
-    if (trusteeFee === undefined || trusteeFee === null) missingFields.push("trusteeFee");
-    if (mortgageRegFee === undefined || mortgageRegFee === null) missingFields.push("mortgageRegFee");
-    if (bankArrangementFee === undefined || bankArrangementFee === null) missingFields.push("bankArrangementFee");
-    if (valuationFee === undefined || valuationFee === null) missingFields.push("valuationFee");
-    if (mortgagePurchaseCosts === undefined || mortgagePurchaseCosts === null) missingFields.push("mortgagePurchaseCosts");
+    if (landDeptFee === undefined || landDeptFee === null)
+      missingFields.push("landDeptFee");
+    if (agencyFeeBase === undefined || agencyFeeBase === null)
+      missingFields.push("agencyFeeBase");
+    if (agencyFee === undefined || agencyFee === null)
+      missingFields.push("agencyFee");
+    if (trusteeFee === undefined || trusteeFee === null)
+      missingFields.push("trusteeFee");
+    if (mortgageRegFee === undefined || mortgageRegFee === null)
+      missingFields.push("mortgageRegFee");
+    if (bankArrangementFee === undefined || bankArrangementFee === null)
+      missingFields.push("bankArrangementFee");
+    if (valuationFee === undefined || valuationFee === null)
+      missingFields.push("valuationFee");
+    if (mortgagePurchaseCosts === undefined || mortgagePurchaseCosts === null)
+      missingFields.push("mortgagePurchaseCosts");
 
     if (missingFields.length > 0) {
       console.log("Missing fields:", missingFields);
       return res.status(400).json({
         success: false,
         message: `Missing required fields: ${missingFields.join(", ")}`,
-        missingFields
+        missingFields,
       });
     }
 
@@ -92,30 +109,62 @@ const createMortgageQuote = async (req, res) => {
       mortgageRegFee: Number(mortgageRegFee),
       bankArrangementFee: Number(bankArrangementFee),
       valuationFee: Number(valuationFee),
-      conveyancerFee: conveyancerFee !== undefined && conveyancerFee !== null ? Number(conveyancerFee) : undefined,
+      conveyancerFee:
+        conveyancerFee !== undefined && conveyancerFee !== null
+          ? Number(conveyancerFee)
+          : undefined,
       mortgagePurchaseCosts: Number(mortgagePurchaseCosts),
-      source
+      source,
     });
 
     await quote.save();
-
-    console.log("Quote saved successfully:", quote._id);
-
     res.status(201).json({
       success: true,
       message: "Mortgage quote request submitted successfully!",
       data: quote,
     });
+
+    const salesforceData = {
+      last_name: quote.fullName,
+      email: quote.email,
+      tele_phone: quote.phone,
+      requestMessage: quote.requestMessage,
+      propertyTitle: quote.propertyTitle,
+      propertyLink: quote.propertyLink,
+      purchasePrice: quote.purchasePrice,
+      downpaymentPercentage: quote.downpaymentPercentage,
+      downPayment: quote.downPayment,
+      loanAmount: quote.loanAmount,
+      interestRate: quote.interestRate,
+      loanDuration: quote.loanDuration,
+      monthlyPayment: quote.monthlyPayment,
+      amountRequiredUpfront: quote.amountRequiredUpfront,
+      currency: quote.currency,
+      landDeptFee: quote.landDeptFee,
+      agencyFeeBase: quote.agencyFeeBase,
+      agencyFee: quote.agencyFee,
+      trusteeFee: quote.trusteeFee,
+      mortgageRegFee: quote.mortgageRegFee,
+      bankArrangementFee: quote.bankArrangementFee,
+      valuationFee: quote.valuationFee,
+      conveyancerFee: quote.conveyancerFee,
+      mortgagePurchaseCosts: quote.mortgagePurchaseCosts,
+      source: quote.source,
+    };
+    salesforceService.syncWithRetry(MortgageQuote, quote._id, salesforceData);
+    
   } catch (error) {
     console.error("Error creating mortgage quote:", error);
     res.status(500).json({
       success: false,
       message: "Server error while creating mortgage quote.",
       error: error.message,
-      details: error.errors ? Object.keys(error.errors).map(key => ({
-        field: key,
-        message: error.errors[key].message
-      })) : null
+      details: error.errors
+        ? Object.keys(error.errors).map((key) => ({
+            field: key,
+            message: error.errors[key].message,
+          }))
+        : null,
     });
   }
 };
@@ -129,7 +178,6 @@ const getMortgageQuotes = async (req, res) => {
       success: true,
       data: quotes,
     });
-
   } catch (error) {
     console.error("Error fetching mortgage quotes:", error);
     res.status(500).json({
@@ -158,7 +206,6 @@ const deleteMortgageQuote = async (req, res) => {
       success: true,
       message: "Mortgage quote deleted successfully.",
     });
-
   } catch (error) {
     console.error("Error deleting mortgage quote:", error);
     res.status(500).json({
@@ -172,5 +219,5 @@ const deleteMortgageQuote = async (req, res) => {
 module.exports = {
   createMortgageQuote,
   getMortgageQuotes,
-  deleteMortgageQuote
+  deleteMortgageQuote,
 };

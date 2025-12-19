@@ -1098,6 +1098,7 @@ const getAgents = async (req, res) => {
           agentId: 1,
           leaderboard: 1,
           sequenceNumber: 1,
+          specialistAreas: 1,
           reraNumber: 1,
           activeOnLeaderboard: 1,
           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
@@ -1399,25 +1400,29 @@ const deleteAgent = async (req, res) => {
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
-    if (agent.imageUrl) {
-      // Fix path joining with leading slash
-      const filePath = path.join(
-        __dirname,
-        "../public",
-        stripLeadingSlash(agent.imageUrl)
-      );
-      fs.promises.unlink(filePath).catch((e) => {
-        if (e?.code !== "ENOENT")
-          console.warn("⚠️  Failed to delete image:", e.message);
-      });
-    }
-
+    // if (agent.imageUrl) {
+    //   // Fix path joining with leading slash
+    //   const filePath = path.join(
+    //     __dirname,
+    //     "../public",
+    //     stripLeadingSlash(agent.imageUrl)
+    //   );
+    //   fs.promises.unlink(filePath).catch((e) => {
+    //     if (e?.code !== "ENOENT")
+    //       console.warn("⚠️  Failed to delete image:", e.message);
+    //   });
+    // }
     // Optionally: await Agent.reorderSequences();
-    return res.status(200).json({ success: true, msg: "Agent Removed" });
+    return res.status(200).json({ success: true, msg: "Agent Removed Successfully" });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }
 };
+
+
+
+
+
 
 module.exports = {
   createAgent,

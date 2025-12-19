@@ -14,6 +14,7 @@ const MortgageApprovalSchema = new mongoose.Schema(
     monthlyRepayment: { type: Number, required: true },
     currency: { type: String, default: "AED" }, 
     agreedToContact: { type: Boolean, default: true },
+    salesforceSynced:{type: Boolean, default: false },
     source: {
         type: String, 
         required: true,

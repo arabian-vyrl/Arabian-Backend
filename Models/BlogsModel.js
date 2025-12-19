@@ -142,6 +142,9 @@ const blogSchema = new Schema(
         lowercase: true,
       },
       agentImage: { type: String, default: null, trim: true },
+      agentInstagramURL: { type: String, default: null,},
+      agentLinkedinURL: { type: String, default: null,},
+  
     },
 
     // Cover Image (make the entire subdoc optional; if provided, it must pass the pre-validate above)

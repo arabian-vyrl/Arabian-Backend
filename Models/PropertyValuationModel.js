@@ -60,7 +60,7 @@ const valuationPropertyTableModel = new mongoose.Schema({
   email: {
     type: String
   },
-
+    salesforceSynced:{type: Boolean, default: false },
   // System Fields
   submittedAt: {
     type: Date,

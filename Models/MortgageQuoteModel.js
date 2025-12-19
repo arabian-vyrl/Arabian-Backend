@@ -103,6 +103,7 @@ const MortgageQuoteSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    salesforceSynced:{type: Boolean, default: false },
     source: {
         type: String, 
         required: true,

@@ -56,7 +56,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 6 * 1024 * 1024 }, // 6MB each
+  limits: { fileSize: 10 * 1024 * 1024 }, 
 }).fields([
   { name: "coverImage", maxCount: 1 },
   { name: "bodyImage1", maxCount: 1 },
@@ -556,7 +556,6 @@ const getNewsByTags = async (req, res) => {
         message: "Tags are required. Pass tags as comma-separated values.",
       });
     }
-
     const tagsArray = tags
       .split(",")
       .map((t) => t.trim().toLowerCase())

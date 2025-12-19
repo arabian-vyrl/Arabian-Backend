@@ -9,8 +9,6 @@ const referralPropertySchema = new mongoose.Schema(
       // required: true,
       index: true,
     },
-
-    // Referrer Information
     referrer: {
       full_name: {
         type: String,
@@ -80,6 +78,7 @@ const referralPropertySchema = new mongoose.Schema(
       },
     },
 
+
     // Query Details
     query_details: {
       urgency_level: {
@@ -104,6 +103,9 @@ const referralPropertySchema = new mongoose.Schema(
         default: null,
       },
     },
+
+    salesforceSynced:{type: Boolean, default: false },
+    emailSent: { type: Boolean, default: false },
     query_progress: {
       status: {
         type: String,

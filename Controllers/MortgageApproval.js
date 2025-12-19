@@ -1,5 +1,5 @@
 const MortgageApproval = require("../Models/MortgageApprovalModel");
-
+const salesforceService = require("../services/SalesforceService");
 // CREATE mortgage approval request
 const createMortgageApproval = async (req, res) => {
   try {
@@ -52,15 +52,29 @@ const createMortgageApproval = async (req, res) => {
       agreedToContact,
       source
     });
-
     await approval.save();
-
     res.status(201).json({
       success: true,
       message: "Mortgage approval request submitted successfully!",
       data: approval,
     });
 
+  const salesforceData = {
+  last_name: approval.fullName,
+  email: approval.email,
+  tele_phone: approval.phone,
+  propertyPrice: approval.propertyPrice,
+  downPayment: approval.downPayment,
+  downPaymentPercent: approval.downPaymentPercent,
+  loanAmount: approval.loanAmount,
+  interestRate: approval.interestRate,
+  loanTermYears: approval.loanTermYears,
+  monthlyRepayment: approval.monthlyRepayment,
+  agreedToContact: approval.agreedToContact,
+  source: approval.source,
+};
+    salesforceService.syncWithRetry(MortgageApproval, approval._id, salesforceData);
+  
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -70,7 +84,6 @@ const createMortgageApproval = async (req, res) => {
   }
 };
 
-// GET all approvals
 const getMortgageApprovals = async (req, res) => {
   try {
     const approvals = await MortgageApproval.find().sort({ createdAt: -1 });

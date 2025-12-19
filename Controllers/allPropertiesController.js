@@ -24,7 +24,6 @@ const getSingleProperty = async (req, res) => {
     const property = await Property.findOne(query);
 
     console.log("Property found:", property ? "Yes" : "No");
-
     if (!property) {
       return res.status(404).json({
         success: false,

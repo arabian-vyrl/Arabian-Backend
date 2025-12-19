@@ -16,9 +16,11 @@ const RentalYieldApproval = new mongoose.Schema(
     netAnnualRent: { type: Number, required: true },           
     grossYield: { type: Number, required: true },               
     netROI: { type: Number, required: true },                   
+    salesforceSynced:{type: Boolean, default: false },
 
     currency: { type: String, default: "AED" },
     agreedToContact: { type: Boolean, default: true },
+
     source: {
         type: String, 
         required: true,
