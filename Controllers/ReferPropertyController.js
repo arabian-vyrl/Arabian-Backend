@@ -1,5 +1,4 @@
 const ReferralProperty = require('../Models/ReferalPropertyModel');
-const axios = require('axios'); // For Salesforce integration
 const { response } = require('express');
 const nodemailer = require('nodemailer');
 const jwtToken = require("jsonwebtoken");
@@ -185,11 +184,14 @@ const trackRefer = async (req, res) => {
       expiresIn: "2d",
     });
 
+    const isProduction = process.env.NODE_ENV === "production";
+
     res.cookie("referalToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 2 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     return res.status(200).json({
@@ -385,59 +387,59 @@ const ReferProperty = async (req, res) => {
         pass: "xeio pmwi xxey asku",
       },
     });
-    // const sendEmail = async (to, subject, html) => {
-    //   try {
-    //     await transporter.sendMail({ from: "adeel8128377@gmail.com", to, subject, html });
-    //     console.log("Email sent to:", to);
-    //     await ReferralProperty.findByIdAndUpdate(savedReferral._id, { emailSent: true });
-    //   } catch (err) {
-    //     console.error("Email send error:", err.message);
-    //   }
-    // };
-    // await sendEmail(
-    //   Reffrer_EmailAdress,
-    //   "Your Property Referral – Login & Tracking Details",
-    //   `
-    //   <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    //     <h2>Hello ${Reffrer_FullName},</h2>
-    //     <p>Thank you for submitting a new property referral. We have successfully received your details.</p>
-    //     <h3>Your Login Details</h3>
-    //     <p><strong>Email:</strong> ${Reffrer_EmailAdress}<br/><strong>Password:</strong> ${ReffrerPassword}</p>
-    //     <h3>All Your Referral Tracking Codes</h3>
-    //     <ul>
-    //       ${allTrackingCodes.map((code) => `<li><strong>${code}</strong></li>`).join("")}
-    //     </ul>
-    //     <p>You can use these tracking codes to monitor the progress of each referral.</p>
-    //     <br/>
-    //     <p>Thank you for helping us connect with new clients.</p>
-    //     <p><strong>Best Regards,</strong><br/>Arabian Estate</p>
-    //   </div>
-    //   `
-    // );
+    const sendEmail = async (to, subject, html) => {
+      try {
+        await transporter.sendMail({ from: "adeel8128377@gmail.com", to, subject, html });
+        console.log("Email sent to:", to);
+        await ReferralProperty.findByIdAndUpdate(savedReferral._id, { emailSent: true });
+      } catch (err) {
+        console.error("Email send error:", err.message);
+      }
+    };
+    await sendEmail(
+      Reffrer_EmailAdress,
+      "Your Property Referral – Login & Tracking Details",
+      `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2>Hello ${Reffrer_FullName},</h2>
+        <p>Thank you for submitting a new property referral. We have successfully received your details.</p>
+        <h3>Your Login Details</h3>
+        <p><strong>Email:</strong> ${Reffrer_EmailAdress}<br/><strong>Password:</strong> ${ReffrerPassword}</p>
+        <h3>All Your Referral Tracking Codes</h3>
+        <ul>
+          ${allTrackingCodes.map((code) => `<li><strong>${code}</strong></li>`).join("")}
+        </ul>
+        <p>You can use these tracking codes to monitor the progress of each referral.</p>
+        <br/>
+        <p>Thank you for helping us connect with new clients.</p>
+        <p><strong>Best Regards,</strong><br/>Arabian Estate</p>
+      </div>
+      `
+    );
 
     // Send to the data 
 
-//     const salesforceData = {
-//   last_name: Reffrer_FullName,
-//   email: Reffrer_EmailAdress,
-//   tele_phone: Reffrer_PhoneNumber,
-//   Property_Area: PropertyArea || null,
-//   Referee_Full_Name: Refree_FullName,
-//   Referee_Email: Refree_EmailAdress,
-//   Referee_Phone: Refree_PhoneNumber,
-//   Relationship_To_Referrer: Relation_to_Reffrer,
-//   Preferred_Contact_Method: Refree_Preffered_Contact_Form,
-//   Best_Time_To_Contact: Best_Time_To_Contect,
-//   Urgency_Level: Urgency_Level,
-//   Special_Requirements: Special_Requirements,
-// };
+    const salesforceData = {
+  last_name: Reffrer_FullName,
+  email: Reffrer_EmailAdress,
+  tele_phone: Reffrer_PhoneNumber,
+  Property_Area: PropertyArea || null,
+  Referee_Full_Name: Refree_FullName,
+  Referee_Email: Refree_EmailAdress,
+  Referee_Phone: Refree_PhoneNumber,
+  Relationship_To_Referrer: Relation_to_Reffrer,
+  Preferred_Contact_Method: Refree_Preffered_Contact_Form,
+  Best_Time_To_Contact: Best_Time_To_Contect,
+  Urgency_Level: Urgency_Level,
+  Special_Requirements: Special_Requirements,
+};
 
 
-//  salesforceService.syncWithRetry(
-//       ReferralProperty,
-//       savedReferral._id,
-//       salesforceData
-//     );
+ salesforceService.syncWithRetry(
+      ReferralProperty,
+      savedReferral._id,
+      salesforceData
+    );
   } catch (error) {
     console.error("Error in ReferProperty:", error);
     res.status(500).json({
@@ -775,33 +777,33 @@ async function sendRefereeIntroductionEmail(referralData) {
   return transporter.sendMail(mailOptions);
 }
 
-async function sendToSalesforce(referralData) {
-  try {
-    // This is a placeholder - implement based on your Salesforce API
-    const salesforceData = {
-      tracking_code: referralData.tracking_code,
-      referrer: referralData.referrer,
-      referee: referralData.referee,
-      property: referralData.property,
-      query_details: referralData.query_details,
-      created_at: referralData.created_at
-    };
+// async function sendToSalesforce(referralData) {
+//   try {
+//     // This is a placeholder - implement based on your Salesforce API
+//     const salesforceData = {
+//       tracking_code: referralData.tracking_code,
+//       referrer: referralData.referrer,
+//       referee: referralData.referee,
+//       property: referralData.property,
+//       query_details: referralData.query_details,
+//       created_at: referralData.created_at
+//     };
 
-    // Example API call to Salesforce
-    // const response = await axios.post('YOUR_SALESFORCE_ENDPOINT', salesforceData, {
-    //   headers: {
-    //     'Authorization': `Bearer ${process.env.SALESFORCE_TOKEN}`,
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
+//     // Example API call to Salesforce
+//     // const response = await axios.post('YOUR_SALESFORCE_ENDPOINT', salesforceData, {
+//     //   headers: {
+//     //     'Authorization': `Bearer ${process.env.SALESFORCE_TOKEN}`,
+//     //     'Content-Type': 'application/json'
+//     //   }
+//     // });
 
-    console.log('Lead sent to Salesforce:', salesforceData);
-    return true;
-  } catch (error) {
-    console.error('Error sending to Salesforce:', error);
-    throw error;
-  }
-}
+//     console.log('Lead sent to Salesforce:', salesforceData);
+//     return true;
+//   } catch (error) {
+//     console.error('Error sending to Salesforce:', error);
+//     throw error;
+//   }
+// }
 
 
 
@@ -885,8 +887,6 @@ async function sendCommissionNotificationEmail(referralData) {
 
   return transporter.sendMail(mailOptions);
 }
-
-
 
 // Export functions
 module.exports = {

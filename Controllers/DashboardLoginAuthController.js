@@ -69,7 +69,6 @@
 //   verifyToken,
 // };
 
-
 const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.SECRET_KEY;
@@ -105,11 +104,14 @@ const login = async (req, res) => {
       { expiresIn: "2d" }
     );
     
+    const isProduction = process.env.NODE_ENV === "production";
+
     res.cookie("login_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 2 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     res.status(200).json({

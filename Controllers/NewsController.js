@@ -200,6 +200,8 @@ const createNews = async (req, res) => {
         agentName: agent.agentName,
         agentEmail: agent.email,
         agentImage: agent.imageUrl,
+        agentInstagramURL: agent.instagram, 
+        agentLinkedinURL: agent.linkedin
       },
       image: coverImageData,
       bodyImages: {
@@ -213,7 +215,6 @@ const createNews = async (req, res) => {
 
     const savedNews = await newNews.save();
 
-    // Optional: link to agent.news array (if helper exists)
     try {
       if (typeof agent.addOrUpdateNews === "function") {
         agent.addOrUpdateNews({
