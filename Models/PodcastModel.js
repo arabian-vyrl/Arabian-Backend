@@ -1,7 +1,60 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const imageSchema = new Schema( 
+  {
+    // Core identifiers
+    publicId: { type: String, trim: true }, // Cloudinary public_id
+    url: { type: String, trim: true }, // secure URL
+    path: { type: String, trim: true }, // alias for url (kept for compatibility)
+    filename: { type: String, trim: true }, // legacy / alias for public_id
+
+    // Extras (Cloudinary metadata)
+    format: { type: String, trim: true },
+    size: { type: Number }, // bytes
+    width: { type: Number },
+    height: { type: Number },
+    folder: { type: String, trim: true },
+
+    // Original upload info
+    originalName: { type: String, trim: true },
+    mimetype: { type: String, trim: true },
+  },
+  { _id: false }
+);
+
+// Require at least one of: publicId, filename, url, path
+imageSchema.pre("validate", function (next) {
+  if (!this) return next();
+  const hasId =
+    (this.publicId && this.publicId.length) ||
+    (this.url && this.url.length)
+    // (this.path && this.path.length);
+
+  if (!hasId) {
+    return next(
+      new mongoose.Error.ValidatorError({
+        path: "image",
+        message:
+          "Image must include at least one of publicId, filename, url, or path.",
+      })
+    );
+  }
+  next();
+});
+
+
 
 const podcastSchema = new mongoose.Schema(
   {
+    metaTitle: {
+      type: String,
+      trim: true,
+    },
+     metaDescription: {
+      type: String,
+      trim: true,
+    },
     title: {
       type: String,
       required: [true, "Podcast title is required"],
@@ -26,11 +79,17 @@ const podcastSchema = new mongoose.Schema(
       trim: true,
       // maxlength: [2000, "Description cannot exceed 2000 characters"],
     },
+    // coverPhoto: {
+    //   type: String,
+    //   required: [true, "Cover photo URL is required"],
+    //   trim: true,
+    // },
+
     coverPhoto: {
-      type: String,
-      required: [true, "Cover photo URL is required"],
-      trim: true,
+    type: imageSchema,
+     required: [true, "Cover photo is required"],
     },
+
     youtubeUrl: {
       type: String,
       required: [true, "YouTube URL is required"],

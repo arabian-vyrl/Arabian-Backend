@@ -1,10 +1,10 @@
-const ReferralProperty = require('../Models/ReferalPropertyModel');
-const { response } = require('express');
-const nodemailer = require('nodemailer');
+const ReferralProperty = require("../Models/ReferalPropertyModel");
+const { response } = require("express");
+const nodemailer = require("nodemailer");
 const jwtToken = require("jsonwebtoken");
 const salesforceService = require("../services/SalesforceService");
 
-require("dotenv").config()
+require("dotenv").config();
 
 // Email configuration
 // const transporter = nodemailer.createTransporter({
@@ -30,7 +30,7 @@ const agentUpdate = async (req, res) => {
     }
 
     const updatedDocument = await ReferralProperty.findOneAndUpdate(
-      { tracking_code: trackingCode }, 
+      { tracking_code: trackingCode },
       {
         $set: {
           "agent_assign.agent_id": agentId,
@@ -64,7 +64,6 @@ const agentUpdate = async (req, res) => {
   }
 };
 
-
 const verifyReferrerToken = async (req, res) => {
   try {
     if (!req.user) {
@@ -73,7 +72,7 @@ const verifyReferrerToken = async (req, res) => {
     const { referrerFullName, refferalEmail } = req.user;
     const referrals = await ReferralProperty.find({
       "referrer.full_name": referrerFullName,
-      "referrer.email": refferalEmail
+      "referrer.email": refferalEmail,
     });
 
     if (!referrals || referrals.length === 0) {
@@ -102,14 +101,13 @@ const verifyReferrerToken = async (req, res) => {
 };
 
 const generateRandomPassword = (length = 6) => {
-  const chars = '0123456789';
-  let password = '';
+  const chars = "0123456789";
+  let password = "";
   for (let i = 0; i < length; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return password;
 };
-
 
 const trackRefer = async (req, res) => {
   try {
@@ -123,9 +121,9 @@ const trackRefer = async (req, res) => {
     }
 
     const ADMIN_EMAIL = process.env.REFER_ADMIN_EMAIL;
-    const ADMIN_PASSWORD = process.env.REFER_ADMIN_PASSWORD; 
+    const ADMIN_PASSWORD = process.env.REFER_ADMIN_PASSWORD;
 
-    console.log(ADMIN_EMAIL, ADMIN_PASSWORD)
+    console.log(ADMIN_EMAIL, ADMIN_PASSWORD);
 
     // ===== ADMIN LOGIN =====
     if (email === ADMIN_EMAIL) {
@@ -147,7 +145,7 @@ const trackRefer = async (req, res) => {
     // ===== USER LOGIN =====
     const user = await ReferralProperty.findOne({
       "referrer.email": email,
-      "referrer.password": password, 
+      "referrer.password": password,
     });
 
     if (!user) {
@@ -250,7 +248,7 @@ const trackRefer = async (req, res) => {
 //     const refferalEmail = referrals[0].referrer.email;
 
 //     const payload = {
-//       referrerFullName: referrerFullName, 
+//       referrerFullName: referrerFullName,
 //       refferalEmail: refferalEmail
 //     };
 
@@ -259,7 +257,7 @@ const trackRefer = async (req, res) => {
 //       expiresIn: '1h'
 //     };
 //     const token = jwtToken.sign(payload, secretKey, options)
-  
+
 //     res.cookie("referalToken", token, {
 //       httpOnly: true,
 //       secure: process.env.NODE_ENV === "production",
@@ -289,17 +287,17 @@ const GetAllReferal = async (req, res) => {
     const referells = await ReferralProperty.find();
     return res.status(200).json({
       success: true,
-      message: 'All Referrals fetched successfully',
-      data: referells
+      message: "All Referrals fetched successfully",
+      data: referells,
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
-      error: error.message
+      message: "Internal server error",
+      error: error.message,
     });
   }
-}
+};
 
 const ReferProperty = async (req, res) => {
   try {
@@ -389,9 +387,16 @@ const ReferProperty = async (req, res) => {
     });
     const sendEmail = async (to, subject, html) => {
       try {
-        await transporter.sendMail({ from: "adeel8128377@gmail.com", to, subject, html });
+        await transporter.sendMail({
+          from: "adeel8128377@gmail.com",
+          to,
+          subject,
+          html,
+        });
         console.log("Email sent to:", to);
-        await ReferralProperty.findByIdAndUpdate(savedReferral._id, { emailSent: true });
+        await ReferralProperty.findByIdAndUpdate(savedReferral._id, {
+          emailSent: true,
+        });
       } catch (err) {
         console.error("Email send error:", err.message);
       }
@@ -407,7 +412,9 @@ const ReferProperty = async (req, res) => {
         <p><strong>Email:</strong> ${Reffrer_EmailAdress}<br/><strong>Password:</strong> ${ReffrerPassword}</p>
         <h3>All Your Referral Tracking Codes</h3>
         <ul>
-          ${allTrackingCodes.map((code) => `<li><strong>${code}</strong></li>`).join("")}
+          ${allTrackingCodes
+            .map((code) => `<li><strong>${code}</strong></li>`)
+            .join("")}
         </ul>
         <p>You can use these tracking codes to monitor the progress of each referral.</p>
         <br/>
@@ -417,25 +424,24 @@ const ReferProperty = async (req, res) => {
       `
     );
 
-    // Send to the data 
+    // Send to the data
 
     const salesforceData = {
-  last_name: Reffrer_FullName,
-  email: Reffrer_EmailAdress,
-  tele_phone: Reffrer_PhoneNumber,
-  Property_Area: PropertyArea || null,
-  Referee_Full_Name: Refree_FullName,
-  Referee_Email: Refree_EmailAdress,
-  Referee_Phone: Refree_PhoneNumber,
-  Relationship_To_Referrer: Relation_to_Reffrer,
-  Preferred_Contact_Method: Refree_Preffered_Contact_Form,
-  Best_Time_To_Contact: Best_Time_To_Contect,
-  Urgency_Level: Urgency_Level,
-  Special_Requirements: Special_Requirements,
-};
+      last_name: Reffrer_FullName,
+      email: Reffrer_EmailAdress,
+      tele_phone: Reffrer_PhoneNumber,
+      Property_Area: PropertyArea || null,
+      Referee_Full_Name: Refree_FullName,
+      Referee_Email: Refree_EmailAdress,
+      Referee_Phone: Refree_PhoneNumber,
+      Relationship_To_Referrer: Relation_to_Reffrer,
+      Preferred_Contact_Method: Refree_Preffered_Contact_Form,
+      Best_Time_To_Contact: Best_Time_To_Contect,
+      Urgency_Level: Urgency_Level,
+      Special_Requirements: Special_Requirements,  
+    };
 
-
- salesforceService.syncWithRetry(
+    salesforceService.syncWithRetry(
       ReferralProperty,
       savedReferral._id,
       salesforceData
@@ -450,8 +456,6 @@ const ReferProperty = async (req, res) => {
   }
 };
 
-
-
 const trackQUery = async (req, res) => {
   try {
     const trackingCode = req.query.trackingCode;
@@ -460,7 +464,7 @@ const trackQUery = async (req, res) => {
     if (!trackingCode) {
       return res.status(400).json({
         success: false,
-        message: 'Tracking code is required'
+        message: "Tracking code is required",
       });
     }
 
@@ -468,55 +472,57 @@ const trackQUery = async (req, res) => {
     if (!/^\d{6}$/.test(trackingCode)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid tracking code format. Please enter a 6-digit number.'
+        message: "Invalid tracking code format. Please enter a 6-digit number.",
       });
     }
 
     // Step 2: Search in database
-    const referral = await ReferralProperty.findOne({ tracking_code: trackingCode });
+    const referral = await ReferralProperty.findOne({
+      tracking_code: trackingCode,
+    });
 
     if (!referral) {
       return res.status(404).json({
         success: false,
-        message: 'No referral found with this tracking code. Please check your code and try again.'
+        message:
+          "No referral found with this tracking code. Please check your code and try again.",
       });
     }
     const progressData = {
       tracking_info: {
         tracking_code: referral.tracking_code,
         submission_date: referral.created_at,
-        last_updated: referral.query_progress.last_updated
+        last_updated: referral.query_progress.last_updated,
       },
 
       referral_details: {
         referrer_name: referral.referrer.full_name,
         referee_name: referral.referee.full_name,
-        property_area: referral.property.area || 'Not specified',
-        urgency_level: referral.query_details.urgency_level
+        property_area: referral.property.area || "Not specified",
+        urgency_level: referral.query_details.urgency_level,
       },
 
       current_status: {
         status: referral.query_progress.status,
         assigned_agent: referral.agent_assign.agent_name || "Not Assigned Yet",
-        last_updated: referral.query_progress.last_updated
+        last_updated: referral.query_progress.last_updated,
       },
     };
 
     res.status(200).json({
       success: true,
-      message: 'Query progress retrieved successfully',
-      data: progressData
+      message: "Query progress retrieved successfully",
+      data: progressData,
     });
-
   } catch (error) {
-    console.error('Error in trackQueryProgress:', error);
+    console.error("Error in trackQueryProgress:", error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving query progress',
-      error: error.message
+      message: "Error retrieving query progress",
+      error: error.message,
     });
   }
-}
+};
 
 // Validation function
 // function validateReferralData(data) {
@@ -542,48 +548,47 @@ const trackQUery = async (req, res) => {
 //   return errors;
 // }
 
-
-
 // Function to update query progress (work on it)
 const updateQueryProgress = async (req, res) => {
   try {
     // Extract parameters from query
     const { newStatus, trackingId } = req.query;
 
-    console.log('Updating progress:', { newStatus, trackingId });
+    console.log("Updating progress:", { newStatus, trackingId });
 
     // Validate required parameters
     if (!newStatus || !trackingId) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required parameters: newStatus and trackingId are required'
+        message:
+          "Missing required parameters: newStatus and trackingId are required",
       });
     }
 
     // Validate status against enum values from your schema
     const validStatuses = [
-      'Query Received',
-      'Agent Assigned',
-      'Contact Initiated',
-      'Meeting Scheduled',
-      'Property Shown',
-      'Negotiation',
-      'Deal Closed Collect Commission From Our Office',
-      'Client Not Interested',
-      'Cancelled',
+      "Query Received",
+      "Agent Assigned",
+      "Contact Initiated",
+      "Meeting Scheduled",
+      "Property Shown",
+      "Negotiation",
+      "Deal Closed Collect Commission From Our Office",
+      "Client Not Interested",
+      "Cancelled",
     ];
 
     if (!validStatuses.includes(newStatus)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+        message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
       });
     }
 
     // Prepare update data
     const updateData = {
-      'query_progress.status': newStatus,
-      'query_progress.last_updated': new Date()
+      "query_progress.status": newStatus,
+      "query_progress.last_updated": new Date(),
     };
 
     // Update the referral document
@@ -592,7 +597,7 @@ const updateQueryProgress = async (req, res) => {
       { $set: updateData },
       {
         new: true, // Return the updated document
-        runValidators: true // Run schema validations
+        runValidators: true, // Run schema validations
       }
     );
 
@@ -600,7 +605,7 @@ const updateQueryProgress = async (req, res) => {
     if (!referral) {
       return res.status(404).json({
         success: false,
-        message: 'Referral not found with the provided tracking ID'
+        message: "Referral not found with the provided tracking ID",
       });
     }
 
@@ -611,39 +616,38 @@ const updateQueryProgress = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Query progress updated successfully',
+      message: "Query progress updated successfully",
       data: {
         id: referral._id,
         tracking_code: referral.tracking_code,
         status: referral.query_progress.status,
         last_updated: referral.query_progress.last_updated,
-        notes: referral.query_progress.notes
-      }
+        notes: referral.query_progress.notes,
+      },
     });
-
   } catch (error) {
-    console.error('Error updating query progress:', error);
+    console.error("Error updating query progress:", error);
 
     // Handle specific MongoDB errors
-    if (error.name === 'CastError') {
+    if (error.name === "CastError") {
       return res.status(400).json({
         success: false,
-        message: 'Invalid tracking ID format'
+        message: "Invalid tracking ID format",
       });
     }
 
-    if (error.name === 'ValidationError') {
+    if (error.name === "ValidationError") {
       return res.status(400).json({
         success: false,
-        message: 'Validation error',
-        details: error.message
+        message: "Validation error",
+        details: error.message,
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: 'Internal server error while updating query progress',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: "Internal server error while updating query progress",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -653,26 +657,26 @@ const deleteQuery = async (req, res) => {
     // Extract tracking ID from query parameters
     const { trackingId } = req.query;
 
-    console.log('Deleting query with tracking ID:', trackingId);
+    console.log("Deleting query with tracking ID:", trackingId);
 
     // Validate required parameter
     if (!trackingId) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required parameter: trackingId is required'
+        message: "Missing required parameter: trackingId is required",
       });
     }
 
     // Find and delete the referral document
     const deletedReferral = await ReferralProperty.findOneAndDelete({
-      tracking_code: trackingId
+      tracking_code: trackingId,
     });
 
     // Check if referral was found and deleted
     if (!deletedReferral) {
       return res.status(404).json({
         success: false,
-        message: 'Referral not found with the provided tracking ID'
+        message: "Referral not found with the provided tracking ID",
       });
     }
 
@@ -680,47 +684,45 @@ const deleteQuery = async (req, res) => {
     console.log(`Query deleted successfully: ${trackingId}`, {
       deletedAt: new Date(),
       referrerName: deletedReferral.referrer.full_name,
-      refereeName: deletedReferral.referee.full_name
+      refereeName: deletedReferral.referee.full_name,
     });
 
     // Return success response with deleted referral info
     return res.status(200).json({
       success: true,
-      message: 'Query deleted successfully',
+      message: "Query deleted successfully",
       data: {
         tracking_code: deletedReferral.tracking_code,
         referrer_name: deletedReferral.referrer.full_name,
         referee_name: deletedReferral.referee.full_name,
-        deleted_at: new Date()
-      }
+        deleted_at: new Date(),
+      },
     });
-
   } catch (error) {
-    console.error('Error deleting query:', error);
+    console.error("Error deleting query:", error);
 
     // Handle specific MongoDB errors
-    if (error.name === 'CastError') {
+    if (error.name === "CastError") {
       return res.status(400).json({
         success: false,
-        message: 'Invalid tracking ID format'
+        message: "Invalid tracking ID format",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: 'Internal server error while deleting query',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: "Internal server error while deleting query",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
-
 
 // Email to referrer
 async function sendReferrerConfirmationEmail(referralData) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: referralData.referrer.email,
-    subject: 'Property Referral Confirmation - Tracking Code Inside',
+    subject: "Property Referral Confirmation - Tracking Code Inside",
     html: `
       <h2>Thank You for Your Referral!</h2>
       <p>Dear ${referralData.referrer.full_name},</p>
@@ -741,7 +743,7 @@ async function sendReferrerConfirmationEmail(referralData) {
       <p>We will keep you updated on the progress and notify you about any commission once the deal is closed.</p>
       
       <p>Best regards,<br>Your Property Team</p>
-    `
+    `,
   };
 
   return transporter.sendMail(mailOptions);
@@ -752,11 +754,13 @@ async function sendRefereeIntroductionEmail(referralData) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: referralData.referee.email,
-    subject: 'Property Search Application Submitted for You',
+    subject: "Property Search Application Submitted for You",
     html: `
       <h2>Property Search Application</h2>
       <p>Dear ${referralData.referee.full_name},</p>
-      <p>${referralData.referrer.full_name} has submitted a property search application on your behalf.</p>
+      <p>${
+        referralData.referrer.full_name
+      } has submitted a property search application on your behalf.</p>
       
       <h3>About Our Company</h3>
       <p>We are a leading property dealer with years of experience in helping clients find their dream properties. Our team of expert agents will assist you in finding the perfect property that matches your requirements.</p>
@@ -764,14 +768,24 @@ async function sendRefereeIntroductionEmail(referralData) {
       <p><strong>Your Requirements:</strong></p>
       <ul>
         <li>Urgency: ${referralData.query_details.urgency_level}</li>
-        ${referralData.property.area ? `<li>Preferred Area: ${referralData.property.area}</li>` : ''}
-        ${referralData.query_details.special_requirements ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>` : ''}
+        ${
+          referralData.property.area
+            ? `<li>Preferred Area: ${referralData.property.area}</li>`
+            : ""
+        }
+        ${
+          referralData.query_details.special_requirements
+            ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
+            : ""
+        }
       </ul>
       
-      <p>One of our agents will contact you soon via ${referralData.referee.preferred_contact} during ${referralData.referee.best_time_contact}.</p>
+      <p>One of our agents will contact you soon via ${
+        referralData.referee.preferred_contact
+      } during ${referralData.referee.best_time_contact}.</p>
       
       <p>Best regards,<br>Your Property Team</p>
-    `
+    `,
   };
 
   return transporter.sendMail(mailOptions);
@@ -805,8 +819,6 @@ async function sendRefereeIntroductionEmail(referralData) {
 //   }
 // }
 
-
-
 // Send progress update email
 async function sendProgressUpdateEmail(referralData) {
   const mailOptions = {
@@ -816,15 +828,23 @@ async function sendProgressUpdateEmail(referralData) {
     html: `
       <h2>Referral Progress Update</h2>
       <p>Dear ${referralData.referrer.full_name},</p>
-      <p>Your referral (Tracking Code: <strong>${referralData.tracking_code}</strong>) has been updated.</p>
+      <p>Your referral (Tracking Code: <strong>${
+        referralData.tracking_code
+      }</strong>) has been updated.</p>
       
-      <p><strong>Current Status:</strong> ${referralData.query_progress.status}</p>
-      ${referralData.query_progress.assigned_agent ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>` : ''}
+      <p><strong>Current Status:</strong> ${
+        referralData.query_progress.status
+      }</p>
+      ${
+        referralData.query_progress.assigned_agent
+          ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
+          : ""
+      }
       
       <p>We will continue to keep you updated on the progress.</p>
       
       <p>Best regards,<br>Your Property Team</p>
-    `
+    `,
   };
 
   return transporter.sendMail(mailOptions);
@@ -839,12 +859,12 @@ const completeDeal = async (referralId, dealValue, commissionPercentage) => {
       referralId,
       {
         $set: {
-          'query_progress.status': 'Deal Closed',
-          'commission.amount': commissionAmount,
-          'commission.percentage': commissionPercentage,
-          'commission.deal_value': dealValue,
-          'commission.status': 'Approved'
-        }
+          "query_progress.status": "Deal Closed",
+          "commission.amount": commissionAmount,
+          "commission.percentage": commissionPercentage,
+          "commission.deal_value": dealValue,
+          "commission.status": "Approved",
+        },
       },
       { new: true }
     );
@@ -854,7 +874,7 @@ const completeDeal = async (referralId, dealValue, commissionPercentage) => {
 
     return referral;
   } catch (error) {
-    console.error('Error completing deal:', error);
+    console.error("Error completing deal:", error);
     throw error;
   }
 };
@@ -864,7 +884,7 @@ async function sendCommissionNotificationEmail(referralData) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: referralData.referrer.email,
-    subject: 'Congratulations! Commission Ready for Collection',
+    subject: "Congratulations! Commission Ready for Collection",
     html: `
       <h2>🎉 Deal Completed Successfully!</h2>
       <p>Dear ${referralData.referrer.full_name},</p>
@@ -874,15 +894,19 @@ async function sendCommissionNotificationEmail(referralData) {
         <h3>Commission Details:</h3>
         <p><strong>Commission Amount:</strong> ₹${referralData.commission.amount.toLocaleString()}</p>
         <p><strong>Deal Value:</strong> ₹${referralData.commission.deal_value.toLocaleString()}</p>
-        <p><strong>Commission Rate:</strong> ${referralData.commission.percentage}%</p>
+        <p><strong>Commission Rate:</strong> ${
+          referralData.commission.percentage
+        }%</p>
       </div>
       
       <p><strong>Please visit our office to collect your commission amount.</strong></p>
-      <p>Bring a valid ID and mention your tracking code: <strong>${referralData.tracking_code}</strong></p>
+      <p>Bring a valid ID and mention your tracking code: <strong>${
+        referralData.tracking_code
+      }</strong></p>
       
       <p>Thank you for your referral!</p>
       <p>Best regards,<br>Your Property Team</p>
-    `
+    `,
   };
 
   return transporter.sendMail(mailOptions);
@@ -896,7 +920,7 @@ module.exports = {
   completeDeal,
   trackQUery,
   GetAllReferal,
-  trackRefer, 
+  trackRefer,
   verifyReferrerToken,
-  agentUpdate
+  agentUpdate,
 };

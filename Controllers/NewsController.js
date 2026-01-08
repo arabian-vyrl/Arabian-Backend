@@ -370,11 +370,27 @@ const updateNews = async (req, res) => {
       }
     }
 
+
+     if (req.body.publishedDate) {
+        news.publishedAt = new Date(req.body.publishedDate);
+      } else if (req.body.clearPublishedDate === "true") {
+        news.publishedAt = null;
+      }
+
+      // Auto-set publishedAt if changing from draft to published and no date provided
+      if (news.status === "published" && !news.publishedAt) {
+        news.publishedAt = new Date();
+      }
+
+    
+
     // Images (replace + destroy old on Cloudinary)
     if (req.files?.coverImage?.[0]) {
       if (news.image?.publicId) await destroyPublicId(news.image.publicId);
       news.image = createImageData(req.files.coverImage[0]);
     }
+
+
 
     if (removeBodyImage1 === "true" || removeBodyImage1 === true) {
       if (news.bodyImages?.image1?.publicId)

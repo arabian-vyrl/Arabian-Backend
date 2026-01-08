@@ -4,9 +4,9 @@ const axios = require("axios");
 
 // Fetch data from API and save to database
 const fetchAndSaveProperties = async (req, res) => {
+  console.log(process.env.AllOffPlanPropertyiesListUrl);
   try {
     console.log("Starting API fetch process...");
-
     const baseUrl =
       process.env.AllOffPlanPropertyiesListUrl ||
       "https://search-listings-production.up.railway.app/v1/properties";
@@ -15,6 +15,8 @@ const fetchAndSaveProperties = async (req, res) => {
       "X-API-Key": `${process.env.OffPlanApiKey}`,
       Accept: "application/json",
     };
+
+    const countryCode = "AE";
 
     let page = Number(req.query.page || 1);
     const perPage = Number(req.query.per_page || 12);
@@ -27,7 +29,7 @@ const fetchAndSaveProperties = async (req, res) => {
       console.log(`Fetching page ${page}...`);
       const { data, status } = await axios.get(baseUrl, {
         headers,
-        params: { page, per_page: perPage },
+        params: { page, per_page: perPage, country: countryCode },
       });
 
       console.log("API status:", status);
@@ -90,6 +92,7 @@ const fetchAndSaveProperties = async (req, res) => {
           hasEscrow: !!item.has_escrow,
           postHandover: !!item.post_handover,
           coverImage,
+          active: true,
         };
 
         return {
@@ -171,15 +174,150 @@ const fetchAndSaveProperties = async (req, res) => {
 
 // Get all new off-plan properties with pagination
 // controllers/NewOffplanController.js (inside getNewOffPlanProperties)
+// const getNewOffPlanProperties = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page || "1", 10);
+//     const limit = parseInt(req.query.limit || "12", 10);
+//     const skip = (page - 1) * limit;
+
+//     const filterQuery = {};
+
+//     if (req.query.area) filterQuery.area = new RegExp(req.query.area, "i");
+//     if (req.query.developer)
+//       filterQuery.developer = new RegExp(req.query.developer, "i");
+//     if (req.query.status) filterQuery.status = req.query.status;
+//     if (req.query.saleStatus) filterQuery.saleStatus = req.query.saleStatus;
+
+//     if (typeof req.query.isPartnerProject !== "undefined") {
+//       filterQuery.isPartnerProject = req.query.isPartnerProject === "true";
+//     }
+
+//     if (req.query.minPrice || req.query.maxPrice) {
+//       filterQuery.minPriceAed = {};
+//       if (req.query.minPrice)
+//         filterQuery.minPriceAed.$gte = parseFloat(req.query.minPrice);
+//       if (req.query.maxPrice)
+//         filterQuery.minPriceAed.$lte = parseFloat(req.query.maxPrice);
+//     }
+
+//     if (req.query.search) {
+//       const re = new RegExp(req.query.search, "i");
+//       filterQuery.$or = [{ name: re }, { area: re }, { developer: re }];
+//     }
+
+//     const totalCount = await OffPlanProperty.countDocuments(filterQuery);
+//     const totalPages = Math.ceil(totalCount / limit) || 1;
+
+//     const offPlanProperties = await OffPlanProperty.find(filterQuery)
+//       .skip(skip)
+//       .limit(limit)
+//       .sort({ createdAt: -1 });
+
+//     return res.status(offPlanProperties.length ? 200 : 404).json({
+//       success: !!offPlanProperties.length,
+//       message: offPlanProperties.length
+//         ? "Off-plan properties fetched successfully"
+//         : "No off-plan properties found",
+//       pagination: {
+//         currentPage: page,
+//         totalPages,
+//         totalCount,
+//         totalMatchingProperties: totalCount,
+//         perPage: limit,
+//         hasNextPage: page < totalPages,
+//         hasPrevPage: page > 1,
+//       },
+//       count: offPlanProperties.length,
+//       data: offPlanProperties,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching new off-plan properties:", error.message);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch off-plan properties",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// const getNewOffPlanProperties = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page || "1", 10);
+//     const limit = parseInt(req.query.limit || "12", 10);
+//     const skip = (page - 1) * limit;
+
+//     const filterQuery = {};
+
+//     if (req.query.area) filterQuery.area = new RegExp(req.query.area, "i");
+//     if (req.query.developer)
+//       filterQuery.developer = new RegExp(req.query.developer, "i");
+//     if (req.query.status) filterQuery.status = req.query.status;
+//     if (req.query.saleStatus) filterQuery.saleStatus = req.query.saleStatus;
+
+//     if (typeof req.query.isPartnerProject !== "undefined") {
+//       filterQuery.isPartnerProject = req.query.isPartnerProject === "true";
+//     }
+
+//     if (req.query.minPrice || req.query.maxPrice) {
+//       filterQuery.minPriceAed = {};
+//       if (req.query.minPrice)
+//         filterQuery.minPriceAed.$gte = parseFloat(req.query.minPrice);
+//       if (req.query.maxPrice)
+//         filterQuery.minPriceAed.$lte = parseFloat(req.query.maxPrice);
+//     }
+
+//     if (req.query.search) {
+//       const re = new RegExp(req.query.search, "i");
+//       filterQuery.$or = [{ name: re }, { area: re }, { developer: re }];
+//     }
+
+//     // Add active: true to the filter
+//     filterQuery.active = true;
+
+//     const totalCount = await OffPlanProperty.countDocuments(filterQuery);
+//     const totalPages = Math.ceil(totalCount / limit) || 1;
+
+//     const offPlanProperties = await OffPlanProperty.find(filterQuery)
+//       .skip(skip)
+//       .limit(limit)
+//       .sort({ createdAt: -1 });
+
+//     return res.status(offPlanProperties.length ? 200 : 404).json({
+//       success: !!offPlanProperties.length,
+//       message: offPlanProperties.length
+//         ? "Off-plan properties fetched successfully"
+//         : "No off-plan properties found",
+//       pagination: {
+//         currentPage: page,
+//         totalPages,
+//         totalCount,
+//         totalMatchingProperties: totalCount,
+//         perPage: limit,
+//         hasNextPage: page < totalPages,
+//         hasPrevPage: page > 1,
+//       },
+//       count: offPlanProperties.length,
+//       data: offPlanProperties,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching new off-plan properties:", error.message);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch off-plan properties",
+//       error: error.message,
+//     });
+//   }
+// };
+
 const getNewOffPlanProperties = async (req, res) => {
   try {
-    console.log("WORKING")
     const page = parseInt(req.query.page || "1", 10);
     const limit = parseInt(req.query.limit || "12", 10);
     const skip = (page - 1) * limit;
 
     const filterQuery = {};
 
+    // Filters based on query params
     if (req.query.area) filterQuery.area = new RegExp(req.query.area, "i");
     if (req.query.developer)
       filterQuery.developer = new RegExp(req.query.developer, "i");
@@ -201,6 +339,14 @@ const getNewOffPlanProperties = async (req, res) => {
     if (req.query.search) {
       const re = new RegExp(req.query.search, "i");
       filterQuery.$or = [{ name: re }, { area: re }, { developer: re }];
+    }
+
+    // Handle active filter
+    // If active=true → only active properties
+    // If active=false or not passed → no filter
+    // By default is true
+    if (req.query.active !== "false") {
+      filterQuery.active = true;
     }
 
     const totalCount = await OffPlanProperty.countDocuments(filterQuery);
@@ -239,7 +385,7 @@ const getNewOffPlanProperties = async (req, res) => {
 };
 
 const getSIngleOffplanProperty = async (req, res) => {
-  console.log("WORKING")
+  console.log("WORKING");
   const property_id = req.query.property_id;
   try {
     console.log("HELLO");
@@ -289,6 +435,7 @@ const getOffPlanAddressSuggestions = async (req, res) => {
     }
 
     const query = {
+      active: true, //Add Active Line
       name: {
         $regex: new RegExp(`\\b${prefix}`, "i"), // Word boundary search, case insensitive
       },
@@ -449,6 +596,7 @@ const FilterDeveloperOffplanProperty = async (req, res) => {
     // Simple exact match filter
     const filter = {
       developer: cleanDeveloper,
+      active: true, //that show the active properties
     };
 
     // console.log("MongoDB filter being applied:", JSON.stringify(filter, null, 2));
@@ -558,6 +706,7 @@ const filterByMinPrice = async (req, res) => {
     }
 
     const filter = {
+      active: true,
       minPriceAed: { $gte: parseInt(minPrice) },
     };
 
@@ -657,6 +806,7 @@ const filterByMaxPrice = async (req, res) => {
 
     // Correct filter - use minPriceAed since that's where the actual price data is
     const filter = {
+      active: true,
       minPriceAed: { $lte: parseInt(maxPrice) },
     };
 
@@ -762,6 +912,7 @@ const OffSearchProperty = async (req, res) => {
 
     // Search only in name field for address suggestions
     const query = {
+      active: true, //Added this
       name: { $regex: new RegExp(`\\b${prefix}`, "i") },
     };
 
@@ -786,6 +937,71 @@ const OffSearchProperty = async (req, res) => {
   }
 };
 
+const StatusUpdateOffPlanProperties = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const property = await OffPlanProperty.findById(id).select("active");
+    if (!property) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Property not found" });
+    }
+    const updatedProperty = await OffPlanProperty.findByIdAndUpdate(
+      id,
+      { $set: { active: !property.active } },
+      { new: true, lean: true }
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Property status updated",
+      data: {
+        _id: updatedProperty._id,
+        active: updatedProperty.active,
+      },
+    });
+  } catch (error) {
+    console.error("Toggle active error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const filterDashboardProperties = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const filter = {};
+    if (q && q.trim()) {
+      const regex = new RegExp(`^${q.trim()}`, "i");
+
+      filter.$or = [
+        { name: regex },
+        { area: regex },
+        { developer: regex },
+        ...(q === "active"
+          ? [{ active: true }]
+          : q === "inactive"
+          ? [{ active: false }]
+          : []),
+      ];
+    }
+
+    const data = await OffPlanProperty.find(filter).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: data.length,
+      data,
+    });
+  } catch (err) {
+    console.error("Filter offplan properties error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 module.exports = {
   fetchAndSaveProperties,
   getOffPlanAddressSuggestions,
@@ -796,4 +1012,6 @@ module.exports = {
   filterByMinPrice,
   filterByMaxPrice,
   OffSearchProperty,
+  StatusUpdateOffPlanProperties,
+  filterDashboardProperties,
 };

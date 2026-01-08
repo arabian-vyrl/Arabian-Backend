@@ -156,7 +156,13 @@ const offPlanPropertySchema = new mongoose.Schema({
       type: String,
       default: null
     }
+  }, 
+
+  active: {
+    type: Boolean,
+    default: true
   }
+
 }, {
   timestamps: true, // Adds createdAt and updatedAt
   collection: 'newoffplanproperties' // Specify collection name

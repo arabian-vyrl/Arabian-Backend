@@ -358,9 +358,12 @@
 //   deletePodcast
 // };
 
-
-
 const Podcast = require("../Models/PodcastModel");
+const path = require("path");
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 
 // Helper function to get next order number
 const getNextOrderNumber = async () => {
@@ -374,46 +377,244 @@ const normalizeTags = (tags) => {
   return [...new Set(tags.map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0))];
 };
 
+
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
+const fileFilter = (_req, file, cb) => {
+  const ok = (file.mimetype || "").startsWith("image/");
+  if (!ok) return cb(new Error("Only image files are allowed!"), false);
+  cb(null, true);
+};
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    // Put all blog images under this folder
+    const folder = "podcast";
+    const base =
+      (file.originalname || "image")
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/, "")
+        .replace(/[^\w]+/g, "-")
+        .slice(0, 50) || "image";
+    const public_id = `${Date.now()}-${Math.round(
+      Math.random() * 1e6
+    )}-${base}`;
+    return {
+      folder,
+      public_id,
+      allowed_formats: ALLOWED_EXT,
+      resource_type: "image",
+      transformation: [{ quality: "auto:good", fetch_format: "auto" }],
+      overwrite: false,
+    };
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, 
+}).fields([
+  { name: "coverImage", maxCount: 1 },
+  { name: "bodyImage1", maxCount: 1 },
+  { name: "bodyImage2", maxCount: 1 },
+]);
+
+// ---------- Helpers ----------
+const createImageData = (file) => {
+  if (!file) return null;
+  return {
+    url: file.path,
+    publicId: file.filename, // existing
+    filename: file.filename, // <-- add this line (required by Agent schema)
+    format: file.format,
+    bytes: file.size,
+    width: file.width,
+    height: file.height,
+    folder: file.folder,
+    originalName: file.originalname,
+    mimetype: file.mimetype,
+  };
+};
+
+
+// const createPodcast = async (req, res) => {
+//   try {
+//     const { 
+//       title, 
+//       shortDescription, 
+//       detailedDescription,
+//       whatsInside,
+//       coverPhoto,
+//       youtubeUrl, 
+//       category, 
+//       tags, 
+//       orderNumber 
+//     } = req.body;
+
+//     // Validate required fields
+//     if (!title || !shortDescription || !detailedDescription || !youtubeUrl || !coverPhoto) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Title, short description, detailed description, cover photo, and YouTube URL are required",
+//       });
+//     }
+
+//     // Validate whatsInside
+//     if (!whatsInside || !Array.isArray(whatsInside) || whatsInside.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "At least one point for 'what's inside' is required",
+//       });
+//     }
+
+//     // Get next order number if not provided
+//     let finalOrderNumber = orderNumber;
+//     if (!finalOrderNumber) {
+//       finalOrderNumber = await getNextOrderNumber();
+//     } else {
+//       // Check if order number already exists
+//       const existingPodcast = await Podcast.findOne({
+//         orderNumber: finalOrderNumber,
+//       });
+//       if (existingPodcast) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Order number ${finalOrderNumber} already exists`,
+//         });
+//       }
+//     }
+
+//     // Normalize tags (trim, lowercase, remove duplicates)
+//     const normalizedTags = normalizeTags(tags);
+
+//     const podcastData = {
+//       title: title.trim(),
+//       shortDescription: shortDescription.trim(),
+//       detailedDescription: detailedDescription.trim(),
+//       whatsInside: whatsInside.map(point => point.trim()).filter(point => point.length > 0),
+//       coverPhoto: coverPhoto.trim(),
+//       youtubeUrl: youtubeUrl.trim(),
+//       category: category?.trim() || "General",
+//       tags: normalizedTags,
+//       orderNumber: finalOrderNumber,
+//     };
+
+//     const podcast = new Podcast(podcastData);
+//     await podcast.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Podcast created successfully",
+//       data: podcast,
+//     });
+//   } catch (error) {
+//     console.error("Error creating podcast:", error);
+
+//     // Handle validation errors
+//     if (error.name === "ValidationError") {
+//       const errors = Object.values(error.errors).map((err) => err.message);
+//       return res.status(400).json({
+//         success: false,
+//         message: "Validation error",
+//         errors: errors,
+//       });
+//     }
+
+//     // Handle duplicate key errors
+//     if (error.code === 11000) {
+//       const field = Object.keys(error.keyValue)[0];
+//       return res.status(400).json({
+//         success: false,
+//         message: `${field} already exists`,
+//       });
+//     }
+
+//     res.status(500).json({
+//       success: false,
+//       message: "Error creating podcast",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// Get All Podcasts
+
+
 const createPodcast = async (req, res) => {
+  console.log("This is the perfectly working")
+  console.log(req.body)
   try {
-    const { 
-      title, 
-      shortDescription, 
+    const {
+      metaTitle,
+      metaDescription,
+      title,
+      shortDescription,
       detailedDescription,
       whatsInside,
-      coverPhoto,
-      youtubeUrl, 
-      category, 
-      tags, 
-      orderNumber 
+      youtubeUrl,
+      category,
+      tags,
+      orderNumber,
     } = req.body;
 
-    // Validate required fields
-    if (!title || !shortDescription || !detailedDescription || !youtubeUrl || !coverPhoto) {
+    // ----------------------------
+    // REQUIRED FIELD VALIDATION
+    // ----------------------------
+    if (!title || !shortDescription || !detailedDescription || !youtubeUrl) {
       return res.status(400).json({
         success: false,
-        message: "Title, short description, detailed description, cover photo, and YouTube URL are required",
+        message:
+          "Title, short description, detailed description, and YouTube URL are required",
       });
     }
 
-    // Validate whatsInside
-    if (!whatsInside || !Array.isArray(whatsInside) || whatsInside.length === 0) {
+    // ----------------------------
+    // COVER IMAGE (FILE-BASED)
+    // ----------------------------
+    const coverPhotoData = req.files?.coverImage?.[0]
+      ? createImageData(req.files.coverImage[0])
+      : null;
+
+    if (!coverPhotoData) {
+      return res.status(400).json({
+        success: false,
+        message: "Cover photo is required",
+      });
+    }
+
+    // ----------------------------
+    // VALIDATE whatsInside
+    // ----------------------------
+    let parsedWhatsInside = whatsInside;
+
+    if (typeof whatsInside === "string") {
+      try {
+        parsedWhatsInside = JSON.parse(whatsInside);
+      } catch {
+        parsedWhatsInside = [];
+      }
+    }
+
+    if (
+      !Array.isArray(parsedWhatsInside) ||
+      parsedWhatsInside.length === 0
+    ) {
       return res.status(400).json({
         success: false,
         message: "At least one point for 'what's inside' is required",
       });
     }
 
-    // Get next order number if not provided
+    // ----------------------------
+    // ORDER NUMBER LOGIC
+    // ----------------------------
     let finalOrderNumber = orderNumber;
     if (!finalOrderNumber) {
       finalOrderNumber = await getNextOrderNumber();
     } else {
-      // Check if order number already exists
-      const existingPodcast = await Podcast.findOne({
-        orderNumber: finalOrderNumber,
-      });
-      if (existingPodcast) {
+      const exists = await Podcast.findOne({ orderNumber: finalOrderNumber });
+      if (exists) {
         return res.status(400).json({
           success: false,
           message: `Order number ${finalOrderNumber} already exists`,
@@ -421,43 +622,49 @@ const createPodcast = async (req, res) => {
       }
     }
 
-    // Normalize tags (trim, lowercase, remove duplicates)
+    // ----------------------------
+    // TAG NORMALIZATION
+    // ----------------------------
     const normalizedTags = normalizeTags(tags);
 
-    const podcastData = {
+    // ----------------------------
+    // CREATE PODCAST
+    // ----------------------------
+    const podcast = new Podcast({
+      metaTitle: metaTitle.trim(),
+      metaDescription: metaDescription.trim(),
       title: title.trim(),
       shortDescription: shortDescription.trim(),
       detailedDescription: detailedDescription.trim(),
-      whatsInside: whatsInside.map(point => point.trim()).filter(point => point.length > 0),
-      coverPhoto: coverPhoto.trim(),
+      description: shortDescription.trim(), // legacy
+      whatsInside: parsedWhatsInside
+        .map((p) => p.trim())
+        .filter(Boolean),
+      coverPhoto: coverPhotoData,
       youtubeUrl: youtubeUrl.trim(),
       category: category?.trim() || "General",
       tags: normalizedTags,
       orderNumber: finalOrderNumber,
-    };
+    });
 
-    const podcast = new Podcast(podcastData);
-    await podcast.save();
+    const savedPodcast = await podcast.save();
 
     res.status(201).json({
       success: true,
       message: "Podcast created successfully",
-      data: podcast,
+      data: savedPodcast,
     });
   } catch (error) {
     console.error("Error creating podcast:", error);
 
-    // Handle validation errors
     if (error.name === "ValidationError") {
-      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
         message: "Validation error",
-        errors: errors,
+        errors: Object.values(error.errors).map((e) => e.message),
       });
     }
 
-    // Handle duplicate key errors
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
       return res.status(400).json({
@@ -474,7 +681,8 @@ const createPodcast = async (req, res) => {
   }
 };
 
-// Get All Podcasts
+
+
 const getAllPodcasts = async (req, res) => {
   try {
     const filter = {};
@@ -672,14 +880,129 @@ const getAllTags = async (req, res) => {
   }
 };
 
+// const updatePodcast = async (req, res) => { 
+//   console.log("This is the Update POdcast", req.body)
+//   try {
+//     const { 
+//       title, 
+//       shortDescription, 
+//       detailedDescription,
+//       whatsInside,
+//       coverPhoto,
+//       youtubeUrl, 
+//       category, 
+//       tags, 
+//       orderNumber 
+//     } = req.body;
+    
+//     const podcast = await Podcast.findById(req.query.id);
+//     console.log(podcast);
+    
+//     if (!podcast) {
+//       return res.status(404).json({
+//         success: false,
+//         message: 'Podcast not found'
+//       });
+//     }
+    
+//     // Check if new order number conflicts with existing one
+//     if (orderNumber && orderNumber !== podcast.orderNumber) {
+//       const existingPodcast = await Podcast.findOne({ 
+//         orderNumber: orderNumber,
+//         _id: { $ne: req.query.id } 
+//       });
+//       if (existingPodcast) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Order number ${orderNumber} already exists`
+//         });
+//       }
+//     }
+
+//     let parsedWhatsInside = whatsInside;
+
+//     if (typeof whatsInside === "string") {
+//       try {
+//         parsedWhatsInside = JSON.parse(whatsInside);
+//       } catch {
+//         parsedWhatsInside = [];
+//       }
+//     }
+    
+//     // Update fields
+//     const updateData = {};
+//     if (title !== undefined) updateData.title = title.trim();
+//     if (shortDescription !== undefined) updateData.shortDescription = shortDescription.trim();
+//     if (detailedDescription !== undefined) updateData.detailedDescription = detailedDescription.trim();
+//     if (whatsInside !== undefined) {
+//       updateData.whatsInside = whatsInside
+//         .map(point => point.trim())
+//         .filter(point => point.length > 0);
+//     }
+//     if (coverPhoto !== undefined) updateData.coverPhoto = coverPhoto.trim();
+//     if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl.trim();
+//     if (category !== undefined) updateData.category = category.trim();
+    
+//     // Handle tags update with normalization
+//     if (tags !== undefined) {
+//       updateData.tags = normalizeTags(tags);
+//     }
+    
+//     if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
+    
+//     const updatedPodcast = await Podcast.findByIdAndUpdate(
+//       req.query.id,
+//       updateData,
+//       { 
+//         new: true, 
+//         runValidators: true 
+//       }
+//     ).select('-__v');
+    
+//     res.json({
+//       success: true,
+//       message: 'Podcast updated successfully',
+//       data: updatedPodcast
+//     });
+//   } catch (error) {
+//     console.error('Error updating podcast:', error);
+    
+//     // Handle validation errors
+//     if (error.name === 'ValidationError') {
+//       const errors = Object.values(error.errors).map(err => err.message);
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Validation error',
+//         errors: errors
+//       });
+//     }
+    
+//     // Handle invalid ObjectId
+//     if (error.name === 'CastError') {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Invalid podcast ID format'
+//       });
+//     }
+    
+//     res.status(500).json({
+//       success: false,
+//       message: 'Error updating podcast',
+//       error: error.message
+//     });
+//   }
+// };
+
+
 const updatePodcast = async (req, res) => {
+  console.log("This is the Update Podcast", req.body);
+  
   try {
     const { 
       title, 
       shortDescription, 
       detailedDescription,
       whatsInside,
-      coverPhoto,
       youtubeUrl, 
       category, 
       tags, 
@@ -709,27 +1032,59 @@ const updatePodcast = async (req, res) => {
         });
       }
     }
-    
+
     // Update fields
     const updateData = {};
+    
     if (title !== undefined) updateData.title = title.trim();
     if (shortDescription !== undefined) updateData.shortDescription = shortDescription.trim();
     if (detailedDescription !== undefined) updateData.detailedDescription = detailedDescription.trim();
-    if (whatsInside !== undefined) {
-      updateData.whatsInside = whatsInside
-        .map(point => point.trim())
-        .filter(point => point.length > 0);
-    }
-    if (coverPhoto !== undefined) updateData.coverPhoto = coverPhoto.trim();
     if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl.trim();
     if (category !== undefined) updateData.category = category.trim();
+    if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
+    
+    // Handle whatsInside - parse if it's a JSON string
+    if (whatsInside !== undefined) {
+      let parsedWhatsInside = whatsInside;
+      
+      if (typeof whatsInside === "string") {
+        try {
+          parsedWhatsInside = JSON.parse(whatsInside);
+        } catch (e) {
+          console.error("Error parsing whatsInside:", e);
+          parsedWhatsInside = [];
+        }
+      }
+      
+      // Now safely map over the parsed array
+      if (Array.isArray(parsedWhatsInside)) {
+        updateData.whatsInside = parsedWhatsInside
+          .map(point => point.trim())
+          .filter(point => point.length > 0);
+      }
+    }
     
     // Handle tags update with normalization
     if (tags !== undefined) {
-      updateData.tags = normalizeTags(tags);
+      let parsedTags = tags;
+      
+      if (typeof tags === "string") {
+        try {
+          parsedTags = JSON.parse(tags);
+        } catch (e) {
+          console.error("Error parsing tags:", e);
+          parsedTags = [];
+        }
+      }
+      
+      updateData.tags = normalizeTags(parsedTags);
     }
     
-    if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
+    // Handle cover image update if a new file is uploaded
+    if (req.files?.coverImage?.[0]) {
+      const coverPhotoData = createImageData(req.files.coverImage[0]);
+      updateData.coverPhoto = coverPhotoData;
+    }
     
     const updatedPodcast = await Podcast.findByIdAndUpdate(
       req.query.id,
@@ -773,6 +1128,7 @@ const updatePodcast = async (req, res) => {
     });
   }
 };
+
 
 const deletePodcast = async (req, res) => {
   try {
@@ -818,6 +1174,7 @@ const deletePodcast = async (req, res) => {
 };
 
 module.exports = {
+  upload,
   createPodcast,
   getAllPodcasts,
   getPodcastById,

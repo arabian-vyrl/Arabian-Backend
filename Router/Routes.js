@@ -43,8 +43,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-
-
 const mainStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = path.join(__dirname, "../uploads");
@@ -85,6 +83,7 @@ const fileFilter = (req, file, cb) => {
     cb(new Error("Only image files are allowed!"), false);
   }
 };
+
 
 // Agent-specific upload middleware
 const agentUpload = multer({
@@ -151,6 +150,14 @@ router.get(
   NewOffPlanProperties.getOffPlanAddressSuggestions
 );
 
+// toggle Status of the newOffplan Properties
+router.put("/update-status-offplan-properties/:id", NewOffPlanProperties.StatusUpdateOffPlanProperties)
+// Dashboard Filter
+router.get("/filter-offplan-properties", NewOffPlanProperties.filterDashboardProperties)
+
+
+
+
 // Refer Property Api's
 router.post("/ReferProperty", ReferProperties.ReferProperty);
 router.get("/AllReferelProperties", ReferProperties.GetAllReferal);
@@ -201,11 +208,13 @@ router.delete("/off-plan-contacts-delete/:id", offPlanListingForm.deleteOffPlanC
 // router.post("/UpdateCommunityGuide", CommunityGuides.upload.single("image"), CommunityGuides.updateCommunityGuide);
 
 // Podcast Api's
-router.post("/CreatePodcast", Podcast.createPodcast);
+// router.post("/CreatePodcast", Podcast.createPodcast);
+
+router.post("/CreatePodcast", Podcast.upload, Podcast.createPodcast);
 router.get("/AllPodcasts", Podcast.getAllPodcasts);
 router.get("/SinglePodcast", Podcast.getPodcastById);
 router.get("/PodcastByTag", Podcast.getPodcastsByTags);
-router.post("/UpdatePodcast", Podcast.updatePodcast);
+router.post("/UpdatePodcast", Podcast.upload, Podcast.updatePodcast);
 router.get("/DeletePodcast", Podcast.deletePodcast);
 
 // router.get("/SinglePodcast", Podcast.getSinglePodcast);
@@ -220,6 +229,7 @@ router.get("/Sort-Properties", AllFilter.SortProperties);
 // router.get("/Location-filter-property", AllFilter.filterByLocation);
 router.get("/Similar-property", AllFilter.filterByCommunity);
 router.get("/Property-location-suggestions", AllFilter.getAddressSuggestions);
+
 
 // AGENT API ENDPOINTS
 router.post(
@@ -241,7 +251,6 @@ router.get("/SequenceAgent", AgentController.getAgentsBySequence);
 
 router.get("/Agent", AgentController.getAgentById);
 router.get("/AgentByEmail", AgentController.getAgentByEmail);
-
 router.get("/delete-agent", AgentController.deleteAgent);
 
 
@@ -297,6 +306,14 @@ router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.d
 
 router.post("/auth/login", DashboardLoginAuthController.login)
 router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
+router.post("/auth/logout", DashboardLoginAuthController.logout);
+
+
+
+// test Routes
+router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData)
+router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew)
+
 
 // Leaderboard Agent
 // Search agents by name or email

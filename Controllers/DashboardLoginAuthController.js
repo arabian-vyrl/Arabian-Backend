@@ -105,7 +105,7 @@ const login = async (req, res) => {
     );
     
     const isProduction = process.env.NODE_ENV === "production";
-
+    
     res.cookie("login_token", token, {
       httpOnly: true,
       secure: isProduction,
@@ -158,7 +158,38 @@ const verifyToken = async (req, res) => {
   }
 };
 
+
+
+
+// Logout controller
+const logout = async (req, res) => {
+  console.log("This is perfectly working")
+  try {
+    const isProduction = process.env.NODE_ENV === "production";
+
+    res.clearCookie("login_token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/", 
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("❌ Logout error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during logout",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   login,
   verifyToken,
+  logout
 };

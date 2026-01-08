@@ -57,7 +57,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, 
+  limits: { fileSize: 10 * 1024 * 1024 },
 }).fields([
   { name: "coverImage", maxCount: 1 },
   { name: "bodyImage1", maxCount: 1 },
@@ -206,8 +206,8 @@ const createBlog = async (req, res) => {
         agentName: agent.agentName,
         agentEmail: agent.email,
         agentImage: agent.imageUrl,
-        agentInstagramURL: agent.instagram, 
-        agentLinkedinURL: agent.linkedin
+        agentInstagramURL: agent.instagram,
+        agentLinkedinURL: agent.linkedin,
       },
       image: coverImageData, // cover
       bodyImages: {
@@ -358,7 +358,7 @@ const updateBlog = async (req, res) => {
         if (s.keywords !== undefined)
           blog.seo.keywords = Array.isArray(s.keywords) ? s.keywords : [];
       }
-      // status
+
       // status
       if (updateData.status === "published" || updateData.status === "draft") {
         blog.status = updateData.status;
@@ -373,6 +373,20 @@ const updateBlog = async (req, res) => {
         }
       }
     }
+
+
+    if (req.body.publishedDate) {
+        blog.publishedAt = new Date(req.body.publishedDate);
+      } else if (req.body.clearPublishedDate === "true") {
+        blog.publishedAt = null;
+      }
+
+      // Auto-set publishedAt if changing from draft to published and no date provided
+      if (blog.status === "published" && !blog.publishedAt) {
+        blog.publishedAt = new Date();
+      }
+
+      
 
     // Images (replace + destroy old on Cloudinary)
     if (req.files?.coverImage?.[0]) {
@@ -410,7 +424,8 @@ const updateBlog = async (req, res) => {
     const blogForAgent = {
       blogId: blog._id,
       title: blog.content?.title || blog.metadata?.title || "Untitled",
-      description: blog.metadata?.description || blog.content?.title || "Untitled",
+      description:
+        blog.metadata?.description || blog.content?.title || "Untitled",
       slug: blog.metadata?.slug || "",
       // imageUrl: pickImageUrl(blog.image),
       imageUrl: blog.image,
@@ -492,9 +507,9 @@ const GetAllBlogs = async (req, res) => {
       filter = { status: "published", isPublished: true };
     }
 
-    const blogs = await Blog.find(filter)
-      // .populate("author.agentId", "agentName email imageUrl designation")
-      // .sort({ createdAt: -1 });
+    const blogs = await Blog.find(filter);
+    // .populate("author.agentId", "agentName email imageUrl designation")
+    // .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -550,7 +565,7 @@ const getBlogsByTags = async (req, res) => {
   try {
     const { tags, limit = 6, excludeId } = req.query;
 
-    console.log("This is the tags", tags)
+    console.log("This is the tags", tags);
     if (!tags) {
       return res.status(400).json({
         success: false,
