@@ -817,6 +817,7 @@ const fetchAndSaveProperties = async (req, res) => {
       "X-API-Key": `${process.env.OffPlanApiKey}`,
       Accept: "application/json",
     };
+
     const countryCode = "AE";
 
     let page = Number(req.query.page || 1);

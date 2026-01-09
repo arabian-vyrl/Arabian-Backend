@@ -1220,13 +1220,29 @@ const determinePropertyType = (customFields) => {
 
   if (
     completionStatus === "off_plan_primary" ||
-    completionStatus === "off_plan_secondary"
+    completionStatus === "off_plan_secondary" 
   ) {
-    return {
-      type: "OffPlan",
-      listingType: "OffPlan",
-      reason: `completion_status is ${completionStatus}`,
-    };
+    if( offeringType!== "CS" ||"CR"){
+      return {
+        type: "OffPlan",
+        listingType: "OffPlan",
+        reason: `completion_status is ${completionStatus}`,
+      };
+    }
+    else if (offeringType === "CS"){
+      return {
+        type: "Sale",
+        listingType: "Commercial",
+        reason: `Listing type is Commercial Sale`,
+      };
+    }
+    else if (offeringType === "CR"){
+      return {
+        type: "Rent",
+        listingType: "Commercial",
+        reason: `Listing type is Commercial Rent`,
+      };
+    }
   }
 
   if (offeringType === "RR") {

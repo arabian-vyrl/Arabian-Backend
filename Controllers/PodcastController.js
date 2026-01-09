@@ -859,8 +859,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
     // Put all blog images under this folder
-    const folder = "";
-    // Create descriptive public_id: blogs/<ts>-<random>-<slugged-original>
+    const folder = "podcast";
     const base =
       (file.originalname || "image")
         .toLowerCase()
