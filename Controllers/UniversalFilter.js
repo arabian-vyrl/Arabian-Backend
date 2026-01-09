@@ -2124,7 +2124,7 @@ const getAddressSuggestions = async (req, res) => {
       req.query.type ||
       "Sale";
     const prefix = req.query.prefix;
-    const maxSuggestions = parseInt(req.query.limit) || 8;
+    const maxSuggestions = parseInt(req.query.limit) || 5;
 
     console.log(
       `Getting address suggestions for listing_type: "${listingType}"`

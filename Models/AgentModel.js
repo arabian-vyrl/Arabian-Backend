@@ -79,7 +79,7 @@
 //       trim: false,
 //       default: "",
 //     },
-    
+
 //     imageUrl: {
 //       type: String,
 //       trim: true,
@@ -516,7 +516,6 @@
 //   }
 // };
 
-
 // // agentSchema.statics.updateAllAgentsMonthlyProperties = async function () {
 // //   try {
 // //     console.log("📊 Updating active properties this month for all agents...");
@@ -651,8 +650,6 @@
 //     return segments.length > 3 && /^\d+$/.test(lastSegment);
 //   });
 // };
-
-
 
 // // agentSchema.statics.getTopPerformersByMetric = function (metric, limit = 5) {
 // //   const validMetrics = [
@@ -1034,9 +1031,6 @@
 
 // module.exports = mongoose.model("Agent", agentSchema);
 
-
-
-
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
@@ -1108,7 +1102,7 @@ const agentSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-     instagram: {
+    instagram: {
       type: String,
       trim: false,
       default: "",
@@ -1118,7 +1112,7 @@ const agentSchema = new mongoose.Schema(
       trim: false,
       default: "",
     },
-    
+
     imageUrl: {
       type: String,
       trim: true,
@@ -1295,7 +1289,7 @@ const agentSchema = new mongoose.Schema(
         description: {
           type: String,
           trim: true,
-      },
+        },
         // Image field for blog
         imageUrl: { type: String, trim: true, default: null },
         isPublished: {
@@ -1342,7 +1336,7 @@ const agentSchema = new mongoose.Schema(
 
 // Indexes
 agentSchema.index({ agentId: 1 }); // Index for sequence number
-agentSchema.index({ sequenceNumber: 1 }); // Index for sequence number
+// agentSchema.index({ sequenceNumber: 1 }); // Index for sequence number
 // agentSchema.index({ "properties.propertyId": 1 });
 // agentSchema.index({ "leaderboard.propertiesSold": -1 }); // Index for leaderboard sorting
 // agentSchema.index({ "leaderboard.totalCommission": -1 }); // Index for leaderboard sorting
@@ -1428,6 +1422,30 @@ agentSchema.virtual("draftBlogs").get(function () {
 });
 
 // ——— NEW: Sequence number management methods ———
+
+
+agentSchema.statics.closeSequenceGapAfterDelete = async function (deletedSeq, session) {
+  if (!Number.isFinite(deletedSeq) || deletedSeq < 1) return;
+
+  const TEMP_OFFSET = 1000000;
+
+  // Shift all agents with seq > deletedSeq down by 1 (collision-safe)
+  // 1) Park them
+  await this.updateMany(
+    { sequenceNumber: { $gt: deletedSeq } },
+    { $inc: { sequenceNumber: TEMP_OFFSET }, $set: { lastUpdated: new Date() } },
+    { session }
+  );
+
+  // 2) Bring them back with -1 net
+  // TEMP then -(TEMP+1) => -1
+  await this.updateMany(
+    { sequenceNumber: { $gt: deletedSeq + TEMP_OFFSET } },
+    { $inc: { sequenceNumber: -(TEMP_OFFSET + 1) }, $set: { lastUpdated: new Date() } },
+    { session }
+  );
+};
+
 agentSchema.statics.getNextSequenceNumber = async function () {
   const lastAgent = await this.findOne(
     {},
@@ -1438,89 +1456,267 @@ agentSchema.statics.getNextSequenceNumber = async function () {
     ? lastAgent.sequenceNumber + 1
     : 1;
 };
+agentSchema.statics.getMaxSequenceNumber = async function (session) {
+  const lastAgent = await this.findOne({}, { sequenceNumber: 1 })
+    .sort({ sequenceNumber: -1 })
+    .session(session || null);
 
-agentSchema.statics.moveAgentSequence = async function (
-  agentId,
-  targetPosition
-) {
-  const session = await mongoose.startSession();
+  return lastAgent?.sequenceNumber || 0;
+};
+
+// ✅ CREATE: insert at position (shift everyone >= position by +1)
+agentSchema.statics.insertAtSequence = async function (desiredSeq, session) {
+  if (!Number.isFinite(desiredSeq) || desiredSeq < 1) {
+    throw new Error("Sequence number must be at least 1");
+  }
+
+  const maxSeq = await this.getMaxSequenceNumber(session);
+  const finalSeq = Math.min(desiredSeq, maxSeq + 1);
+
+  const TEMP_OFFSET = 1000000; // any large number bigger than possible sequences
+
+  // 1) Park all affected agents far away to avoid unique collisions
+  await this.updateMany(
+    { sequenceNumber: { $gte: finalSeq } },
+    {
+      $inc: { sequenceNumber: TEMP_OFFSET },
+      $set: { lastUpdated: new Date() },
+    },
+    { session }
+  );
+
+  // 2) Bring them back shifted by +1 (net: +TEMP_OFFSET then -(TEMP_OFFSET-1) => +1)
+  await this.updateMany(
+    { sequenceNumber: { $gte: finalSeq + TEMP_OFFSET } },
+    {
+      $inc: { sequenceNumber: -(TEMP_OFFSET - 1) }, // subtract 999,999
+      $set: { lastUpdated: new Date() },
+    },
+    { session }
+  );
+
+  return finalSeq;
+};
+
+
+// agentSchema.statics.moveAgentSequence = async function (
+//   agentId,
+//   targetPosition
+// ) {
+//   const session = await mongoose.startSession();
+
+//   try {
+//     await session.withTransaction(async () => {
+//       const agent = await this.findOne({ agentId }).session(session);
+//       if (!agent) throw new Error("Agent not found");
+
+//       const oldPos = agent.sequenceNumber;
+//       if (!Number.isFinite(oldPos))
+//         throw new Error("Agent has no sequence number");
+
+//       let newPos = Number(targetPosition);
+//       if (!Number.isFinite(newPos) || newPos < 1) {
+//         throw new Error("Target position must be >= 1");
+//       }
+
+//       // Clamp into valid range [1..maxSeq]
+//       const maxSeq = await this.getMaxSequenceNumber(session);
+//       if (maxSeq === 0) return; // no agents?
+
+//       newPos = Math.min(newPos, maxSeq);
+
+//       if (oldPos === newPos) return;
+
+//       // Moving UP: 5 -> 2 => shift 2..4 down (+1)
+//       if (newPos < oldPos) {
+//         await this.updateMany(
+//           { sequenceNumber: { $gte: newPos, $lt: oldPos } },
+//           { $inc: { sequenceNumber: 1 }, $set: { lastUpdated: new Date() } },
+//           { session }
+//         );
+//       }
+
+//       // Moving DOWN: 2 -> 5 => shift 3..5 up (-1)
+//       if (newPos > oldPos) {
+//         await this.updateMany(
+//           { sequenceNumber: { $gt: oldPos, $lte: newPos } },
+//           { $inc: { sequenceNumber: -1 }, $set: { lastUpdated: new Date() } },
+//           { session }
+//         );
+//       }
+
+//       // Set this agent's new position
+//       await this.updateOne(
+//         { agentId },
+//         { $set: { sequenceNumber: newPos, lastUpdated: new Date() } },
+//         { session }
+//       );
+//     });
+
+//     return true;
+//   } finally {
+//     await session.endSession();
+//   }
+// };
+
+
+// Perfectly working while creating new agents
+// agentSchema.statics.moveAgentSequence = async function (agentId, targetPosition) {
+//   const session = await mongoose.startSession();
+//   const TEMP_OFFSET = 1000000;
+
+//   try {
+//     await session.withTransaction(async () => {
+//       const agent = await this.findOne({ agentId }).session(session);
+//       if (!agent) throw new Error("Agent not found");
+
+//       const oldPos = agent.sequenceNumber;
+//       if (!Number.isFinite(oldPos)) throw new Error("Agent has no sequence number");
+
+//       let newPos = Number(targetPosition);
+//       if (!Number.isFinite(newPos) || newPos < 1) {
+//         throw new Error("Target position must be >= 1");
+//       }
+
+//       const maxSeq = await this.getMaxSequenceNumber(session);
+//       newPos = Math.min(newPos, maxSeq);
+
+//       if (oldPos === newPos) return;
+
+//       // ✅ Move the agent OUT of the way first (avoid collision with others)
+//       await this.updateOne(
+//         { agentId },
+//         { $set: { sequenceNumber: TEMP_OFFSET + oldPos, lastUpdated: new Date() } },
+//         { session }
+//       );
+
+//       // Moving UP: shift [newPos .. oldPos-1] by +1
+//       if (newPos < oldPos) {
+//         // Park range
+//         await this.updateMany(
+//           { sequenceNumber: { $gte: newPos, $lt: oldPos } },
+//           { $inc: { sequenceNumber: TEMP_OFFSET }, $set: { lastUpdated: new Date() } },
+//           { session }
+//         );
+//         // Bring back +1
+//         await this.updateMany(
+//           { sequenceNumber: { $gte: newPos + TEMP_OFFSET, $lt: oldPos + TEMP_OFFSET } },
+//           { $inc: { sequenceNumber: -(TEMP_OFFSET - 1) }, $set: { lastUpdated: new Date() } },
+//           { session }
+//         );
+//       }
+
+//       // Moving DOWN: shift [oldPos+1 .. newPos] by -1
+//       if (newPos > oldPos) {
+//         // Park range
+//         await this.updateMany(
+//           { sequenceNumber: { $gt: oldPos, $lte: newPos } },
+//           { $inc: { sequenceNumber: TEMP_OFFSET }, $set: { lastUpdated: new Date() } },
+//           { session }
+//         );
+//         // Bring back -1 (TEMP then -(TEMP+1) => -1)
+//         await this.updateMany(
+//           { sequenceNumber: { $gt: oldPos + TEMP_OFFSET, $lte: newPos + TEMP_OFFSET } },
+//           { $inc: { sequenceNumber: -(TEMP_OFFSET + 1) }, $set: { lastUpdated: new Date() } },
+//           { session }
+//         );
+//       }
+
+//       // ✅ Now place the moved agent into its final position
+//       await this.updateOne(
+//         { agentId },
+//         { $set: { sequenceNumber: newPos, lastUpdated: new Date() } },
+//         { session }
+//       );
+//     });
+
+//     return true;
+//   } finally {
+//     await session.endSession();
+//   }
+// };
+
+
+agentSchema.statics.moveAgentSequence = async function (agentId, targetPosition, externalSession = null) {
+  const session = externalSession || (await mongoose.startSession());
+  const shouldEndSession = !externalSession;
+  const TEMP_OFFSET = 1000000;
 
   try {
-    await session.withTransaction(async () => {
+    const run = async () => {
       const agent = await this.findOne({ agentId }).session(session);
-      if (!agent) {
-        throw new Error("Agent not found");
+      if (!agent) throw new Error("Agent not found");
+
+      const oldPos = agent.sequenceNumber;
+      if (!Number.isFinite(oldPos)) throw new Error("Agent has no sequence number");
+
+      let newPos = Number(targetPosition);
+      if (!Number.isFinite(newPos) || newPos < 1) {
+        throw new Error("Target position must be >= 1");
       }
 
-      const currentPosition = agent.sequenceNumber;
-      if (!currentPosition) {
-        throw new Error("Agent has no sequence number");
-      }
+      const maxSeq = await this.getMaxSequenceNumber(session);
+      newPos = Math.min(newPos, maxSeq);
 
-      if (currentPosition === targetPosition) {
-        return;
-      }
+      if (oldPos === newPos) return;
 
-      // Validate target position
-      const maxSequence = await this.countDocuments({
-        sequenceNumber: { $exists: true, $ne: null },
-      }).session(session);
+      // Move agent out of the way
+      await this.updateOne(
+        { agentId },
+        { $set: { sequenceNumber: TEMP_OFFSET + oldPos, lastUpdated: new Date() } },
+        { session }
+      );
 
-      if (targetPosition < 1 || targetPosition > maxSequence) {
-        throw new Error(
-          `Invalid target position. Must be between 1 and ${maxSequence}`
+      // Move UP
+      if (newPos < oldPos) {
+        await this.updateMany(
+          { sequenceNumber: { $gte: newPos, $lt: oldPos } },
+          { $inc: { sequenceNumber: TEMP_OFFSET }, $set: { lastUpdated: new Date() } },
+          { session }
+        );
+
+        await this.updateMany(
+          { sequenceNumber: { $gte: newPos + TEMP_OFFSET, $lt: oldPos + TEMP_OFFSET } },
+          { $inc: { sequenceNumber: -(TEMP_OFFSET - 1) }, $set: { lastUpdated: new Date() } },
+          { session }
         );
       }
 
-      // Shift agents
-      if (currentPosition < targetPosition) {
+      // Move DOWN
+      if (newPos > oldPos) {
         await this.updateMany(
-          {
-            sequenceNumber: {
-              $gt: currentPosition,
-              $lte: targetPosition,
-            },
-          },
-          {
-            $inc: { sequenceNumber: -1 },
-            $set: { lastUpdated: new Date() },
-          }
-        ).session(session);
-      } else {
+          { sequenceNumber: { $gt: oldPos, $lte: newPos } },
+          { $inc: { sequenceNumber: TEMP_OFFSET }, $set: { lastUpdated: new Date() } },
+          { session }
+        );
+
         await this.updateMany(
-          {
-            sequenceNumber: {
-              $gte: targetPosition,
-              $lt: currentPosition,
-            },
-          },
-          {
-            $inc: { sequenceNumber: 1 },
-            $set: { lastUpdated: new Date() },
-          }
-        ).session(session);
+          { sequenceNumber: { $gt: oldPos + TEMP_OFFSET, $lte: newPos + TEMP_OFFSET } },
+          { $inc: { sequenceNumber: -(TEMP_OFFSET + 1) }, $set: { lastUpdated: new Date() } },
+          { session }
+        );
       }
 
-      // Update target agent
+      // Place agent into final position
       await this.updateOne(
         { agentId },
-        {
-          $set: {
-            sequenceNumber: targetPosition,
-            lastUpdated: new Date(),
-          },
-        }
-      ).session(session);
-    });
+        { $set: { sequenceNumber: newPos, lastUpdated: new Date() } },
+        { session }
+      );
+    };
 
-    console.log(`✅ Moved agent ${agentId} to position ${targetPosition}`);
-  } catch (error) {
-    console.error("Error moving agent sequence:", error);
-    throw error;
+    if (externalSession) {
+      await run();
+    } else {
+      await session.withTransaction(run);
+    }
+
+    return true;
   } finally {
-    await session.endSession();
+    if (shouldEndSession) await session.endSession();
   }
 };
+
 
 agentSchema.statics.reorderAllSequences = async function () {
   const session = await mongoose.startSession();
@@ -1579,58 +1775,6 @@ agentSchema.methods.getRelistedProperties = function () {
   });
 };
 
-
-
-//   const validMetrics = [
-//     "propertiesSold",
-//     "totalCommission",
-//     "viewings",
-//     "offers",
-//   ];
-//   if (!validMetrics.includes(metric)) {
-//     throw new Error(
-//       `Invalid metric: ${metric}. Must be one of: ${validMetrics.join(", ")}`
-//     );
-//   }
-
-//   const sortField = `leaderboard.${metric}`;
-//   return this.aggregate([
-//     { $match: { isActive: true } },
-//     {
-//       $project: {
-//         agentId: 1,
-//         agentName: 1,
-//         designation: 1,
-//         imageUrl: 1,
-//         [`leaderboard.${metric}`]: 1,
-//       },
-//     },
-//     { $sort: { [sortField]: -1 } },
-//     { $limit: limit },
-//   ]);
-// };
-
-// agentSchema.statics.getLeaderboardStats = function () {
-//   return this.aggregate([
-//     { $match: { isActive: true } },
-//     {
-//       $group: {
-//         _id: null,
-//         totalPropertiesSold: { $sum: "$leaderboard.propertiesSold" },
-//         totalCommission: { $sum: "$leaderboard.totalCommission" },
-//         totalViewings: { $sum: "$leaderboard.viewings" },
-//         totalOffers: { $sum: "$leaderboard.offers" },
-//         avgPropertiesSold: { $avg: "$leaderboard.propertiesSold" },
-//         avgCommission: { $avg: "$leaderboard.totalCommission" },
-//         avgViewings: { $avg: "$leaderboard.viewings" },
-//         avgOffers: { $avg: "$leaderboard.offers" },
-//         totalAgents: { $sum: 1 },
-//       },
-//     },
-//   ]);
-// };
-
-// ——— Property management methods ———
 agentSchema.methods.addOrUpdateProperty = function (propertyData) {
   if (!this.properties) this.properties = [];
 
@@ -1934,7 +2078,8 @@ agentSchema.pre("save", async function (next) {
   // Auto-assign sequence number for new agents if not provided
   if (this.isNew && !this.sequenceNumber) {
     try {
-      this.sequenceNumber = await this.constructor.getNextSequenceNumber();
+      const maxSeq = await this.constructor.getMaxSequenceNumber();
+      this.sequenceNumber = maxSeq + 1;
     } catch (error) {
       console.error("Error setting sequence number:", error);
     }

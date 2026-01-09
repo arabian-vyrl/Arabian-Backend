@@ -14,7 +14,7 @@
 
 // //     let imageUrl = null;
 // //     if (req.file) {
-// //       imageUrl = req.file.path; 
+// //       imageUrl = req.file.path;
 // //       req.body.imageUrl = imageUrl;
 // //     }
 
@@ -54,7 +54,7 @@
 // //     return res.status(201).json({
 // //       success: true,
 // //       data: agent,
-// //       imageUrl: imageUrl, 
+// //       imageUrl: imageUrl,
 // //     });
 // //   } catch (err) {
 // //     console.error("Create agent error:", err);
@@ -373,8 +373,6 @@
 // //   }
 // // };
 
-
-
 // // const getAgentsBySequence = async (req, res) => {
 // //   try {
 // //     const { activeOnly = "true" } = req.query;
@@ -425,7 +423,6 @@
 // //   getAgentsBySequence,
 // //   deleteAgent,
 // // };
-
 
 // // Agent mongoose model (MongoDB collection for agents)
 // const Agent = require("../Models/AgentModel");
@@ -999,12 +996,11 @@
 //   deleteAgent,
 // };
 
-
-
 const Agent = require("../Models/AgentModel");
 const path = require("path");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
+const mongoose = require("mongoose");
 
 const isTruthy = (v) => v === true || v === "true";
 const clampInt = (v, def = 0) => {
@@ -1013,55 +1009,57 @@ const clampInt = (v, def = 0) => {
 };
 
 const createAgent = async (req, res) => {
-  try {
+  const session = await mongoose.startSession();
 
-    let imageUrl = null;
+  try {
+    session.startTransaction();
+
+    // Image
     if (req.file) {
-      imageUrl = req.file.path; 
-      req.body.imageUrl = imageUrl;
+      req.body.imageUrl = req.file.path;
     }
 
+    // Booleans
     if (req.body.superAgent !== undefined) {
       req.body.superAgent = isTruthy(req.body.superAgent);
     }
 
-    // ✅ NEW: Handle activeOnLeaderboard boolean
     if (req.body.activeOnLeaderboard !== undefined) {
       req.body.activeOnLeaderboard = isTruthy(req.body.activeOnLeaderboard);
     } else {
-      // Default to true if not provided
       req.body.activeOnLeaderboard = true;
     }
 
-    // Validate and enforce unique sequenceNumber if provided
-    if (req.body.sequenceNumber) {
-      const sequenceNumber = clampInt(req.body.sequenceNumber);
-      if (sequenceNumber < 1) {
-        return res.status(400).json({
-          success: false,
-          error: "Sequence number must be at least 1",
-        });
-      }
-      const existingAgent = await Agent.findOne({ sequenceNumber });
-      if (existingAgent) {
-        return res.status(400).json({
-          success: false,
-          error: `Sequence number ${sequenceNumber} is already taken by agent: ${existingAgent.agentName}`,
-        });
-      }
-      req.body.sequenceNumber = sequenceNumber;
+    // ✅ SEQUENCE HANDLING
+    if (
+      req.body.sequenceNumber !== undefined &&
+      req.body.sequenceNumber !== ""
+    ) {
+      const desiredSeq = clampInt(req.body.sequenceNumber);
+      req.body.sequenceNumber = await Agent.insertAtSequence(
+        desiredSeq,
+        session
+      );
+    } else {
+      const maxSeq = await Agent.getMaxSequenceNumber(session);
+      req.body.sequenceNumber = maxSeq + 1;
     }
 
-    const agent = await Agent.create(req.body);
+    const [agent] = await Agent.create([req.body], { session });
+
+    await session.commitTransaction();
 
     return res.status(201).json({
       success: true,
       data: agent,
-      imageUrl: imageUrl, 
+      imageUrl: agent.imageUrl,
     });
   } catch (err) {
+    await session.abortTransaction();
     console.error("Create agent error:", err);
     return res.status(400).json({ success: false, error: err.message });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -1085,6 +1083,7 @@ const getAgents = async (req, res) => {
           agentName: 1,
           agentLanguage: 1,
           designation: 1,
+          description: 1,
           superAgent: 1,
           email: 1,
           whatsapp: 1,
@@ -1169,58 +1168,48 @@ const getAgentByEmail = async (req, res) => {
 };
 
 const updateAgent = async (req, res) => {
+  // console.log("updating agent",req.body);
+  const session = await mongoose.startSession();
+
   try {
+    session.startTransaction();
+
     const { agentId, ...requestFields } = req.body || {};
 
     if (!agentId) {
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ success: false, error: "Agent ID is required" });
     }
 
-    const existingAgent = await Agent.findOne({ agentId });
+    const existingAgent = await Agent.findOne({ agentId }).session(session);
     if (!existingAgent) {
+      await session.abortTransaction();
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
-    // Handle sequenceNumber swap if changed
-    if (requestFields.sequenceNumber !== undefined) {
-      const newSequenceNumber = clampInt(requestFields.sequenceNumber, NaN);
-      if (!Number.isFinite(newSequenceNumber) || newSequenceNumber < 1) {
+    // ✅ SEQUENCE MOVE (same logic as create)
+    if (
+      requestFields.sequenceNumber !== undefined &&
+      requestFields.sequenceNumber !== ""
+    ) {
+      const newSeq = clampInt(requestFields.sequenceNumber, NaN);
+
+      if (!Number.isFinite(newSeq) || newSeq < 1) {
+        await session.abortTransaction();
         return res.status(400).json({
           success: false,
           error: "Sequence number must be a positive integer",
         });
       }
 
-      if (existingAgent.sequenceNumber !== newSequenceNumber) {
-        if (typeof Agent.swapSequenceNumbers !== "function") {
-          return res.status(500).json({
-            success: false,
-            error:
-              "Sequence swap not available: Agent.swapSequenceNumbers is undefined.",
-          });
-        }
-        try {
-          await Agent.swapSequenceNumbers(agentId, newSequenceNumber);
-          const updatedAgent = await Agent.findOne({ agentId });
-          return res.status(200).json({
-            success: true,
-            message: `Agent sequence number updated successfully to ${newSequenceNumber}`,
-            data: updatedAgent,
-          });
-        } catch (swapError) {
-          return res.status(400).json({
-            success: false,
-            error: `Failed to update sequence number: ${swapError.message}`,
-          });
-        }
-      } else {
-        delete requestFields.sequenceNumber;
-      }
+      // IMPORTANT: run inside same session
+      await Agent.moveAgentSequence(agentId, newSeq, session);
+      delete requestFields.sequenceNumber;
     }
 
-    // Build update object
+    // Build update object (unchanged)
     const buildUpdateObject = (fields, file, currentAgent) => {
       const updateObj = {};
       const allowedFields = [
@@ -1233,7 +1222,7 @@ const updateAgent = async (req, res) => {
         "phone",
         "whatsapp",
         "instagram",
-         "linkedin",
+        "linkedin",
         "activeSaleListings",
         "propertiesSoldLast15Days",
         "agentLanguage",
@@ -1271,7 +1260,7 @@ const updateAgent = async (req, res) => {
 
           case "isActive":
           case "superAgent":
-          case "activeOnLeaderboard": // ✅ NEW: Handle activeOnLeaderboard boolean
+          case "activeOnLeaderboard":
             updateObj[field] = isTruthy(value);
             break;
 
@@ -1280,10 +1269,7 @@ const updateAgent = async (req, res) => {
         }
       }
 
-      // ✅ CLOUDINARY: Handle file upload with full URL
-      if (file) {
-        updateObj.imageUrl = file.path; // Cloudinary full URL
-      }
+      if (file) updateObj.imageUrl = file.path;
 
       updateObj.lastUpdated = new Date();
       return updateObj;
@@ -1295,11 +1281,12 @@ const updateAgent = async (req, res) => {
       existingAgent
     );
 
-    // If no actual changes besides lastUpdated, return existing
+    // No changes?
     const effectiveKeys = Object.keys(updateFields).filter(
       (k) => k !== "lastUpdated"
     );
     if (effectiveKeys.length === 0) {
+      await session.commitTransaction();
       return res.status(200).json({
         success: true,
         message: "No changes detected",
@@ -1307,13 +1294,15 @@ const updateAgent = async (req, res) => {
       });
     }
 
-    // Email uniqueness check
+    // Email uniqueness check (transaction-safe)
     if (updateFields.email) {
       const emailExists = await Agent.findOne({
         email: updateFields.email,
         agentId: { $ne: agentId },
-      });
+      }).session(session);
+
       if (emailExists) {
+        await session.abortTransaction();
         return res.status(400).json({
           success: false,
           error: `Email "${updateFields.email}" is already in use by another agent`,
@@ -1321,32 +1310,26 @@ const updateAgent = async (req, res) => {
       }
     }
 
-    // ✅ CLOUDINARY: Delete old image if new one is uploaded
+    // ✅ Cloudinary delete old image (ok to keep; but note this is external side-effect)
     if (req.file && existingAgent.imageUrl) {
       try {
-        // Extract public_id from Cloudinary URL
-        // Example URL: https://res.cloudinary.com/dxxxxxxxx/image/upload/v123456/agent-images/agent-123456789.jpg
         const urlParts = existingAgent.imageUrl.split("/");
-        const publicIdWithExt = urlParts[urlParts.length - 1]; // agent-123456789.jpg
-        const publicIdWithoutExt = publicIdWithExt.split(".")[0]; // agent-123456789
-        const fullPublicId = `agent-images/${publicIdWithoutExt}`; // agent-images/agent-123456789
-
+        const publicIdWithExt = urlParts[urlParts.length - 1];
+        const publicIdWithoutExt = publicIdWithExt.split(".")[0];
+        const fullPublicId = `agent-images/${publicIdWithoutExt}`;
         await cloudinary.uploader.destroy(fullPublicId);
-        console.log(`✅ Deleted old Cloudinary image: ${fullPublicId}`);
-      } catch (deleteError) {
-        console.error(
-          "⚠️ Error deleting old Cloudinary image:",
-          deleteError.message
-        );
-        // Continue with update even if deletion fails
+      } catch (e) {
+        console.error("⚠️ Error deleting old Cloudinary image:", e.message);
       }
     }
 
     const updatedAgent = await Agent.findOneAndUpdate(
       { agentId },
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, session }
     );
+
+    await session.commitTransaction();
 
     return res.status(200).json({
       success: true,
@@ -1354,9 +1337,10 @@ const updateAgent = async (req, res) => {
         ", "
       )}`,
       data: updatedAgent,
-      imageUrl: updatedAgent.imageUrl, // ✅ Return Cloudinary URL
+      imageUrl: updatedAgent.imageUrl,
     });
   } catch (err) {
+    await session.abortTransaction();
     console.error("Update agent error:", err);
 
     if (err?.code === 11000) {
@@ -1374,10 +1358,10 @@ const updateAgent = async (req, res) => {
       success: false,
       error: err.message || "Failed to update agent",
     });
+  } finally {
+    session.endSession();
   }
 };
-
-
 
 const getAgentsBySequence = async (req, res) => {
   try {
@@ -1393,36 +1377,64 @@ const getAgentsBySequence = async (req, res) => {
   }
 };
 
+// const deleteAgent = async (req, res) => {
+//   try {
+//     const agent = await Agent.findOneAndDelete({ agentId: req.query.agentId });
+//     if (!agent) {
+//       return res.status(404).json({ success: false, error: "Agent not found" });
+//     }
+
+//     return res
+//       .status(200)
+//       .json({ success: true, msg: "Agent Removed Successfully" });
+//   } catch (err) {
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
+
+
 const deleteAgent = async (req, res) => {
+  const session = await mongoose.startSession();
+
   try {
-    const agent = await Agent.findOneAndDelete({ agentId: req.query.agentId });
+    session.startTransaction();
+
+    const agentId = req.query.agentId;
+    if (!agentId) {
+      await session.abortTransaction();
+      return res.status(400).json({ success: false, error: "Agent ID is required" });
+    }
+
+    const agent = await Agent.findOne({ agentId }).session(session);
     if (!agent) {
+      await session.abortTransaction();
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
-    // if (agent.imageUrl) {
-    //   // Fix path joining with leading slash
-    //   const filePath = path.join(
-    //     __dirname,
-    //     "../public",
-    //     stripLeadingSlash(agent.imageUrl)
-    //   );
-    //   fs.promises.unlink(filePath).catch((e) => {
-    //     if (e?.code !== "ENOENT")
-    //       console.warn("⚠️  Failed to delete image:", e.message);
-    //   });
-    // }
-    // Optionally: await Agent.reorderSequences();
-    return res.status(200).json({ success: true, msg: "Agent Removed Successfully" });
+    const deletedSeq = agent.sequenceNumber;
+
+    // Delete agent
+    await Agent.deleteOne({ agentId }).session(session);
+
+    // ✅ Close the gap
+    if (Number.isFinite(deletedSeq)) {
+      await Agent.closeSequenceGapAfterDelete(deletedSeq, session);
+    }
+
+    await session.commitTransaction();
+
+    return res.status(200).json({
+      success: true,
+      msg: "Agent Removed Successfully",
+    });
   } catch (err) {
+    await session.abortTransaction();
     return res.status(500).json({ success: false, error: err.message });
+  } finally {
+    session.endSession();
   }
 };
-
-
-
-
-
 
 module.exports = {
   createAgent,
