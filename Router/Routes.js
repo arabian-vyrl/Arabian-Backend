@@ -618,7 +618,8 @@ router.get("/filter-offplan-properties", NewOffPlanProperties.filterDashboardPro
 router.post("/ReferProperty", ReferProperties.ReferProperty);
 router.get("/AllReferelProperties", ReferProperties.GetAllReferal);
 router.get("/Track-Refer-Lead", ReferProperties.trackQUery);
-router.get("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
+// router.get("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
+router.put("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.get("/Delete-Refer-Lead", ReferProperties.deleteQuery);
 
 // Blogs Api's
@@ -736,7 +737,8 @@ router.delete("/delete-property-valuation/:id", propertyValuation.deleteProperty
 router.post("/list-property-form", propertyListForm.createPropertyListForm)
 router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm)
 router.delete("/delete-list-property-form/:id", propertyListForm.deletePropertyListForm)
-router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
+
+// router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 
 router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
 router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)

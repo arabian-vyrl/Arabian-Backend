@@ -3,7 +3,7 @@ const { response } = require("express");
 const nodemailer = require("nodemailer");
 const jwtToken = require("jsonwebtoken");
 const salesforceService = require("../services/SalesforceService");
-
+const Agent=require('../Models/AgentModel')
 require("dotenv").config();
 
 // Email configuration
@@ -549,23 +549,103 @@ const trackQUery = async (req, res) => {
 // }
 
 // Function to update query progress (work on it)
+// const updateQueryProgress = async (req, res) => {
+//   try {
+//     const { trackingCode, newStatus,  agentEmail } = req.query;
+//     if (!newStatus) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "newStatus is required",
+//       });
+//     }
+//     const validStatuses = [
+//       "Query Received",
+//       "Agent Assigned",
+//       "Contact Initiated",
+//       "Meeting Scheduled",
+//       "Property Shown",
+//       "Negotiation",
+//       "Deal Closed Collect Commission From Our Office",
+//       "Client Not Interested",
+//       "Cancelled",
+//     ];
+
+//     if (!validStatuses.includes(newStatus)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
+//       });
+//     }
+
+//     const updateData = {
+//       "query_progress.status": newStatus,
+//       "query_progress.last_updated": new Date(),
+//     };
+
+//     if (newStatus === "Agent Assigned") {
+//       if (!agentId || !agentName) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "agentId and agentName are required when status is Agent Assigned",
+//         });
+//       }
+
+//       updateData["agent_assign.agent_id"] = agentId;
+//       updateData["agent_assign.agent_name"] = agentName;
+//     }
+
+//     const updatedDocument = await ReferralProperty.findOneAndUpdate(
+//       { tracking_code: trackingCode },
+//       { $set: updateData },
+//       { new: true, runValidators: true }
+//     );
+
+//     if (!updatedDocument) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Document not found with this tracking code",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Query progress updated successfully",
+//       data: {
+//         id: updatedDocument._id,
+//         tracking_code: updatedDocument.tracking_code,
+//         agent_assign: updatedDocument.agent_assign,
+//         query_progress: updatedDocument.query_progress,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error updating query progress:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error while updating query progress",
+//       error: process.env.NODE_ENV === "development" ? error.message : undefined,
+//     });
+//   }
+// };
+
 const updateQueryProgress = async (req, res) => {
   try {
-    // Extract parameters from query
-    const { newStatus, trackingId } = req.query;
-
-    console.log("Updating progress:", { newStatus, trackingId });
-
-    // Validate required parameters
-    if (!newStatus || !trackingId) {
+    const { trackingCode, newStatus, agentEmail } = req.query;
+    console.log("email",req.query.agentEmail)
+    if (!trackingCode) {
       return res.status(400).json({
         success: false,
-        message:
-          "Missing required parameters: newStatus and trackingId are required",
+        message: "trackingCode is required",
       });
     }
 
-    // Validate status against enum values from your schema
+    if (!newStatus) {
+      return res.status(400).json({
+        success: false,
+        message: "newStatus is required",
+      });
+    }
+
     const validStatuses = [
       "Query Received",
       "Agent Assigned",
@@ -585,72 +665,70 @@ const updateQueryProgress = async (req, res) => {
       });
     }
 
-    // Prepare update data
+    // Base update (always applied)
     const updateData = {
       "query_progress.status": newStatus,
       "query_progress.last_updated": new Date(),
     };
 
-    // Update the referral document
-    const referral = await ReferralProperty.findOneAndUpdate(
-      { tracking_code: trackingId },
-      { $set: updateData },
-      {
-        new: true, // Return the updated document
-        runValidators: true, // Run schema validations
+    /**
+     * ✅ Agent can be updated at ANY stage
+     * If agentEmail is provided → update agent_assign
+     */
+    if (agentEmail) {
+      const agentDoc = await Agent.findOne({
+        email:agentEmail.trim().toLowerCase(),
+        isActive: true,
+      }).select("agentName agentId email");
+
+      if (!agentDoc) {
+        return res.status(404).json({
+          success: false,
+          message: "Active agent not found with this email",
+        });
       }
+
+      updateData["agent_assign.agent_name"] = agentDoc.agentName;
+      updateData["agent_assign.agent_id"] = agentDoc.agentId;
+      updateData["agent_assign.agent_email"] = agentDoc.email;
+      updateData["agent_assign.updated_at"] = new Date();
+    }
+
+    const updatedDocument = await ReferralProperty.findOneAndUpdate(
+      { tracking_code: trackingCode },
+      { $set: updateData },
+      { new: true, runValidators: true }
     );
 
-    // Check if referral was found and updated
-    if (!referral) {
+    if (!updatedDocument) {
       return res.status(404).json({
         success: false,
-        message: "Referral not found with the provided tracking ID",
+        message: "Document not found with this tracking code",
       });
     }
 
-    // Send update email to referrer (uncomment when email service is ready)
-    // if (referral) {
-    //   await sendProgressUpdateEmail(referral);
-    // }
-
     return res.status(200).json({
       success: true,
-      message: "Query progress updated successfully",
+      message: "Query updated successfully",
       data: {
-        id: referral._id,
-        tracking_code: referral.tracking_code,
-        status: referral.query_progress.status,
-        last_updated: referral.query_progress.last_updated,
-        notes: referral.query_progress.notes,
+        id: updatedDocument._id,
+        tracking_code: updatedDocument.tracking_code,
+        agent_assign: updatedDocument.agent_assign,
+        query_progress: updatedDocument.query_progress,
       },
     });
   } catch (error) {
     console.error("Error updating query progress:", error);
 
-    // Handle specific MongoDB errors
-    if (error.name === "CastError") {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid tracking ID format",
-      });
-    }
-
-    if (error.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        message: "Validation error",
-        details: error.message,
-      });
-    }
-
     return res.status(500).json({
       success: false,
-      message: "Internal server error while updating query progress",
+      message: "Server error while updating query progress",
       error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
+
+
 
 const deleteQuery = async (req, res) => {
   try {
