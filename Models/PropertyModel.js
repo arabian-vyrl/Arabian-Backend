@@ -873,6 +873,21 @@ const PropertySchema = new mongoose.Schema({
 PropertySchema.index({ id: 1 }); 
 PropertySchema.index({ offering_type: 1, property_type: 1 }); 
 
+
+
+PropertySchema.index({
+  "custom_fields.city": 1,
+  "general_listing_information.status": 1
+});
+
+// Index for checking already matched properties (IMPORTANT for performance)
+PropertySchema.index({
+  "custom_fields.city": 1,
+  "general_listing_information.status": 1,
+  "redin_location.location_id": 1
+});
+
+
 PropertySchema.methods.getFormattedPrice = function() {
   if (!this.general_listing_information.listingprice) return 'Price on request';
   

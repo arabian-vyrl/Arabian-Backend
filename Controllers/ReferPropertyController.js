@@ -71,7 +71,7 @@ const verifyReferrerToken = async (req, res) => {
     }
     const { referrerFullName, refferalEmail } = req.user;
     const referrals = await ReferralProperty.find({
-      "referrer.full_name": referrerFullName,
+      // "referrer.full_name": referrerFullName,
       "referrer.email": refferalEmail,
     });
 
@@ -95,6 +95,32 @@ const verifyReferrerToken = async (req, res) => {
     return res.status(500).json({
       valid: false,
       message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+
+
+const Referrerlogout = async (req, res) => {
+  try {
+    const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("referalToken", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/", 
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("❌ Logout error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during logout",
       error: error.message,
     });
   }
@@ -381,14 +407,14 @@ const ReferProperty = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "adeel8128377@gmail.com",
-        pass: "xeio pmwi xxey asku",
+         user: process.env.NODE_MAILER_EMAIL,
+        pass: process.env.NODE_MAILER_PASSWORD,
       },
     });
     const sendEmail = async (to, subject, html) => {
       try {
         await transporter.sendMail({
-          from: "adeel8128377@gmail.com",
+          from: process.env.NODE_MAILER_EMAIL,
           to,
           subject,
           html,
@@ -1001,4 +1027,5 @@ module.exports = {
   trackRefer,
   verifyReferrerToken,
   agentUpdate,
+  Referrerlogout
 };

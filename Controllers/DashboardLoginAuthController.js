@@ -163,7 +163,6 @@ const verifyToken = async (req, res) => {
 
 // Logout controller
 const logout = async (req, res) => {
-  console.log("This is perfectly working")
   try {
     const isProduction = process.env.NODE_ENV === "production";
 
