@@ -1760,62 +1760,8 @@ router.get("/get-coordinates", testController2.getPropertiesWithCoordinates);
 router.get("/test-controller-geo-pionts", testController.MatchgeoPiont);
 
 
-const AgentService = require("../Services/agentService");
-
-// GET /api/agents/admin/cleanup - Clean up orphaned properties
-router.get("/agents/admin/cleanup", async (req, res) => {
-  try {
-    const result = await AgentService.cleanupOrphanedProperties();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// GET /api/agents/admin/sync - Synchronize agent counts
-router.get("/agents/admin/sync", async (req, res) => {
-  try {
-    const result = await AgentService.synchronizeAgentCounts();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// GET /api/agents/admin/duplicates - Find duplicate agents
-router.get("/agents/admin/duplicates", async (req, res) => {
-  try {
-    const result = await AgentService.findDuplicateAgents();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// GET /api/agents/admin/validate - Validate data integrity
-router.get("/agents/admin/validate", async (req, res) => {
-  try {
-    const result = await AgentService.validateDataIntegrity();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-// GET /api/agents/admin/performance - Generate performance report
-router.get("/agents/admin/performance", async (req, res) => {
-  try {
-    const { timeframe = 'month' } = req.query;
-    const result = await AgentService.generatePerformanceReport(timeframe);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
 
 
-// Hero Section filter
-// router.get("/All-Hero-filters", AllFilter.specializedFilter);
 
 // Property Listing route (Post Route for listing property)
 router.post("/list-property", ListProperty);
