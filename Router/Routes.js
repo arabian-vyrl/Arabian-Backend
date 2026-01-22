@@ -1350,6 +1350,8 @@
 // module.exports = router;
 
 // const getAllProperties = require("../Controllers/allPropertiesController");
+
+// Network error fixed
 const PropertyController = require("../Controllers/allPropertiesController");
 // const getSaleProperties = require("../Controllers/salePropertiesController");
 // const RentProperties = require("../Controllers/rentPropertiesController");
