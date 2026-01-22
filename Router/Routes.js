@@ -1810,7 +1810,7 @@ router.get("/agents/admin/performance", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-*/
+
 
 // Hero Section filter
 // router.get("/All-Hero-filters", AllFilter.specializedFilter);
