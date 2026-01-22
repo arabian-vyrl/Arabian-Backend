@@ -43,8 +43,6 @@
 // //   api_secret: process.env.CLOUDINARY_API_SECRET
 // // });
 
-
-
 // // const mainStorage = multer.diskStorage({
 // //   destination: function (req, file, cb) {
 // //     const uploadPath = path.join(__dirname, "../uploads");
@@ -88,9 +86,9 @@
 
 // // // Agent-specific upload middleware
 // // const agentUpload = multer({
-// //   storage: agentStorage, 
+// //   storage: agentStorage,
 // //   fileFilter,
-// //   limits: { fileSize: 15 * 1024 * 1024 }, 
+// //   limits: { fileSize: 15 * 1024 * 1024 },
 // // });
 
 // // // General upload middleware (for blogs, news, hero content, etc.)
@@ -230,7 +228,7 @@
 // // // Your route is already correct!
 // // router.post(
 // //   "/update-agent",
-// //   agentUpload.single("image"), 
+// //   agentUpload.single("image"),
 // //   AgentController.updateAgent
 // // );
 
@@ -244,7 +242,6 @@
 
 // // router.get("/delete-agent", AgentController.deleteAgent);
 
-
 // // // Leaderboard Routes
 // // router.get("/GetAgentDeals", LeaderboardController.syncAgentDealsFromSalesforce);
 // // router.get("/GetAgentCommissions", LeaderboardController.syncAgentCommissionsFromSalesforce);
@@ -253,12 +250,10 @@
 // // router.post("/SaleforceAuthToken",LeaderboardController.getSalesforceToken)
 // // router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
 
-
 // // // Manual Testing
 // // router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
 
 // // // TrackRefer EndPoint
-
 
 // // // Adeel EndPionts
 // // router.post("/track-referrer", ReferProperties.trackRefer)
@@ -292,8 +287,6 @@
 // // router.post("/rental-yield-mortgage-approval", RentalYieldMortgageApproval.createRentalYieldApproval);
 // // router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
 // // router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
-
-
 
 // // router.post("/auth/login", DashboardLoginAuthController.login)
 // // router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
@@ -451,9 +444,6 @@
 
 // // module.exports = router;
 
-
-
-
 // // const getAllProperties = require("../Controllers/allPropertiesController");
 // const PropertyController = require("../Controllers/allPropertiesController");
 // // const getSaleProperties = require("../Controllers/salePropertiesController");
@@ -540,12 +530,11 @@
 //   }
 // };
 
-
 // // Agent-specific upload middleware
 // const agentUpload = multer({
-//   storage: agentStorage, 
+//   storage: agentStorage,
 //   fileFilter,
-//   limits: { fileSize: 10 * 1024 * 1024 }, 
+//   limits: { fileSize: 10 * 1024 * 1024 },
 // });
 
 // // General upload middleware (for blogs, news, hero content, etc.)
@@ -610,9 +599,6 @@
 // router.put("/update-status-offplan-properties/:id", NewOffPlanProperties.StatusUpdateOffPlanProperties)
 // // Dashboard Filter
 // router.get("/filter-offplan-properties", NewOffPlanProperties.filterDashboardProperties)
-
-
-
 
 // // Refer Property Api's
 // router.post("/ReferProperty", ReferProperties.ReferProperty);
@@ -687,7 +673,6 @@
 // router.get("/Similar-property", AllFilter.filterByCommunity);
 // router.get("/Property-location-suggestions", AllFilter.getAddressSuggestions);
 
-
 // // AGENT API ENDPOINTS
 // router.post(
 //   "/register-agents",
@@ -697,7 +682,7 @@
 // // Your route is already correct!
 // router.post(
 //   "/update-agent",
-//   agentUpload.single("image"), 
+//   agentUpload.single("image"),
 //   AgentController.updateAgent
 // );
 
@@ -710,7 +695,6 @@
 // router.get("/AgentByEmail", AgentController.getAgentByEmail);
 // router.get("/delete-agent", AgentController.deleteAgent);
 
-
 // // Leaderboard Routes
 // router.get("/GetAgentDeals", LeaderboardController.syncAgentDealsFromSalesforce);
 // router.get("/GetAgentCommissions", LeaderboardController.syncAgentCommissionsFromSalesforce);
@@ -719,12 +703,10 @@
 // router.post("/SaleforceAuthToken",LeaderboardController.getSalesforceToken)
 // router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
 
-
 // // Manual Testing
 // router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
 
 // // TrackRefer EndPoint
-
 
 // // Adeel EndPionts
 // router.post("/track-referrer", ReferProperties.trackRefer)
@@ -760,18 +742,13 @@
 // router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
 // router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
 
-
-
 // router.post("/auth/login", DashboardLoginAuthController.login)
 // router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
 // router.post("/auth/logout", DashboardLoginAuthController.logout);
 
-
-
 // // test Routes
 // router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData)
 // router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew)
-
 
 // // Leaderboard Agent
 // // Search agents by name or email
@@ -926,7 +903,6 @@
 
 // module.exports = router;
 
-
 // // const getAllProperties = require("../Controllers/allPropertiesController");
 // const PropertyController = require("../Controllers/allPropertiesController");
 // // const getSaleProperties = require("../Controllers/salePropertiesController");
@@ -972,8 +948,6 @@
 //   api_secret: process.env.CLOUDINARY_API_SECRET
 // });
 
-
-
 // const mainStorage = multer.diskStorage({
 //   destination: function (req, file, cb) {
 //     const uploadPath = path.join(__dirname, "../uploads");
@@ -1017,9 +991,9 @@
 
 // // Agent-specific upload middleware
 // const agentUpload = multer({
-//   storage: agentStorage, 
+//   storage: agentStorage,
 //   fileFilter,
-//   limits: { fileSize: 15 * 1024 * 1024 }, 
+//   limits: { fileSize: 15 * 1024 * 1024 },
 // });
 
 // // General upload middleware (for blogs, news, hero content, etc.)
@@ -1159,7 +1133,7 @@
 // // Your route is already correct!
 // router.post(
 //   "/update-agent",
-//   agentUpload.single("image"), 
+//   agentUpload.single("image"),
 //   AgentController.updateAgent
 // );
 
@@ -1173,7 +1147,6 @@
 
 // router.get("/delete-agent", AgentController.deleteAgent);
 
-
 // // Leaderboard Routes
 // router.get("/GetAgentDeals", LeaderboardController.syncAgentDealsFromSalesforce);
 // router.get("/GetAgentCommissions", LeaderboardController.syncAgentCommissionsFromSalesforce);
@@ -1182,12 +1155,10 @@
 // router.post("/SaleforceAuthToken",LeaderboardController.getSalesforceToken)
 // router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
 
-
 // // Manual Testing
 // router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
 
 // // TrackRefer EndPoint
-
 
 // // Adeel EndPionts
 // router.post("/track-referrer", ReferProperties.trackRefer)
@@ -1221,8 +1192,6 @@
 // router.post("/rental-yield-mortgage-approval", RentalYieldMortgageApproval.createRentalYieldApproval);
 // router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
 // router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
-
-
 
 // router.post("/auth/login", DashboardLoginAuthController.login)
 // router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
@@ -1380,9 +1349,6 @@
 
 // module.exports = router;
 
-
-
-
 // const getAllProperties = require("../Controllers/allPropertiesController");
 const PropertyController = require("../Controllers/allPropertiesController");
 // const getSaleProperties = require("../Controllers/salePropertiesController");
@@ -1402,24 +1368,24 @@ const Podcast = require("../Controllers/PodcastController");
 const HeroController = require("../Controllers/HeroContentController");
 const LeaderboardController = require("../Controllers/LeaderboardController");
 const middleWare = require("../Middlewares/VerifyLoginReferralToken");
-const propertyListForm = require("../Controllers/PropertyListForm")
-const propertyValuation = require("../Controllers/PropertyValuation")
-const offPlanListingForm = require("../Controllers/OffPlanController")
-const RentalYieldMortgageApproval = require("../Controllers/RentalYieldMortgageApproval")
-const MortgageApproval = require("../Controllers/MortgageApproval")
-const MortgageQuote = require("../Controllers/GetMorgageQuote")
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const GetLocationRedin = require("../Controllers/GetLocationRedin")
-const DashboardLoginAuthController = require("../Controllers/DashboardLoginAuthController")
-const AdminAuthMiddleware  = require("../Middlewares/Auth")
+const propertyListForm = require("../Controllers/PropertyListForm");
+const propertyValuation = require("../Controllers/PropertyValuation");
+const offPlanListingForm = require("../Controllers/OffPlanController");
+const RentalYieldMortgageApproval = require("../Controllers/RentalYieldMortgageApproval");
+const MortgageApproval = require("../Controllers/MortgageApproval");
+const MortgageQuote = require("../Controllers/GetMorgageQuote");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const GetLocationRedin = require("../Controllers/GetLocationRedin");
+const DashboardLoginAuthController = require("../Controllers/DashboardLoginAuthController");
+const AdminAuthMiddleware = require("../Middlewares/Auth");
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
+// const { agentUpload } = require("../server"); // adjust path if needed
 
 // testing Routes
 const testController2 = require("../Controllers/testController2");
 const testController = require("../Controllers/testController");
-
 
 const express = require("express");
 const router = express.Router();
@@ -1430,7 +1396,7 @@ const fs = require("fs");
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const mainStorage = multer.diskStorage({
@@ -1448,23 +1414,33 @@ const mainStorage = multer.diskStorage({
 });
 
 // Agent storage - separate directory for agent images
-const agentStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'agent-images',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-    transformation: [
-      { width: 800, height: 800, crop: 'limit' }, // Max size
-      { quality: 'auto' } // Auto optimize
-    ],
-    public_id: (req, file) => {
-      // Generate unique filename
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      return `agent-${unique}`;
-    }
-  }
-});
+// const agentStorage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: "agent-images",
+//     allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
+//     transformation: [
+//       { width: 800, height: 800, crop: "limit" }, // Max size
+//       { quality: "auto" }, // Auto optimize
+//     ],
+//     public_id: (req, file) => {
+//       // Generate unique filename
+//       const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//       return `agent-${unique}`;
+//     },
+//   },
+// });
 
+const agentStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "agent-images",
+    resource_type: "image",
+
+    // ✅ IMPORTANT: Do NOT add transformation, quality, fetch_format, format
+    // This keeps original bytes & quality.
+  }),
+});
 // File filter - only allow images
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
@@ -1474,14 +1450,17 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-
 // Agent-specific upload middleware
+// const agentUpload = multer({
+//   storage: agentStorage,
+//   fileFilter,
+//   limits: { fileSize: 20 * 1024 * 1024 },
+// });
 const agentUpload = multer({
-  storage: agentStorage, 
+  storage: agentStorage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, 
+  limits: { fileSize: 20 * 1024 * 1024 },
 });
-
 // General upload middleware (for blogs, news, hero content, etc.)
 const upload = multer({
   storage: mainStorage,
@@ -1493,13 +1472,51 @@ router.get("/get-hero", HeroController.getHero);
 router.post(
   "/add-replace",
   HeroController.upload.single("media"),
-  HeroController.addOrReplaceHero
+  HeroController.addOrReplaceHero,
 );
 router.put(
   "/update",
   HeroController.upload.single("media"),
-  HeroController.updateHero
+  HeroController.updateHero,
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+// AGENT API ENDPOINTS
+router.post(
+  "/register-agents",
+  agentUpload.single("imageUrl"),
+  AgentController.createAgent,
+);
+// Your route is already correct!
+router.post(
+  "/update-agent",
+  agentUpload.single("image"),
+  AgentController.updateAgent,
+);
+
+// Get all agents (with pagination, sorting, etc.)
+router.get("/Allagents", AgentController.getAgents);
+// router.get("/AllLeaderboardAgents", AgentController.getAgentsForLeaderboard);
+router.get("/SequenceAgent", AgentController.getAgentsBySequence);
+
+router.get("/Agent", AgentController.getAgentById);
+router.get("/AgentByEmail", AgentController.getAgentByEmail);
+router.get("/delete-agent", AgentController.deleteAgent);
+
+
+
+
 
 // Contact us
 router.post("/Contact", ContactUs.createContact);
@@ -1518,35 +1535,38 @@ router.get("/single-property", PropertyController);
 // New API for offplan properties
 router.get(
   "/save-offplan-property",
-  NewOffPlanProperties.fetchAndSaveProperties
+  NewOffPlanProperties.fetchAndSaveProperties,
 );
 router.get(
   "/get-offplan-property",
-  NewOffPlanProperties.getNewOffPlanProperties
+  NewOffPlanProperties.getNewOffPlanProperties,
 );
 router.get(
   "/get-offplan-single-property",
-  NewOffPlanProperties.getSIngleOffplanProperty
+  NewOffPlanProperties.getSIngleOffplanProperty,
 );
 router.get(
   "/offplanfilterbydeveloper",
-  NewOffPlanProperties.FilterDeveloperOffplanProperty
+  NewOffPlanProperties.FilterDeveloperOffplanProperty,
 );
 router.get("/offplanminprice", NewOffPlanProperties.filterByMinPrice);
 router.get("/offplanmaxprice", NewOffPlanProperties.filterByMaxPrice);
 router.get("/OffPlanLocation", NewOffPlanProperties.OffSearchProperty);
 router.get(
   "/OffPlanLocationSuggestion",
-  NewOffPlanProperties.getOffPlanAddressSuggestions
+  NewOffPlanProperties.getOffPlanAddressSuggestions,
 );
 
 // toggle Status of the newOffplan Properties
-router.put("/update-status-offplan-properties/:id", NewOffPlanProperties.StatusUpdateOffPlanProperties)
+router.put(
+  "/update-status-offplan-properties/:id",
+  NewOffPlanProperties.StatusUpdateOffPlanProperties,
+);
 // Dashboard Filter
-router.get("/filter-offplan-properties", NewOffPlanProperties.filterDashboardProperties)
-
-
-
+router.get(
+  "/filter-offplan-properties",
+  NewOffPlanProperties.filterDashboardProperties,
+);
 
 // Refer Property Api's
 router.post("/ReferProperty", ReferProperties.ReferProperty);
@@ -1555,7 +1575,7 @@ router.get("/Track-Refer-Lead", ReferProperties.trackQUery);
 // router.get("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.put("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.get("/Delete-Refer-Lead", ReferProperties.deleteQuery);
-router.post("/refer-track-logout", ReferProperties.Referrerlogout)
+router.post("/refer-track-logout", ReferProperties.Referrerlogout);
 
 // Blogs Api's
 router.get("/GetBlogs", Blogs.GetAllBlogs);
@@ -1580,17 +1600,20 @@ router.get("/DeleteCommunityGuide", CommunityGuides.deleteCommunityGuide);
 router.post(
   "/AddCommunityGuide",
   CommunityGuides.uploadMultiple,
-  CommunityGuides.createCommunityGuide
+  CommunityGuides.createCommunityGuide,
 );
 router.post(
   "/UpdateCommunityGuide",
   CommunityGuides.uploadMultiple,
-  CommunityGuides.updateCommunityGuide
+  CommunityGuides.updateCommunityGuide,
 );
 
-router.post("/off-plan-form", offPlanListingForm.createOffPlanContact)
-router.get("/off-plan-contacts", offPlanListingForm.getOffPlanContacts)
-router.delete("/off-plan-contacts-delete/:id", offPlanListingForm.deleteOffPlanContact)
+router.post("/off-plan-form", offPlanListingForm.createOffPlanContact);
+router.get("/off-plan-contacts", offPlanListingForm.getOffPlanContacts);
+router.delete(
+  "/off-plan-contacts-delete/:id",
+  offPlanListingForm.deleteOffPlanContact,
+);
 
 // Community Guideline Api's
 // router.get("/GetCommunityGuides", CommunityGuides.GetAllCommunityGuides);
@@ -1622,187 +1645,119 @@ router.get("/Sort-Properties", AllFilter.SortProperties);
 router.get("/Similar-property", AllFilter.filterByCommunity);
 router.get("/Property-location-suggestions", AllFilter.getAddressSuggestions);
 
-
-// AGENT API ENDPOINTS
-router.post(
-  "/register-agents",
-  agentUpload.single("imageUrl"),
-  AgentController.createAgent
-);
-// Your route is already correct!
-router.post(
-  "/update-agent",
-  agentUpload.single("image"), 
-  AgentController.updateAgent
-);
-
-// Get all agents (with pagination, sorting, etc.)
-router.get("/Allagents", AgentController.getAgents);
-// router.get("/AllLeaderboardAgents", AgentController.getAgentsForLeaderboard);
-router.get("/SequenceAgent", AgentController.getAgentsBySequence);
-
-router.get("/Agent", AgentController.getAgentById);
-router.get("/AgentByEmail", AgentController.getAgentByEmail);
-router.get("/delete-agent", AgentController.deleteAgent);
-
-
 // Leaderboard Routes
-router.get("/GetAgentDeals", LeaderboardController.syncAgentDealsFromSalesforce);
-router.get("/GetAgentCommissions", LeaderboardController.syncAgentCommissionsFromSalesforce);
-router.get("/GetAgentViewings", LeaderboardController.syncAgentViewingsFromSalesforce);
-router.get("/UpdateMonthlyProperty", LeaderboardController.updateMonthlyPropertiesForAllAgents);
-router.post("/SaleforceAuthToken",LeaderboardController.getSalesforceToken)
-router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
-
+router.get(
+  "/GetAgentDeals",
+  LeaderboardController.syncAgentDealsFromSalesforce,
+);
+router.get(
+  "/GetAgentCommissions",
+  LeaderboardController.syncAgentCommissionsFromSalesforce,
+);
+router.get(
+  "/GetAgentViewings",
+  LeaderboardController.syncAgentViewingsFromSalesforce,
+);
+router.get(
+  "/UpdateMonthlyProperty",
+  LeaderboardController.updateMonthlyPropertiesForAllAgents,
+);
+router.post("/SaleforceAuthToken", LeaderboardController.getSalesforceToken);
+router.get("/getLeaderboardAgents", LeaderboardController.getLeaderboardAgents);
 
 // Manual Testing
-router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
+router.post(
+  "/ManualSaleforceAuthToken",
+  LeaderboardController.GetSalesForceToken,
+);
 
 // TrackRefer EndPoint
 
-
 // Adeel EndPionts
-router.post("/track-referrer", ReferProperties.trackRefer)
-router.get("/verify-referral-token", middleWare , ReferProperties.verifyReferrerToken)
+router.post("/track-referrer", ReferProperties.trackRefer);
+router.get(
+  "/verify-referral-token",
+  middleWare,
+  ReferProperties.verifyReferrerToken,
+);
 
-router.post("/propertyValuation", propertyValuation.createPropertyValuation)
-router.get("/get-property-valuations", propertyValuation.getPropertyValuations)
-router.delete("/delete-property-valuation/:id", propertyValuation.deletePropertyValuation)
+router.post("/propertyValuation", propertyValuation.createPropertyValuation);
+router.get("/get-property-valuations", propertyValuation.getPropertyValuations);
+router.delete(
+  "/delete-property-valuation/:id",
+  propertyValuation.deletePropertyValuation,
+);
 
-router.post("/list-property-form", propertyListForm.createPropertyListForm)
-router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm)
-router.delete("/delete-list-property-form/:id", propertyListForm.deletePropertyListForm)
+router.post("/list-property-form", propertyListForm.createPropertyListForm);
+router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm);
+router.delete(
+  "/delete-list-property-form/:id",
+  propertyListForm.deletePropertyListForm,
+);
 
 // router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 
-router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
-router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)
+router.put(
+  "/update-community-guide-status/:id",
+  CommunityGuides.updateCommunityStatus,
+);
+router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo);
 
-router.get("/redin/location", GetLocationRedin.getLocationFromRedin)
-router.get("/extract-location-redin", GetLocationRedin.extractLocationFromRedin)
-router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData)
-router.get("/get-all-extracted-location", GetLocationRedin.getAllRedinLocationFromDatabase)
+router.get("/redin/location", GetLocationRedin.getLocationFromRedin);
+router.get(
+  "/extract-location-redin",
+  GetLocationRedin.extractLocationFromRedin,
+);
+router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData);
+router.get(
+  "/get-all-extracted-location",
+  GetLocationRedin.getAllRedinLocationFromDatabase,
+);
 
-router.post("/mortgage-quote", MortgageQuote.createMortgageQuote)
-router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes)
-router.delete("/delete-mortgage-quote/:id", MortgageQuote.deleteMortgageQuote)
+router.post("/mortgage-quote", MortgageQuote.createMortgageQuote);
+router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes);
+router.delete("/delete-mortgage-quote/:id", MortgageQuote.deleteMortgageQuote);
 
 router.post("/mortgage-approval", MortgageApproval.createMortgageApproval);
-router.get("/get-all-mortgage-approvals", MortgageApproval.getMortgageApprovals);
-router.delete("/delete-mortgage-approval/:id", MortgageApproval.deleteMortgageApproval);
+router.get(
+  "/get-all-mortgage-approvals",
+  MortgageApproval.getMortgageApprovals,
+);
+router.delete(
+  "/delete-mortgage-approval/:id",
+  MortgageApproval.deleteMortgageApproval,
+);
 
-router.post("/rental-yield-mortgage-approval", RentalYieldMortgageApproval.createRentalYieldApproval);
-router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
-router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
+router.post(
+  "/rental-yield-mortgage-approval",
+  RentalYieldMortgageApproval.createRentalYieldApproval,
+);
+router.get(
+  "/get-all-rental-yield-approvals",
+  RentalYieldMortgageApproval.getRentalYieldApprovals,
+);
+router.delete(
+  "/delete-rental-yeild-approval/:id",
+  RentalYieldMortgageApproval.deleteRentalYieldApproval,
+);
 
-router.post("/auth/login", DashboardLoginAuthController.login)
-router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
+router.post("/auth/login", DashboardLoginAuthController.login);
+router.get(
+  "/auth/verify",
+  AdminAuthMiddleware,
+  DashboardLoginAuthController.verifyToken,
+);
 router.post("/auth/logout", DashboardLoginAuthController.logout);
 
-
 // test Routes
-router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData)
-router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew)
+router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData);
+router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew);
 
 // Route for testing Coordinates
-router.get("/get-coordinates", testController2.getPropertiesWithCoordinates)
-router.get("/test-controller-geo-pionts", testController.MatchgeoPiont)
-
-// ========== OPTIMIZED GEO POINT MATCHING ROUTES ==========
-// Option 1: Optimized non-blocking (still waits for completion but doesn't freeze server)
-// router.get("/match-geo-point-optimized", testController2.MatchGeoPointOptimized)
-
-// Option 2: Background processing (returns immediately, check status endpoint)
-// router.get("/match-geo-point-background", testController2.MatchGeoPointBackground)
-// router.get("/match-geo-point-status", testController2.GetBackgroundJobStatus)
+router.get("/get-coordinates", testController2.getPropertiesWithCoordinates);
+router.get("/test-controller-geo-pionts", testController.MatchgeoPiont);
 
 
-// Leaderboard Agent
-// Search agents by name or email
-// router.get(
-//   "/agents/search",
-//   AgentController.searchAgents
-// );c
-
-// Get top performing agents
-// router.get(
-//   "/agents/top",
-//   AgentController.getTopAgents
-// );
-
-// Get agent statistics
-// router.get(
-//   "/agents/statistics",
-//   AgentController.getAgentStatistics
-// );
-
-// Get specific agent details (by agentId or email)
-// router.get(
-//   "/agents/:identifier",
-//   AgentController.getAgentDetails
-// );
-
-// Get an agent's properties (with filters)
-// router.get(
-//   "/agents/:identifier/properties",
-//   AgentController.getAgentProperties
-// );
-
-// Update agent (with optional new image)
-// router.put(
-//   "/agents/:identifier",
-//   upload.single("image"),
-//   AgentController.updateAgent
-// );
-
-// Deactivate (or delete) an agent
-// router.delete(
-//   "/agents/:identifier",
-//   AgentController.deactivateAgent
-// );
-
-// GET /api/agents - Get all agents with pagination and sorting
-// Query params: page, limit, sortBy, sortOrder
-// Example: /api/agents?page=1&limit=20&sortBy=totalProperties&sortOrder=desc
-// router.get("/agents", AgentController.getAllAgents);
-
-// GET /api/agents/search - Search agents by name or email
-// Query params: query, page, limit
-// Example: /api/agents/search?query=john&page=1&limit=10
-// router.get("/agents/search", AgentController.searchAgents);
-
-// GET /api/agents/top - Get top performing agents
-// Query params: limit, type (total/sale/rent/offplan)
-// Example: /api/agents/top?limit=10&type=sale
-// router.get("/agents/top", AgentController.getTopAgents);
-
-// GET /api/agents/statistics - Get agent statistics and analytics
-// router.get("/agents/statistics", AgentController.getAgentStatistics);
-
-// GET /api/agents/:identifier - Get specific agent details (by ID or email)
-// Example: /api/agents/samantha@arabianestates.ae or /api/agents/507f1f77bcf86cd799439011
-// router.get("/agents/:identifier", AgentController.getAgentDetails);
-
-// GET /api/agents/:identifier/properties - Get agent's properties with filters
-// Query params: listingType, status, minPrice, maxPrice, bedrooms, propertyType, page, limit
-// Example: /api/agents/samantha@arabianestates.ae/properties?listingType=Sale&bedrooms=3&page=1&limit=10
-// router.get("/agents/:identifier/properties", AgentController.getAgentProperties);
-
-// PUT /api/agents/:identifier - Update agent information
-// Body: { firstName, lastName, phone, mobilePhone }
-// router.put("/agents/:identifier", AgentController.updateAgent);
-
-// DELETE /api/agents/:identifier - Deactivate agent (soft delete)
-// router.delete("/agents/:identifier", AgentController.deactivateAgent);
-
-// ================================
-// AGENT UTILITY ENDPOINTS (Optional - for admin use)
-// ================================
-
-// You can also add these utility endpoints if you want admin functionality
-// Uncomment and add AgentService import at the top if needed
-
-/*
 const AgentService = require("../Services/agentService");
 
 // GET /api/agents/admin/cleanup - Clean up orphaned properties
@@ -1869,4 +1824,3 @@ router.get("/parse-xml", ParseXml.parseXmlFromUrl);
 router.get("/delete-properties", ParseXml.cleanupMissingProperties);
 
 module.exports = router;
-

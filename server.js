@@ -12,6 +12,7 @@ const ConnectDb = require("./Database/Db");
 const multer = require("multer");
 const router = require("./Router/Routes");
 const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cookieParser = require("cookie-parser");
 
 // Set up middlewares
@@ -36,6 +37,21 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+const agentStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "agent-images",
+    resource_type: "image",
+
+    // ✅ keep original format & bytes (NO compression on upload)
+    // do NOT add: transformation, quality, fetch_format, format
+
+    // optional:
+    // use_filename: true,
+    // unique_filename: true,
+    // overwrite: false,
+  }),
 });
 
 // ---- Multer setup ----
@@ -89,4 +105,6 @@ ConnectDb()
 
 // Export upload middleware for use in routes
 module.exports.upload = upload;
+// module.exports.agentUpload = agentUpload;
+
 module.exports.cloudinary = cloudinary;
