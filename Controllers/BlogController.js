@@ -2100,17 +2100,24 @@ const updateBlog = async (req, res) => {
 
 const GetAllBlogs = async (req, res) => {
   try {
-    const { isPublished } = req.query;
+    const { isPublished, isViewing } = req.query;
 
     const filter = {};
     if (isPublished !== undefined) {
       filter.isPublished = isPublished === "true";
     }
 
+    // Base fields (default)
+    let selectFields =
+      "_id title description coverImage metaInfo isPublished publishedAt author createdAt";
+
+    // If viewing a single/full blog
+    if (isViewing === "true") {
+      selectFields += " content";
+    }
+
     const blogs = await Blog.find(filter)
-      .select(
-        "_id title description coverImage metaInfo isPublished publishedAt author createdAt"
-      )
+      .select(selectFields)
       .populate(
         "author",
         "agentName email imageUrl designation"

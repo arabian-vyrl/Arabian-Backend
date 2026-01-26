@@ -1316,17 +1316,24 @@ const updateNews = async (req, res) => {
 /* ---------- READS ---------- */
 const GetAllNews = async (req, res) => {
   try {
-    const { isPublished } = req.query;
+    const { isPublished, isViewing } = req.query;
 
     const filter = {};
     if (isPublished !== undefined) {
       filter.isPublished = isPublished === "true";
     }
 
+    // Base fields
+    let selectFields =
+      "_id title description coverImage metaInfo isPublished publishedAt author createdAt";
+
+    // If viewing a single/full news item
+    if (isViewing === "true") {
+      selectFields += " content";
+    }
+
     const newsItems = await News.find(filter)
-      .select(
-        "_id title description coverImage metaInfo isPublished publishedAt author createdAt"
-      )
+      .select(selectFields)
       .populate(
         "author",
         "agentName email imageUrl designation"
