@@ -1310,6 +1310,47 @@ const agentSchema = new mongoose.Schema(
       },
     ],
 
+
+    news: [
+      {
+        newsId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "News",
+          required: true,
+        },
+        title: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        slug: {
+          type: String,
+          trim: true,
+        },
+        description: {
+          type: String,
+          trim: true,
+        },
+        imageUrl: { type: String, trim: true, default: null },
+        isPublished: {
+          type: Boolean,
+          default: false,
+        },
+        publishedAt: {
+          type: Date,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
+
     isActive: {
       type: Boolean,
       default: true,
@@ -1851,6 +1892,51 @@ agentSchema.methods.removeProperty = function (propertyId) {
     return true;
   }
   return false;
+};
+
+// ——— News management methods ———
+agentSchema.methods.addOrUpdateNews = function (newsData) {
+  if (!this.news) {
+    this.news = [];
+  }
+  const existingNewsIndex = this.news.findIndex(
+    (b) => b.newsId.toString() === newsData.newsId.toString()
+  );
+  if (existingNewsIndex > -1) {
+    // Update existing new - EXPLICITLY set all fields including image
+    this.news[existingNewsIndex].newsId = newsData.newsId;
+    this.news[existingNewsIndex].title = newsData.title;
+    this.news[existingNewsIndex].slug = newsData.slug;
+    this.news[existingNewsIndex].imageUrl = newsData.imageUrl || null;
+    this.news[existingNewsIndex].description = newsData.description || null;
+    this.news[existingNewsIndex].isPublished = newsData.isPublished;
+    this.news[existingNewsIndex].publishedAt = newsData.publishedAt;
+    this.news[existingNewsIndex].createdAt =
+      newsData.createdAt || this.news[existingNewsIndex].createdAt;
+    this.news[existingNewsIndex].updatedAt = new Date();
+    console.log(
+      `✅ Updated existing News: ${newsData.title} with image: ${newsData.image?.filename}`
+    );
+  } else {
+    const NewsEntry = {
+      newsId: newsData.newsId,
+      title: newsData.title,
+      description: newsData.description,
+      slug: newsData.slug,
+      imageUrl: newsData.imageUrl || null,
+      isPublished: newsData.isPublished,
+      publishedAt: newsData.publishedAt,
+      createdAt: newsData.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+
+    this.news.push(NewsEntry);
+    console.log(
+      `✅ Added new News: ${newsData.title} with image: ${newsData.image?.filename}`
+    );
+  }
+  this.lastUpdated = new Date();
+  return this;
 };
 
 // ——— Blog management methods ———

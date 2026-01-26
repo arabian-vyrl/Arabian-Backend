@@ -49,6 +49,8 @@ const normalizeForMatching = (str) => {
 
   let result = str.toLowerCase().trim();
 
+  result = result.replace(/\bwaterside\b/g, "water");
+
   result = result.replace(/\bpalm\s+jumeirah\b/g, "the palm");
   result = result.replace(/\bviews\b/g, "view");
 

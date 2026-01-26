@@ -1262,7 +1262,7 @@ const getPodcastById = async (req, res) => {
 // NEW: Get Podcasts by Tags
 const getPodcastsByTags = async (req, res) => {
   try {
-    const { tags } = req.query;
+    const { tags, limit = 10 } = req.query;
 
     // Validate tags parameter
     if (!tags) {
@@ -1274,8 +1274,8 @@ const getPodcastsByTags = async (req, res) => {
 
     // Parse tags (support both comma-separated string and array)
     let tagArray;
-    if (typeof tags === 'string') {
-      tagArray = tags.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0);
+    if (typeof tags === "string") {
+      tagArray = tags.split(",").map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0);
     } else if (Array.isArray(tags)) {
       tagArray = tags.map(tag => tag.trim().toLowerCase()).filter(tag => tag.length > 0);
     } else {
@@ -1292,19 +1292,16 @@ const getPodcastsByTags = async (req, res) => {
       });
     }
 
+    // Parse limit as integer
+    const parsedLimit = parseInt(limit, 10);
+
     // Find podcasts that contain ANY of the provided tags
     const podcasts = await Podcast.find({
       tags: { $in: tagArray }
     })
     .sort({ orderNumber: 1 })
+    .limit(parsedLimit)
     .select("-__v");
-
-    // Optional: Find podcasts that contain ALL of the provided tags (commented out)
-    // const podcasts = await Podcast.find({
-    //   tags: { $all: tagArray }
-    // })
-    // .sort({ orderNumber: 1 })
-    // .select("-__v");
 
     res.status(200).json({
       success: true,
@@ -1323,6 +1320,7 @@ const getPodcastsByTags = async (req, res) => {
     });
   }
 };
+
 
 // NEW: Get All Unique Tags
 const getAllTags = async (req, res) => {

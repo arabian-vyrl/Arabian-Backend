@@ -1585,12 +1585,13 @@ router.get("/SingleBlog", Blogs.getSingleBlog);
 router.get("/DeleteBlog", Blogs.deleteBlog);
 router.get("/GetBlogByTag", Blogs.getBlogsByTags);
 router.post("/Addblog", Blogs.upload, Blogs.createBlog);
-router.put("/UpdateBlog", Blogs.upload, Blogs.updateBlog);
+router.put("/UpdateBlog/:id", Blogs.upload, Blogs.updateBlog);
+router.get("/getBlogByAgent", Blogs.getBlogsByAgent)
 
 // News Routes
 router.get("/GetNews", News.GetAllNews);
 router.get("/SingleNews", News.getSingleNews);
-router.delete("/DeleteNews", News.deleteNews);
+router.get("/DeleteNews", News.deleteNews);
 router.get("/GetNewsByTag", News.getNewsByTags);
 router.post("/AddNews", News.upload, News.createNews);
 router.put("/UpdateNews", News.upload, News.updateNews);
