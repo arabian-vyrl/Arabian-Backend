@@ -474,6 +474,7 @@
 
 
 
+
 const mongoose = require("mongoose");
 
 const newsSchema = new mongoose.Schema(
@@ -492,6 +493,16 @@ const newsSchema = new mongoose.Schema(
           type: String,
         },
       },
+      agentSocialMedia: {
+        instagram: {
+          type: String,
+          trim: true,
+        },
+        linkedin: {
+          type: String,
+          trim: true,
+        },
+      }
     },
     metaInfo: {
       metaTitle: {
@@ -516,6 +527,13 @@ const newsSchema = new mongoose.Schema(
       required: [true, "Blog title is required"],
       trim: true,
       maxlength: [100, "Title cannot exceed 100 characters"],
+    },
+     slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
     },
       description: {
         type: String,
@@ -576,6 +594,47 @@ const newsSchema = new mongoose.Schema(
   }
 );
 
+async function generateUniqueSlug(title, NewsModel, excludeId = null) {
+  if (!title) {
+    return `blog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+  const baseSlug = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "") 
+    .replace(/\s+/g, "-")        
+    .replace(/-+/g, "-");        
+
+  let slug = baseSlug;
+  let counter = 1;
+
+  // Ensure uniqueness
+  while (true) {
+    const query = { slug };
+    if (excludeId) query._id = { $ne: excludeId };
+    const exists = await NewsModel.findOne(query).lean();
+    if (!exists) break;
+    slug = `${baseSlug}-${counter++}`;
+  }
+  return slug;
+}
+
+
+newsSchema.pre("save", async function (next) {
+  try {
+    if (this.isNew || !this.slug || this.isModified("title")) {
+      this.slug = await generateUniqueSlug(
+        this.title,
+        this.constructor,
+        this._id
+      );
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 newsSchema.index({ "author.agentEmail": 1, status: 1 });
 newsSchema.index({ "metaInfo.tags": 1 });
 newsSchema.index({ createdAt: -1 });
@@ -618,6 +677,11 @@ newsSchema.statics.findByTags = function (tags) {
   });
 };
 
-module.exports = mongoose.model("AllNews", newsSchema);
+newsSchema.statics.findBySlug = function (slug) {
+  return this.findOne({ slug });
+};
 
+
+
+module.exports = mongoose.model("AllNews", newsSchema);
 

@@ -1310,7 +1310,7 @@ const agentSchema = new mongoose.Schema(
       },
     ],
 
-
+     // ——— News linked to this agent ———
     news: [
       {
         newsId: {
@@ -1331,6 +1331,7 @@ const agentSchema = new mongoose.Schema(
           type: String,
           trim: true,
         },
+        // Image field for blog
         imageUrl: { type: String, trim: true, default: null },
         isPublished: {
           type: Boolean,
@@ -1349,7 +1350,6 @@ const agentSchema = new mongoose.Schema(
         },
       },
     ],
-
 
     isActive: {
       type: Boolean,
@@ -1893,6 +1893,7 @@ agentSchema.methods.removeProperty = function (propertyId) {
   }
   return false;
 };
+
 
 // ——— News management methods ———
 agentSchema.methods.addOrUpdateNews = function (newsData) {

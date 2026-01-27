@@ -521,6 +521,10 @@
 // module.exports = mongoose.models.Blog || mongoose.model("Blog", blogSchema);
 
 
+
+
+// New Schema
+
 const mongoose = require("mongoose");
 
 const blogSchema = new mongoose.Schema(
@@ -539,6 +543,17 @@ const blogSchema = new mongoose.Schema(
           type: String,
         },
       },
+      agentSocialMedia: {
+        instagram: {
+          type: String,
+          trim: true,
+        },
+        linkedin: {
+          type: String,
+          trim: true,
+        },
+      }
+
     },
     metaInfo: {
       metaTitle: {
@@ -564,7 +579,14 @@ const blogSchema = new mongoose.Schema(
       trim: true,
       maxlength: [100, "Title cannot exceed 100 characters"],
     },
-      description: {
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+    description: {
         type: String,
         trim: true,
       },
@@ -623,6 +645,50 @@ const blogSchema = new mongoose.Schema(
   }
 );
 
+// Helper function to generate a unique slug
+async function generateUniqueSlug(title, BlogModel, excludeId = null) {
+  if (!title) {
+    return `blog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+  const baseSlug = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "") 
+    .replace(/\s+/g, "-")        
+    .replace(/-+/g, "-");        
+
+  let slug = baseSlug;
+  let counter = 1;
+
+  // Ensure uniqueness
+  while (true) {
+    const query = { slug };
+    if (excludeId) query._id = { $ne: excludeId };
+    const exists = await BlogModel.findOne(query).lean();
+    if (!exists) break;
+    slug = `${baseSlug}-${counter++}`;
+  }
+
+  return slug;
+}
+
+// Pre-save hook to generate/update slug when title changes
+blogSchema.pre("save", async function (next) {
+  try {
+    // Generate slug if new document, no slug exists, or title is modified
+    if (this.isNew || !this.slug || this.isModified("title")) {
+      this.slug = await generateUniqueSlug(
+        this.title,
+        this.constructor,
+        this._id
+      );
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 blogSchema.index({ "author.agentEmail": 1, status: 1 });
 blogSchema.index({ "metaInfo.tags": 1 });
 blogSchema.index({ createdAt: -1 });
@@ -663,6 +729,10 @@ blogSchema.statics.findByTags = function (tags) {
   return this.find({ "metaInfo.tags": { $in: tags } }).sort({
     createdAt: -1,
   });
+};
+
+blogSchema.statics.findBySlug = function (slug) {
+  return this.findOne({ slug });
 };
 
 module.exports = mongoose.model("AllBlogs", blogSchema);

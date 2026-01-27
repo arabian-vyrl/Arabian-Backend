@@ -1218,7 +1218,7 @@ const getPodcastById = async (req, res) => {
   try {
     const podcastId = req.query.id;
     console.log(podcastId);
-    
+
     if (!podcastId.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
         success: false,
@@ -1254,6 +1254,40 @@ const getPodcastById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching podcast",
+      error: error.message,
+    });
+  }
+};
+
+// Get Single Podcast by Slug
+const getPodcastBySlug = async (req, res) => {
+  try {
+    const slug = req.query.slug;
+    if (!slug) {
+      return res.status(400).json({
+        success: false,
+        message: "Podcast slug is required",
+      });
+    }
+    const podcast = await Podcast.findOne({ slug }).select("-__v");
+
+    if (!podcast) {
+      return res.status(404).json({
+        success: false,
+        message: "Podcast not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Podcast fetched successfully",
+      data: podcast,
+    });
+  } catch (error) {
+    console.error("getPodcastBySlug error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch podcast",
       error: error.message,
     });
   }
@@ -1320,7 +1354,6 @@ const getPodcastsByTags = async (req, res) => {
     });
   }
 };
-
 
 // NEW: Get All Unique Tags
 const getAllTags = async (req, res) => {
@@ -1464,57 +1497,59 @@ const getAllTags = async (req, res) => {
 
 const updatePodcast = async (req, res) => {
   console.log("This is the Update Podcast", req.body);
-  
+
   try {
-    const { 
-      title, 
-      shortDescription, 
+    const {
+      metaTitle,
+      metaDescription,
+      title,
+      shortDescription,
       detailedDescription,
       whatsInside,
-      youtubeUrl, 
-      category, 
-      tags, 
-      orderNumber 
+      youtubeUrl,
+      category,
+      tags,
+      orderNumber,
     } = req.body;
-    
+
     const podcast = await Podcast.findById(req.query.id);
     console.log(podcast);
-    
+
     if (!podcast) {
       return res.status(404).json({
         success: false,
-        message: 'Podcast not found'
+        message: "Podcast not found",
       });
     }
-    
+
     // Check if new order number conflicts with existing one
     if (orderNumber && orderNumber !== podcast.orderNumber) {
-      const existingPodcast = await Podcast.findOne({ 
+      const existingPodcast = await Podcast.findOne({
         orderNumber: orderNumber,
-        _id: { $ne: req.query.id } 
+        _id: { $ne: req.query.id },
       });
       if (existingPodcast) {
         return res.status(400).json({
           success: false,
-          message: `Order number ${orderNumber} already exists`
+          message: `Order number ${orderNumber} already exists`,
         });
       }
     }
 
-    // Update fields
-    const updateData = {};
-    
-    if (title !== undefined) updateData.title = title.trim();
-    if (shortDescription !== undefined) updateData.shortDescription = shortDescription.trim();
-    if (detailedDescription !== undefined) updateData.detailedDescription = detailedDescription.trim();
-    if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl.trim();
-    if (category !== undefined) updateData.category = category.trim();
-    if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
-    
+    // Update fields directly on the document (to trigger pre-save hook for slug)
+    if (metaTitle !== undefined) podcast.metaTitle = metaTitle.trim();
+    if (metaDescription !== undefined) podcast.metaDescription = metaDescription.trim();
+    if (title !== undefined) podcast.title = title.trim();
+    if (shortDescription !== undefined) podcast.shortDescription = shortDescription.trim();
+    if (detailedDescription !== undefined) podcast.detailedDescription = detailedDescription.trim();
+    if (youtubeUrl !== undefined) podcast.youtubeUrl = youtubeUrl.trim();
+    if (category !== undefined) podcast.category = category.trim();
+    if (orderNumber !== undefined) podcast.orderNumber = orderNumber;
+
     // Handle whatsInside - parse if it's a JSON string
     if (whatsInside !== undefined) {
       let parsedWhatsInside = whatsInside;
-      
+
       if (typeof whatsInside === "string") {
         try {
           parsedWhatsInside = JSON.parse(whatsInside);
@@ -1523,19 +1558,19 @@ const updatePodcast = async (req, res) => {
           parsedWhatsInside = [];
         }
       }
-      
+
       // Now safely map over the parsed array
       if (Array.isArray(parsedWhatsInside)) {
-        updateData.whatsInside = parsedWhatsInside
-          .map(point => point.trim())
-          .filter(point => point.length > 0);
+        podcast.whatsInside = parsedWhatsInside
+          .map((point) => point.trim())
+          .filter((point) => point.length > 0);
       }
     }
-    
+
     // Handle tags update with normalization
     if (tags !== undefined) {
       let parsedTags = tags;
-      
+
       if (typeof tags === "string") {
         try {
           parsedTags = JSON.parse(tags);
@@ -1544,55 +1579,49 @@ const updatePodcast = async (req, res) => {
           parsedTags = [];
         }
       }
-      
-      updateData.tags = normalizeTags(parsedTags);
+
+      podcast.tags = normalizeTags(parsedTags);
     }
-    
+
     // Handle cover image update if a new file is uploaded
     if (req.files?.coverImage?.[0]) {
       const coverPhotoData = createImageData(req.files.coverImage[0]);
-      updateData.coverPhoto = coverPhotoData;
+      podcast.coverPhoto = coverPhotoData;
     }
-    
-    const updatedPodcast = await Podcast.findByIdAndUpdate(
-      req.query.id,
-      updateData,
-      { 
-        new: true, 
-        runValidators: true 
-      }
-    ).select('-__v');
-    
+
+    // Save the document - this triggers the pre-save hook to regenerate slug if title changed
+    const updatedPodcast = await podcast.save();
+
     res.json({
       success: true,
-      message: 'Podcast updated successfully',
-      data: updatedPodcast
+      message: "Podcast updated successfully",
+      data: updatedPodcast,
     });
   } catch (error) {
-    console.error('Error updating podcast:', error);
-    
+    console.error("Error updating podcast:", error);
+
     // Handle validation errors
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
-        message: 'Validation error',
-        errors: errors
+        message: "Validation error",
+        errors: errors,
       });
     }
-    
+
     // Handle invalid ObjectId
-    if (error.name === 'CastError') {
+    if (error.name === "CastError") {
       return res.status(400).json({
         success: false,
-        message: 'Invalid podcast ID format'
+        message: "Invalid podcast ID format",
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Error updating podcast',
-      error: error.message
+      message: "Error updating podcast",
+      error: error.message,
     });
   }
 };
@@ -1646,6 +1675,7 @@ module.exports = {
   createPodcast,
   getAllPodcasts,
   getPodcastById,
+  getPodcastBySlug,
   getPodcastsByTags,
   getAllTags,
   updatePodcast,

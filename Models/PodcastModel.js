@@ -123,11 +123,67 @@ const podcastSchema = new mongoose.Schema(
       type: [String],
       // required: [true, "At least one point for what's inside is required"],
     },
+
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+
+
+
+// Generate Slug
+// Helper function to generate a unique slug
+async function generateUniqueSlug(title, PodcastModel, excludeId = null) {
+  if (!title) {
+    return `blog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+  const baseSlug = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "") 
+    .replace(/\s+/g, "-")        
+    .replace(/-+/g, "-");        
+
+  let slug = baseSlug;
+  let counter = 1;
+
+  // Ensure uniqueness
+  while (true) {
+    const query = { slug };
+    if (excludeId) query._id = { $ne: excludeId };
+    const exists = await PodcastModel.findOne(query).lean();
+    if (!exists) break;
+    slug = `${baseSlug}-${counter++}`;
+  }
+
+  return slug;
+}
+
+// Pre-save hook to generate/update slug when title changes
+podcastSchema.pre("save", async function (next) {
+  try {
+    // Generate slug if new document, no slug exists, or title is modified
+    if (this.isNew || !this.slug || this.isModified("title")) {
+      this.slug = await generateUniqueSlug(
+        this.title,
+        this.constructor,
+        this._id
+      );
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Indexes for better performance
 podcastSchema.index({

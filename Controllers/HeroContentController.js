@@ -289,7 +289,7 @@ const heroStorage = new CloudinaryStorage({
 const upload = multer({
   storage: heroStorage,
   fileFilter: heroFileFilter,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // 50MB
 });
 
 // ---------- Helpers ----------
