@@ -798,8 +798,6 @@
 //   OffSearchProperty,
 // };
 
-
-
 // Fixed Controller: NewOffplanController.js
 const OffPlanProperty = require("../Models/NewOffplanModel");
 const axios = require("axios");
@@ -865,9 +863,22 @@ const fetchAndSaveProperties = async (req, res) => {
             coverImage = JSON.parse(item.cover_image_url);
         } catch (e) {
           console.warn(
-            `cover_image_url parse failed for ${item.name} (ID ${item.id}): ${e.message}`
+            `cover_image_url parse failed for ${item.name} (ID ${item.id}): ${e.message}`,
           );
         }
+
+        const formatQuarter = (dateStr) => {
+          if (!dateStr) return "TBA";
+
+          const d = new Date(dateStr);
+          if (Number.isNaN(d.getTime())) return "TBA";
+
+          const quarter = Math.floor(d.getMonth() / 3) + 1;
+          return `Q${quarter} ${d.getFullYear()}`;
+        };
+
+        const handOver = item.completion_datetime;
+        const handoverQuarter = handOver ? formatQuarter(handOver) : "TBA";
 
         const completionDate = item.completion_datetime
           ? new Date(item.completion_datetime)
@@ -889,6 +900,7 @@ const fetchAndSaveProperties = async (req, res) => {
           areaUnit: item.area_unit || "sqft",
           status: item.status, // e.g. "Presale"
           saleStatus: item.sale_status, // e.g. "Presale(EOI)"
+          handoverQuarter: handoverQuarter,
           completionDate,
           isPartnerProject: !!item.is_partner_project,
           hasEscrow: !!item.has_escrow,
@@ -919,7 +931,7 @@ const fetchAndSaveProperties = async (req, res) => {
           console.log(
             `Page ${page}: upserts=${result.upsertedCount || 0}, modified=${
               result.modifiedCount || 0
-            }`
+            }`,
           );
         } catch (e) {
           console.error("Bulk write error:", e?.message || e);
@@ -1198,7 +1210,7 @@ const getSIngleOffplanProperty = async (req, res) => {
           "X-API-Key": `${process.env.OffPlanApiKey}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     console.log(response.data);
     return res.status(200).json({
@@ -1252,7 +1264,7 @@ const getOffPlanAddressSuggestions = async (req, res) => {
       .lean();
 
     console.log(
-      `Found ${properties.length} off-plan properties matching query`
+      `Found ${properties.length} off-plan properties matching query`,
     );
 
     // Create suggestions set to avoid duplicates
@@ -1315,7 +1327,7 @@ const getOffPlanAddressSuggestions = async (req, res) => {
     suggestionsArray = suggestionsArray.slice(0, maxSuggestions);
 
     console.log(
-      `Returning ${suggestionsArray.length} project name suggestions`
+      `Returning ${suggestionsArray.length} project name suggestions`,
     );
 
     return res.status(200).json({
@@ -1339,6 +1351,7 @@ const getOffPlanAddressSuggestions = async (req, res) => {
     });
   }
 };
+
 // Get current sync status
 const getSyncStatus = async (req, res) => {
   try {
@@ -1429,7 +1442,7 @@ const FilterDeveloperOffplanProperty = async (req, res) => {
     console.log("Found properties count:", properties.length);
     console.log(
       "Sample property developer (if found):",
-      properties[0]?.developer
+      properties[0]?.developer,
     );
 
     // Process the properties to match your expected format
@@ -1556,10 +1569,10 @@ const filterByMinPrice = async (req, res) => {
       message:
         totalCount > 0
           ? `Properties with minimum price AED ${parseInt(
-              minPrice
+              minPrice,
             ).toLocaleString()} fetched successfully`
           : `No properties found with minimum price AED ${parseInt(
-              minPrice
+              minPrice,
             ).toLocaleString()}`,
       pagination: {
         currentPage: pageNum,
@@ -1656,10 +1669,10 @@ const filterByMaxPrice = async (req, res) => {
       message:
         totalCount > 0
           ? `Properties with maximum price AED ${parseInt(
-              maxPrice
+              maxPrice,
             ).toLocaleString()} fetched successfully`
           : `No properties found with maximum price AED ${parseInt(
-              maxPrice
+              maxPrice,
             ).toLocaleString()}`,
       pagination: {
         currentPage: pageNum,
@@ -1752,7 +1765,7 @@ const StatusUpdateOffPlanProperties = async (req, res) => {
     const updatedProperty = await OffPlanProperty.findByIdAndUpdate(
       id,
       { $set: { active: !property.active } },
-      { new: true, lean: true }
+      { new: true, lean: true },
     );
     return res.status(200).json({
       success: true,
@@ -1783,8 +1796,8 @@ const filterDashboardProperties = async (req, res) => {
         ...(q === "active"
           ? [{ active: true }]
           : q === "inactive"
-          ? [{ active: false }]
-          : []),
+            ? [{ active: false }]
+            : []),
       ];
     }
 
@@ -1804,6 +1817,164 @@ const filterDashboardProperties = async (req, res) => {
   }
 };
 
+const offPlanFilterByCommunity = async (req, res) => {
+  try {
+    let area = req.query.area || "";
+    const apiId = req.query.apiId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    if (!area) {
+      return res.status(400).json({
+        success: false,
+        message: "Area is required",
+      });
+    }
+    // Normalize area
+    area = area.split("(")[0].trim();
+    const searchWords = area.split(/\s+/).filter((word) => word.length > 0);
+    const wordRegexPatterns = searchWords.map((word) => {
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`\\b${escapedWord}\\b`, "i");
+    });
+    const queryConditions = [
+      { area: { $all: wordRegexPatterns } },
+      { status: { $ne: "Deleted" } },
+      { active: true },
+    ];
+    // Exclude current property if apiId exists
+    if (apiId) {
+      queryConditions.push({ apiId: { $ne: Number(apiId) } });
+    }
+    const query = { $and: queryConditions };
+
+    const skip = (page - 1) * limit;
+
+    const totalCount = await OffPlanProperty.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const properties = await OffPlanProperty.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      message: `Properties found in "${area}"`,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        perPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+      count: properties.length,
+      data: properties,
+    });
+  } catch (error) {
+    console.error("Error in filterByArea:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to filter properties by area",
+      error: error.message,
+    });
+  }
+};
+
+const getOffPlanDeveloperSuggestions = async (req, res) => {
+  try {
+    const prefix = req.query.prefix;
+    const limit = parseInt(req.query.limit) || 8;
+
+    if (!prefix || prefix.length < 2) {
+      return res.json({
+        success: true,
+        data: [],
+        count: 0,
+      });
+    }
+
+    const regex = new RegExp(`^${prefix}`, "i");
+
+    const developers = await OffPlanProperty.distinct("developer", {
+      active: true,
+      developer: { $regex: regex },
+    });
+
+    const suggestions = developers.slice(0, limit);
+
+    return res.status(200).json({
+      success: true,
+      data: suggestions,
+      count: suggestions.length,
+    });
+  } catch (error) {
+    console.error("Developer suggestion error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch developer suggestions",
+      error: error.message,
+    });
+  }
+};
+
+// HandOverQuarter
+const filterByHandoverQuarter = async (req, res) => {
+  try {
+    const { handoverQuarter } = req.query;
+    const { page = 1, limit = 10 } = req.query;
+
+    if (!handoverQuarter) {
+      return res.status(400).json({
+        success: false,
+        message: "handoverQuarter parameter is required",
+      });
+    }
+
+    const filter = { active: true, handoverQuarter };
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const totalCount = await OffPlanProperty.countDocuments(filter);
+
+    const properties = await OffPlanProperty.find(filter)
+      .skip(skip)
+      .limit(limitNum)
+      .lean();
+
+    const totalPages = Math.ceil(totalCount / limitNum);
+
+    res.status(200).json({
+      success: true,
+      message:
+        totalCount > 0
+          ? `Properties with handover quarter ${handoverQuarter} fetched successfully`
+          : `No properties found with handover quarter ${handoverQuarter}`,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        perPage: limitNum,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+      },
+      count: properties.length,
+      data: properties,
+    });
+  } catch (error) {
+    console.error("Error filtering by handover quarter:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error filtering by handover quarter",
+      error: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   fetchAndSaveProperties,
   getOffPlanAddressSuggestions,
@@ -1816,4 +1987,7 @@ module.exports = {
   OffSearchProperty,
   StatusUpdateOffPlanProperties,
   filterDashboardProperties,
+  offPlanFilterByCommunity,
+  getOffPlanDeveloperSuggestions,
+  filterByHandoverQuarter
 };

@@ -75,10 +75,10 @@ const JWT_SECRET = process.env.SECRET_KEY;
 const ADMIN_EMAIL = process.env.DASHBOARD_ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.DASHBOARD_ADMIN_PASSWORD;
 
-if (!JWT_SECRET || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
-  console.error("❌ Missing required environment variables");
-  process.exit(1);
-}
+// if (!JWT_SECRET || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
+//   console.error("❌ Missing required environment variables");
+//   process.exit(1);
+// }
 
 const login = async (req, res) => {
   try {

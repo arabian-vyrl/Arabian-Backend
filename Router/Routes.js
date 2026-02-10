@@ -603,6 +603,9 @@ router.get(
   "/offplanfilterbydeveloper",
   NewOffPlanProperties.FilterDeveloperOffplanProperty
 );
+router.get("/filterByHandoverQuarter", NewOffPlanProperties.filterByHandoverQuarter)
+
+
 router.get("/offplanminprice", NewOffPlanProperties.filterByMinPrice);
 router.get("/offplanmaxprice", NewOffPlanProperties.filterByMaxPrice);
 router.get("/OffPlanLocation", NewOffPlanProperties.OffSearchProperty);
@@ -610,14 +613,16 @@ router.get(
   "/OffPlanLocationSuggestion",
   NewOffPlanProperties.getOffPlanAddressSuggestions
 );
+router.get(
+  "/OffPlanDeveloperSuggestion",
+  NewOffPlanProperties.getOffPlanDeveloperSuggestions
+);
+router.get("/fetchSimilarNewOffPlan", NewOffPlanProperties.offPlanFilterByCommunity)
 
 // toggle Status of the newOffplan Properties
 router.put("/update-status-offplan-properties/:id", NewOffPlanProperties.StatusUpdateOffPlanProperties)
 // Dashboard Filter
 router.get("/filter-offplan-properties", NewOffPlanProperties.filterDashboardProperties)
-
-
-
 
 // Refer Property Api's
 router.post("/ReferProperty", ReferProperties.ReferProperty);
@@ -694,7 +699,8 @@ router.get("/Universal-filter", AllFilter.UniversalSpecializedFilter);
 
 router.get("/Sort-Properties", AllFilter.SortProperties);
 // router.get("/Location-filter-property", AllFilter.filterByLocation);
-router.get("/Similar-property", AllFilter.filterByCommunity);
+// router.get("/Similar-property", AllFilter.filterByCommunity);
+router.get("/Similar-property", AllFilter.NewfilterByCommunity);
 router.get("/Property-location-suggestions", AllFilter.getAddressSuggestions);
 
 

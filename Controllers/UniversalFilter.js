@@ -992,6 +992,10 @@ const getAddressSuggestions = async (req, res) => {
  */
 const filterByCommunity = async (req, res) => {
   try {
+
+    const propertyPrice = req.query.propertyPrice;
+
+    console.log("PROPERTY PRICE", propertyPrice)
     const community = req.query.community;
     const listingTypeParam = req.query.listingType || req.query.type || "Sale";
 
@@ -1178,6 +1182,275 @@ const filterByCommunity = async (req, res) => {
   }
 };
 
+
+
+const NewfilterByCommunity = async (req, res) => {
+  try {
+    const propertyPrice = req.query.propertyPrice || "";
+    console.log("PROPERTY PRICE", propertyPrice);
+    let community = req.query.community || "";
+    const listingTypeParam = req.query.listingType || req.query.type || "";
+    console.log("Community", community)
+
+    console.log("Listing Type Param", listingTypeParam)
+
+    //Normalize the Community Name to remove the (Tecom, (Dubai World Central) ) like this 
+    if (community) {
+       community = community.split('(')[0].trim();
+    }
+
+    const listingTypes = listingTypeParam.split(",").map((t) => t.trim());
+    console.log("LT", listingTypes);
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+
+    // Normalize listing types: "sale" -> "Sale", "offplan" -> "Offplan"
+    const normalizedListingTypes = listingTypes.map(
+      (type) => type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
+    );
+
+    // Community filter (optional)
+    let communityQuery = {};
+    let searchWords = [];
+    
+    if (community) {
+      // Break community string into words for flexible matching
+      searchWords = community
+        .trim()
+        .split(/\s+/)
+        .filter((word) => word.length > 0);
+
+      // Create regex patterns for each word with word-boundaries
+      const wordRegexPatterns = searchWords.map((word) => {
+        const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return new RegExp(`\\b${escapedWord}\\b`, "i");
+      });
+      
+      communityQuery = {
+        "custom_fields.community": {
+          $all: wordRegexPatterns,
+        },
+      };
+    }
+
+    // Build listingType-specific query
+    let listingTypeQuery;
+
+    if (
+      normalizedListingTypes.length === 1 &&
+      normalizedListingTypes[0] === "Offplan"
+    ) {
+      // Pure Offplan search: use completion_status
+      listingTypeQuery = {
+        "custom_fields.completion_status": {
+          $in: ["off_plan_primary", "off_plan_secondary"],
+        },
+      };
+    } else if (normalizedListingTypes.includes("Offplan")) {
+      // Mixed Offplan + others (Sale/Rent)
+      const offeringTypes = normalizedListingTypes
+        .filter((type) => type !== "Offplan")
+        .map((type) => (type === "Sale" ? "RS" : "RR"));
+
+      const orConditions = [];
+
+      // Offplan condition
+      orConditions.push({
+        "custom_fields.completion_status": {
+          $in: ["off_plan_primary", "off_plan_secondary"],
+        },
+      });
+
+      // Sale/Rent condition (non-offplan)
+      if (offeringTypes.length > 0) {
+        orConditions.push({
+          offering_type: { $in: offeringTypes },
+          "custom_fields.completion_status": {
+            $nin: ["off_plan_primary", "off_plan_secondary"],
+          },
+        });
+      }
+
+      listingTypeQuery = { $or: orConditions };
+    } else {
+      // Only Sale/Rent (no Offplan)
+      const offeringTypes = normalizedListingTypes.map((type) =>
+        type === "Sale" ? "RS" : "RR"
+      );
+
+      listingTypeQuery = {
+        offering_type:
+          offeringTypes.length === 1
+            ? offeringTypes[0]
+            : { $in: offeringTypes },
+        "custom_fields.completion_status": {
+          $nin: ["off_plan_primary", "off_plan_secondary"],
+        },
+      };
+    }
+
+    // Price range calculation (±20% of propertyPrice)
+    let priceQuery = {};
+    let minPrice = null;
+    let maxPrice = null;
+    
+    if (propertyPrice) {
+      const basePrice = parseFloat(propertyPrice);
+      minPrice = basePrice - (basePrice * 0.25); // 25% decrease
+      maxPrice = basePrice + (basePrice * 0.25); // 25% increase
+      
+      priceQuery = {
+        "general_listing_information.listingprice": {
+          $gte: minPrice.toString(),
+          $lte: maxPrice.toString()
+        }
+      };
+
+      console.log("Price Range:", {
+        basePrice,
+        minPrice,
+        maxPrice
+      });
+    }
+
+    // Combined query:
+    // - community (if provided)
+    // - listing type logic
+    // - price range (if provided)
+    // - Live properties only
+
+    const queryConditions = [
+      listingTypeQuery,
+      {
+        "general_listing_information.status": "Live",
+      },
+    ];
+    
+    // Add community filter only if provided
+    if (community) {
+      queryConditions.push(communityQuery);
+    }
+
+    // Add price filter only if provided
+    if (propertyPrice) {
+      queryConditions.push(priceQuery);
+    }
+
+    const combinedQuery = {
+      $and: queryConditions,
+    };
+
+    console.log("Community search terms:", searchWords);
+    console.log("Listing types:", normalizedListingTypes);
+    console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
+
+    const skip = (page - 1) * limit;
+
+    const totalCount = await Property.countDocuments(combinedQuery);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    if (totalCount === 0) {
+      return res.status(200).json({
+        success: true,
+        message: `No ${normalizedListingTypes
+          .join(" or ")
+          .toLowerCase()} properties found${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range ${minPrice} - ${maxPrice}` : ''}`,
+        pagination: {
+          currentPage: page,
+          totalPages: 0,
+          totalCount: 0,
+          perPage: limit,
+          hasNextPage: false,
+          hasPrevPage: page > 1,
+        },
+        priceFilter: propertyPrice ? {
+          basePrice: parseFloat(propertyPrice),
+          minPrice,
+          maxPrice,
+          range: "±25%"
+        } : null,
+        communityStats: {
+          totalMatches: 0,
+          communitiesBreakdown: {}
+        },
+        count: 0,
+        data: [],
+        debug: {
+          listingTypes: normalizedListingTypes,
+          filterQuery: combinedQuery,
+          searchTerms: searchWords,
+        },
+      });
+    }
+
+    const properties = await Property.find(combinedQuery)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Get all properties (without pagination) for community statistics
+    const allProperties = await Property.find(combinedQuery)
+      .select('custom_fields.community')
+      .lean();
+
+    // Calculate community statistics
+    const communityBreakdown = {};
+    allProperties.forEach(prop => {
+      const communityName = prop.custom_fields?.community || 'Unknown';
+      communityBreakdown[communityName] = (communityBreakdown[communityName] || 0) + 1;
+    });
+
+    console.log(
+      `Found ${properties.length} ${normalizedListingTypes
+        .join(" and ")
+        .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `${normalizedListingTypes.join(
+        " and "
+      )} properties${community ? ` in "${community}" community` : ''} found successfully`,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalCount: totalCount,
+        perPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+      priceFilter: propertyPrice ? {
+        basePrice: parseFloat(propertyPrice),
+        minPrice,
+        maxPrice,
+        range: "±20%"
+      } : null,
+      communityStats: {
+        totalMatches: totalCount,
+        communitiesBreakdown: communityBreakdown
+      },
+      searchTerms: searchWords,
+      searchField: community ? "custom_fields.community" : null,
+      listingTypes: normalizedListingTypes,
+      count: properties.length,
+      data: properties,
+      debug: {
+        listingTypes: normalizedListingTypes,
+        filterQuery: combinedQuery,
+      },
+    });
+  } catch (error) {
+    console.error("Error in filterByCommunity:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to filter properties by community",
+      error: error.message,
+    });
+  }
+};
+
 /**
  * filterByCommunityFlexible:
  * - Simpler version that matches listing_type / _classification / offering_type
@@ -1194,4 +1467,5 @@ module.exports = {
   filterByCommunity,
   // Main universal filter for property search
   UniversalSpecializedFilter,
+  NewfilterByCommunity
 };
