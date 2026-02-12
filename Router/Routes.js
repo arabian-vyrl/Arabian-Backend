@@ -43,8 +43,6 @@
 //   api_secret: process.env.CLOUDINARY_API_SECRET
 // });
 
-
-
 // const mainStorage = multer.diskStorage({
 //   destination: function (req, file, cb) {
 //     const uploadPath = path.join(__dirname, "../uploads");
@@ -88,9 +86,9 @@
 
 // // Agent-specific upload middleware
 // const agentUpload = multer({
-//   storage: agentStorage, 
+//   storage: agentStorage,
 //   fileFilter,
-//   limits: { fileSize: 15 * 1024 * 1024 }, 
+//   limits: { fileSize: 15 * 1024 * 1024 },
 // });
 
 // // General upload middleware (for blogs, news, hero content, etc.)
@@ -230,7 +228,7 @@
 // // Your route is already correct!
 // router.post(
 //   "/update-agent",
-//   agentUpload.single("image"), 
+//   agentUpload.single("image"),
 //   AgentController.updateAgent
 // );
 
@@ -244,7 +242,6 @@
 
 // router.get("/delete-agent", AgentController.deleteAgent);
 
-
 // // Leaderboard Routes
 // router.get("/GetAgentDeals", LeaderboardController.syncAgentDealsFromSalesforce);
 // router.get("/GetAgentCommissions", LeaderboardController.syncAgentCommissionsFromSalesforce);
@@ -253,12 +250,10 @@
 // router.post("/SaleforceAuthToken",LeaderboardController.getSalesforceToken)
 // router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
 
-
 // // Manual Testing
 // router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
 
 // // TrackRefer EndPoint
-
 
 // // Adeel EndPionts
 // router.post("/track-referrer", ReferProperties.trackRefer)
@@ -292,8 +287,6 @@
 // router.post("/rental-yield-mortgage-approval", RentalYieldMortgageApproval.createRentalYieldApproval);
 // router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
 // router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
-
-
 
 // router.post("/auth/login", DashboardLoginAuthController.login)
 // router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
@@ -451,9 +444,6 @@
 
 // module.exports = router;
 
-
-
-
 // const getAllProperties = require("../Controllers/allPropertiesController");
 const PropertyController = require("../Controllers/allPropertiesController");
 // const getSaleProperties = require("../Controllers/salePropertiesController");
@@ -473,24 +463,23 @@ const Podcast = require("../Controllers/PodcastController");
 const HeroController = require("../Controllers/HeroContentController");
 const LeaderboardController = require("../Controllers/LeaderboardController");
 const middleWare = require("../Middlewares/VerifyLoginReferralToken");
-const propertyListForm = require("../Controllers/PropertyListForm")
-const propertyValuation = require("../Controllers/PropertyValuation")
-const offPlanListingForm = require("../Controllers/OffPlanController")
-const RentalYieldMortgageApproval = require("../Controllers/RentalYieldMortgageApproval")
-const MortgageApproval = require("../Controllers/MortgageApproval")
-const MortgageQuote = require("../Controllers/GetMorgageQuote")
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const GetLocationRedin = require("../Controllers/GetLocationRedin")
-const DashboardLoginAuthController = require("../Controllers/DashboardLoginAuthController")
-const AdminAuthMiddleware  = require("../Middlewares/Auth")
+const propertyListForm = require("../Controllers/PropertyListForm");
+const propertyValuation = require("../Controllers/PropertyValuation");
+const offPlanListingForm = require("../Controllers/OffPlanController");
+const RentalYieldMortgageApproval = require("../Controllers/RentalYieldMortgageApproval");
+const MortgageApproval = require("../Controllers/MortgageApproval");
+const MortgageQuote = require("../Controllers/GetMorgageQuote");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const GetLocationRedin = require("../Controllers/GetLocationRedin");
+const DashboardLoginAuthController = require("../Controllers/DashboardLoginAuthController");
+const AdminAuthMiddleware = require("../Middlewares/Auth");
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
-
+const CategoryController = require("../Controllers/CategoryController");
 // testing Routes
 const testController2 = require("../Controllers/testController2");
 const testController = require("../Controllers/testController");
-
 
 const express = require("express");
 const router = express.Router();
@@ -501,7 +490,7 @@ const fs = require("fs");
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const mainStorage = multer.diskStorage({
@@ -522,18 +511,18 @@ const mainStorage = multer.diskStorage({
 const agentStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'agent-images',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    folder: "agent-images",
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
     transformation: [
-      { width: 800, height: 800, crop: 'limit' }, // Max size
-      { quality: 'auto' } // Auto optimize
+      { width: 800, height: 800, crop: "limit" }, // Max size
+      { quality: "auto" }, // Auto optimize
     ],
     public_id: (req, file) => {
       // Generate unique filename
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
       return `agent-${unique}`;
-    }
-  }
+    },
+  },
 });
 
 // File filter - only allow images
@@ -545,12 +534,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-
 // Agent-specific upload middleware
 const agentUpload = multer({
-  storage: agentStorage, 
+  storage: agentStorage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, 
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 // General upload middleware (for blogs, news, hero content, etc.)
@@ -564,12 +552,12 @@ router.get("/get-hero", HeroController.getHero);
 router.post(
   "/add-replace",
   HeroController.upload.single("media"),
-  HeroController.addOrReplaceHero
+  HeroController.addOrReplaceHero,
 );
 router.put(
   "/update",
   HeroController.upload.single("media"),
-  HeroController.updateHero
+  HeroController.updateHero,
 );
 
 // Contact us
@@ -589,40 +577,51 @@ router.get("/single-property", PropertyController);
 // New API for offplan properties
 router.get(
   "/save-offplan-property",
-  NewOffPlanProperties.fetchAndSaveProperties
+  NewOffPlanProperties.fetchAndSaveProperties,
 );
 router.get(
   "/get-offplan-property",
-  NewOffPlanProperties.getNewOffPlanProperties
+  NewOffPlanProperties.getNewOffPlanProperties,
 );
 router.get(
   "/get-offplan-single-property",
-  NewOffPlanProperties.getSIngleOffplanProperty
+  NewOffPlanProperties.getSIngleOffplanProperty,
 );
 router.get(
   "/offplanfilterbydeveloper",
-  NewOffPlanProperties.FilterDeveloperOffplanProperty
+  NewOffPlanProperties.FilterDeveloperOffplanProperty,
 );
-router.get("/filterByHandoverQuarter", NewOffPlanProperties.filterByHandoverQuarter)
-
+router.get(
+  "/filterByHandoverQuarter",
+  NewOffPlanProperties.filterByHandoverQuarter,
+);
 
 router.get("/offplanminprice", NewOffPlanProperties.filterByMinPrice);
 router.get("/offplanmaxprice", NewOffPlanProperties.filterByMaxPrice);
 router.get("/OffPlanLocation", NewOffPlanProperties.OffSearchProperty);
 router.get(
   "/OffPlanLocationSuggestion",
-  NewOffPlanProperties.getOffPlanAddressSuggestions
+  NewOffPlanProperties.getOffPlanAddressSuggestions,
 );
 router.get(
   "/OffPlanDeveloperSuggestion",
-  NewOffPlanProperties.getOffPlanDeveloperSuggestions
+  NewOffPlanProperties.getOffPlanDeveloperSuggestions,
 );
-router.get("/fetchSimilarNewOffPlan", NewOffPlanProperties.offPlanFilterByCommunity)
+router.get(
+  "/fetchSimilarNewOffPlan",
+  NewOffPlanProperties.offPlanFilterByCommunity,
+);
 
 // toggle Status of the newOffplan Properties
-router.put("/update-status-offplan-properties/:id", NewOffPlanProperties.StatusUpdateOffPlanProperties)
+router.put(
+  "/update-status-offplan-properties/:id",
+  NewOffPlanProperties.StatusUpdateOffPlanProperties,
+);
 // Dashboard Filter
-router.get("/filter-offplan-properties", NewOffPlanProperties.filterDashboardProperties)
+router.get(
+  "/filter-offplan-properties",
+  NewOffPlanProperties.filterDashboardProperties,
+);
 
 // Refer Property Api's
 router.post("/ReferProperty", ReferProperties.ReferProperty);
@@ -631,17 +630,23 @@ router.get("/Track-Refer-Lead", ReferProperties.trackQUery);
 // router.get("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.put("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.get("/Delete-Refer-Lead", ReferProperties.deleteQuery);
-router.post("/refer-track-logout", ReferProperties.Referrerlogout)
+router.post("/refer-track-logout", ReferProperties.Referrerlogout);
 
 // Blogs Api's
 router.get("/GetBlogs", Blogs.GetAllBlogs);
 router.get("/SingleBlog", Blogs.getSingleBlog);
-router.get("/SingleBlogBySlug", Blogs.getBlogBySlug)
+router.get("/SingleBlogBySlug", Blogs.getBlogBySlug);
 router.get("/DeleteBlog", Blogs.deleteBlog);
 router.get("/GetBlogByTag", Blogs.getBlogsByTags);
 router.post("/Addblog", Blogs.upload, Blogs.createBlog);
 router.put("/UpdateBlog/:id", Blogs.upload, Blogs.updateBlog);
-router.get("/getBlogByAgent", Blogs.getBlogsByAgent)
+router.get("/getBlogByAgent", Blogs.getBlogsByAgent);
+
+// Category Routes
+router.post("/create-category", CategoryController.createCategory);
+router.get("/get-category", CategoryController.getCategories);
+router.put("/update-category", CategoryController.updateCategory);
+router.delete("/delete-category", CategoryController.deleteCategory);
 
 // News Routes/
 router.get("/GetNews", News.GetAllNews);
@@ -659,17 +664,20 @@ router.get("/DeleteCommunityGuide", CommunityGuides.deleteCommunityGuide);
 router.post(
   "/AddCommunityGuide",
   CommunityGuides.uploadMultiple,
-  CommunityGuides.createCommunityGuide
+  CommunityGuides.createCommunityGuide,
 );
 router.post(
   "/UpdateCommunityGuide",
   CommunityGuides.uploadMultiple,
-  CommunityGuides.updateCommunityGuide
+  CommunityGuides.updateCommunityGuide,
 );
 
-router.post("/off-plan-form", offPlanListingForm.createOffPlanContact)
-router.get("/off-plan-contacts", offPlanListingForm.getOffPlanContacts)
-router.delete("/off-plan-contacts-delete/:id", offPlanListingForm.deleteOffPlanContact)
+router.post("/off-plan-form", offPlanListingForm.createOffPlanContact);
+router.get("/off-plan-contacts", offPlanListingForm.getOffPlanContacts);
+router.delete(
+  "/off-plan-contacts-delete/:id",
+  offPlanListingForm.deleteOffPlanContact,
+);
 
 // Community Guideline Api's
 // router.get("/GetCommunityGuides", CommunityGuides.GetAllCommunityGuides);
@@ -703,18 +711,17 @@ router.get("/Sort-Properties", AllFilter.SortProperties);
 router.get("/Similar-property", AllFilter.NewfilterByCommunity);
 router.get("/Property-location-suggestions", AllFilter.getAddressSuggestions);
 
-
 // AGENT API ENDPOINTS
 router.post(
   "/register-agents",
   agentUpload.single("imageUrl"),
-  AgentController.createAgent
+  AgentController.createAgent,
 );
 // Your route is already correct!
 router.post(
   "/update-agent",
-  agentUpload.single("image"), 
-  AgentController.updateAgent
+  agentUpload.single("image"),
+  AgentController.updateAgent,
 );
 
 // Get all agents (with pagination, sorting, etc.)
@@ -725,69 +732,119 @@ router.get("/SequenceAgent", AgentController.getAgentsBySequence);
 router.get("/Agent", AgentController.getAgentById);
 router.get("/AgentByEmail", AgentController.getAgentByEmail);
 router.get("/delete-agent", AgentController.deleteAgent);
-
+router.get("/getAgentLanguages", AgentController.getAgentLanguages)
 
 // Leaderboard Routes
-router.get("/GetAgentDeals", LeaderboardController.syncAgentDealsFromSalesforce);
-router.get("/GetAgentCommissions", LeaderboardController.syncAgentCommissionsFromSalesforce);
-router.get("/GetAgentViewings", LeaderboardController.syncAgentViewingsFromSalesforce);
-router.get("/UpdateMonthlyProperty", LeaderboardController.updateMonthlyPropertiesForAllAgents);
-router.post("/SaleforceAuthToken",LeaderboardController.getSalesforceToken)
-router.get("/getLeaderboardAgents",LeaderboardController.getLeaderboardAgents)
-
+router.get(
+  "/GetAgentDeals",
+  LeaderboardController.syncAgentDealsFromSalesforce,
+);
+router.get(
+  "/GetAgentCommissions",
+  LeaderboardController.syncAgentCommissionsFromSalesforce,
+);
+router.get(
+  "/GetAgentViewings",
+  LeaderboardController.syncAgentViewingsFromSalesforce,
+);
+router.get(
+  "/UpdateMonthlyProperty",
+  LeaderboardController.updateMonthlyPropertiesForAllAgents,
+);
+router.post("/SaleforceAuthToken", LeaderboardController.getSalesforceToken);
+router.get("/getLeaderboardAgents", LeaderboardController.getLeaderboardAgents);
 
 // Manual Testing
-router.post("/ManualSaleforceAuthToken",LeaderboardController.GetSalesForceToken)
+router.post(
+  "/ManualSaleforceAuthToken",
+  LeaderboardController.GetSalesForceToken,
+);
 
-// TrackRefer EndPoint
-
+// Category Routes
 
 // Adeel EndPionts
-router.post("/track-referrer", ReferProperties.trackRefer)
-router.get("/verify-referral-token", middleWare , ReferProperties.verifyReferrerToken)
+router.post("/track-referrer", ReferProperties.trackRefer);
+router.get(
+  "/verify-referral-token",
+  middleWare,
+  ReferProperties.verifyReferrerToken,
+);
 
-router.post("/propertyValuation", propertyValuation.createPropertyValuation)
-router.get("/get-property-valuations", propertyValuation.getPropertyValuations)
-router.delete("/delete-property-valuation/:id", propertyValuation.deletePropertyValuation)
+router.post("/propertyValuation", propertyValuation.createPropertyValuation);
+router.get("/get-property-valuations", propertyValuation.getPropertyValuations);
+router.delete(
+  "/delete-property-valuation/:id",
+  propertyValuation.deletePropertyValuation,
+);
 
-router.post("/list-property-form", propertyListForm.createPropertyListForm)
-router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm)
-router.delete("/delete-list-property-form/:id", propertyListForm.deletePropertyListForm)
+router.post("/list-property-form", propertyListForm.createPropertyListForm);
+router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm);
+router.delete(
+  "/delete-list-property-form/:id",
+  propertyListForm.deletePropertyListForm,
+);
 
 // router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 
-router.put("/update-community-guide-status/:id", CommunityGuides.updateCommunityStatus)
-router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo)
+router.put(
+  "/update-community-guide-status/:id",
+  CommunityGuides.updateCommunityStatus,
+);
+router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo);
 
-router.get("/redin/location", GetLocationRedin.getLocationFromRedin)
-router.get("/extract-location-redin", GetLocationRedin.extractLocationFromRedin)
-router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData)
-router.get("/get-all-extracted-location", GetLocationRedin.getAllRedinLocationFromDatabase)
+router.get("/redin/location", GetLocationRedin.getLocationFromRedin);
+router.get(
+  "/extract-location-redin",
+  GetLocationRedin.extractLocationFromRedin,
+);
+router.get("/check-properties-with-redin", GetLocationRedin.updatePropertyData);
+router.get(
+  "/get-all-extracted-location",
+  GetLocationRedin.getAllRedinLocationFromDatabase,
+);
 
-router.post("/mortgage-quote", MortgageQuote.createMortgageQuote)
-router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes)
-router.delete("/delete-mortgage-quote/:id", MortgageQuote.deleteMortgageQuote)
+router.post("/mortgage-quote", MortgageQuote.createMortgageQuote);
+router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes);
+router.delete("/delete-mortgage-quote/:id", MortgageQuote.deleteMortgageQuote);
 
 router.post("/mortgage-approval", MortgageApproval.createMortgageApproval);
-router.get("/get-all-mortgage-approvals", MortgageApproval.getMortgageApprovals);
-router.delete("/delete-mortgage-approval/:id", MortgageApproval.deleteMortgageApproval);
+router.get(
+  "/get-all-mortgage-approvals",
+  MortgageApproval.getMortgageApprovals,
+);
+router.delete(
+  "/delete-mortgage-approval/:id",
+  MortgageApproval.deleteMortgageApproval,
+);
 
-router.post("/rental-yield-mortgage-approval", RentalYieldMortgageApproval.createRentalYieldApproval);
-router.get("/get-all-rental-yield-approvals", RentalYieldMortgageApproval.getRentalYieldApprovals);
-router.delete("/delete-rental-yeild-approval/:id", RentalYieldMortgageApproval.deleteRentalYieldApproval);
+router.post(
+  "/rental-yield-mortgage-approval",
+  RentalYieldMortgageApproval.createRentalYieldApproval,
+);
+router.get(
+  "/get-all-rental-yield-approvals",
+  RentalYieldMortgageApproval.getRentalYieldApprovals,
+);
+router.delete(
+  "/delete-rental-yeild-approval/:id",
+  RentalYieldMortgageApproval.deleteRentalYieldApproval,
+);
 
-router.post("/auth/login", DashboardLoginAuthController.login)
-router.get("/auth/verify", AdminAuthMiddleware, DashboardLoginAuthController.verifyToken);
+router.post("/auth/login", DashboardLoginAuthController.login);
+router.get(
+  "/auth/verify",
+  AdminAuthMiddleware,
+  DashboardLoginAuthController.verifyToken,
+);
 router.post("/auth/logout", DashboardLoginAuthController.logout);
 
-
 // test Routes
-router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData)
-router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew)
+router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData);
+router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew);
 
 // Route for testing Coordinates
-router.get("/get-coordinates", testController2.getPropertiesWithCoordinates)
-router.get("/test-controller-geo-pionts", testController.MatchgeoPiont)
+router.get("/get-coordinates", testController2.getPropertiesWithCoordinates);
+router.get("/test-controller-geo-pionts", testController.MatchgeoPiont);
 
 // ========== OPTIMIZED GEO POINT MATCHING ROUTES ==========
 // Option 1: Optimized non-blocking (still waits for completion but doesn't freeze server)
@@ -796,7 +853,6 @@ router.get("/test-controller-geo-pionts", testController.MatchgeoPiont)
 // Option 2: Background processing (returns immediately, check status endpoint)
 // router.get("/match-geo-point-background", testController2.MatchGeoPointBackground)
 // router.get("/match-geo-point-status", testController2.GetBackgroundJobStatus)
-
 
 // Leaderboard Agent
 // Search agents by name or email

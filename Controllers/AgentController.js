@@ -1019,6 +1019,11 @@ const createAgent = async (req, res) => {
       req.body.imageUrl = req.file.path;
     }
 
+    // Add designation category handling
+    if (req.body.designationCategory) {
+      req.body.designationCategory = req.body.designationCategory.trim();
+    }
+
     // Booleans
     if (req.body.superAgent !== undefined) {
       req.body.superAgent = isTruthy(req.body.superAgent);
@@ -1038,7 +1043,7 @@ const createAgent = async (req, res) => {
       const desiredSeq = clampInt(req.body.sequenceNumber);
       req.body.sequenceNumber = await Agent.insertAtSequence(
         desiredSeq,
-        session
+        session,
       );
     } else {
       const maxSeq = await Agent.getMaxSequenceNumber(session);
@@ -1103,7 +1108,7 @@ const getAgents = async (req, res) => {
           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
           blogsCount: { $size: { $ifNull: ["$blogs", []] } },
         },
-      }
+      },
     );
 
     const agents = await Agent.aggregate(pipeline).allowDiskUse(true);
@@ -1154,7 +1159,7 @@ const getAgentByEmail = async (req, res) => {
         agentLanguage: 1,
         leaderboard: 1,
         superAgent: 1,
-      }
+      },
     );
 
     if (!agent) {
@@ -1215,6 +1220,7 @@ const updateAgent = async (req, res) => {
       const allowedFields = [
         "agentName",
         "designation",
+        "designationCategory",
         "reraNumber",
         "specialistAreas",
         "description",
@@ -1278,12 +1284,12 @@ const updateAgent = async (req, res) => {
     const updateFields = buildUpdateObject(
       requestFields,
       req.file,
-      existingAgent
+      existingAgent,
     );
 
     // No changes?
     const effectiveKeys = Object.keys(updateFields).filter(
-      (k) => k !== "lastUpdated"
+      (k) => k !== "lastUpdated",
     );
     if (effectiveKeys.length === 0) {
       await session.commitTransaction();
@@ -1326,7 +1332,7 @@ const updateAgent = async (req, res) => {
     const updatedAgent = await Agent.findOneAndUpdate(
       { agentId },
       { $set: updateFields },
-      { new: true, runValidators: true, session }
+      { new: true, runValidators: true, session },
     );
 
     await session.commitTransaction();
@@ -1334,7 +1340,7 @@ const updateAgent = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `Agent updated successfully. Updated fields: ${effectiveKeys.join(
-        ", "
+        ", ",
       )}`,
       data: updatedAgent,
       imageUrl: updatedAgent.imageUrl,
@@ -1349,7 +1355,7 @@ const updateAgent = async (req, res) => {
       return res.status(400).json({
         success: false,
         error: `${field?.[0]?.toUpperCase()}${field?.slice(
-          1
+          1,
         )} "${value}" already exists`,
       });
     }
@@ -1392,8 +1398,6 @@ const getAgentsBySequence = async (req, res) => {
 //   }
 // };
 
-
-
 const deleteAgent = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -1403,7 +1407,9 @@ const deleteAgent = async (req, res) => {
     const agentId = req.query.agentId;
     if (!agentId) {
       await session.abortTransaction();
-      return res.status(400).json({ success: false, error: "Agent ID is required" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Agent ID is required" });
     }
 
     const agent = await Agent.findOne({ agentId }).session(session);
@@ -1436,6 +1442,60 @@ const deleteAgent = async (req, res) => {
   }
 };
 
+
+// Get the Distict Languages
+
+const getAgentLanguages = async (req, res) => {
+  try {
+    const languages = await Agent.aggregate([
+      {
+        $match: {
+          agentLanguage: { $exists: true, $ne: "" }
+        }
+      },
+      {
+        $project: {
+          languages: { $split: ["$agentLanguage", ","] }
+        }
+      },
+      { $unwind: "$languages" },
+      {
+        $project: {
+          language: { $trim: { input: "$languages" } }
+        }
+      },
+      {
+        $group: {
+          _id: "$language"
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          language: "$_id"
+        }
+      },
+      { $sort: { language: 1 } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: languages.length,
+      data: languages.map(l => l.language)
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch agent languages",
+      error: error.message
+    });
+  }
+};
+
+
+
+
 module.exports = {
   createAgent,
   getAgents,
@@ -1444,4 +1504,5 @@ module.exports = {
   updateAgent,
   getAgentsBySequence,
   deleteAgent,
+  getAgentLanguages
 };
