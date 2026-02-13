@@ -41,13 +41,14 @@ const labelToSlug = {
   "Shared Spa": "shared-spa",
   Parking: "covered-parking", // adjust if needed
   Security: "security",
-  Garden: "garden",
+  "Garden": "private-garden",
   Elevator: "elevator",
   "Maid Room": "maids-room",
-  "Study Room": "study-room",
+  "Study Room": "study",
   Storage: "storage",
   "Built-in Wardrobes": "built-in-wardrobes",
   "Kitchen Appliances": "kitchen-appliances",
+  "Jacuzzi" : "private-jacuzzi"
 };
 
 /**

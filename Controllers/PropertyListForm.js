@@ -9,8 +9,8 @@ const createPropertyListForm = async (req, res) => {
       lastName,
       telephone,
       email,
-      preferredDate,
-      preferredTime,
+      // preferredDate,
+      // preferredTime,
       address,
     } = req.body;
 
@@ -25,8 +25,8 @@ const createPropertyListForm = async (req, res) => {
       lastName,
       telephone,
       email,
-      preferredDate,
-      preferredTime,
+      // preferredDate,
+      // preferredTime,
       address,
     });
 
@@ -43,9 +43,9 @@ const createPropertyListForm = async (req, res) => {
       firstName: propertyList.firstName,
       last_name: propertyList.lastName,
       tele_phone: propertyList.telephone,
-      email: propertyList.phone,
-      preferredDate: propertyList.preferredDate,
-      preferredTime: propertyList.preferredTime,
+      email: propertyList.email,
+      // preferredDate: propertyList.preferredDate,
+      // preferredTime: propertyList.preferredTime,
       address: propertyList.address,
     };
     salesforceService.syncWithRetry(PropertyListModel, propertyList._id, salesforceData);

@@ -11,9 +11,13 @@ const valuationPropertyTableModel = new mongoose.Schema({
   phone: {
     type: String
   },
-  telephone: {
-    type: String
+  email: {
+    type: String, 
+    required: true
   },
+  // telephone: {
+  //   type: String
+  // },
   preferredDate: {
     type: Date
   },
@@ -24,52 +28,49 @@ const valuationPropertyTableModel = new mongoose.Schema({
     type: String
   },
 
-  communityTowerName: {
-    type: String
-  },
-  relation: {
-    type: String,
-    enum: ["Friend", "Family", "Colleague", "Other"]
-  },
-  propertyType: {
-    type: String
-  },
-  numberOfBedrooms: {
-    type: Number
-  },
-  numberOfBathrooms: {
-    type: Number
-  },
-  unitSize: {
-    type: Number // in sq ft
-  },
-  floor: {
-    type: String
-  },
-  views: {
-    type: String
-  },
-  upgrades: {
-    type: String
-  },
+  // communityTowerName: {
+  //   type: String
+  // },
+  // relation: {
+  //   type: String,
+  //   enum: ["Friend", "Family", "Colleague", "Other"]
+  // },
+  // propertyType: {
+  //   type: String
+  // },
+  // numberOfBedrooms: {
+  //   type: Number
+  // },
+  // numberOfBathrooms: {
+  //   type: Number
+  // },
+  // unitSize: {
+  //   type: Number // in sq ft
+  // },
+  // floor: {
+  //   type: String
+  // },
+  // views: {
+  //   type: String
+  // },
+  // upgrades: {
+  //   type: String
+  // },
 
   // Step 3 Fields - Provide your details
-  name: {
-    type: String
-  },
-  email: {
-    type: String
-  },
-    salesforceSynced:{type: Boolean, default: false },
+  // name: {
+  //   type: String
+  // },
+  salesforceSynced:{type: Boolean, default: false },
   // System Fields
   submittedAt: {
     type: Date,
     default: Date.now
   },
-  currentStep: {
-    type: Number,
-    default: 1
-  }
+  // currentStep: {
+  //   type: Number,
+  //   default: 1
+  // }
 }, {
   timestamps: true
 });

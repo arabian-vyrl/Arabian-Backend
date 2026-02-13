@@ -3,6 +3,7 @@ require("./Config/redis.js"); // Initialize Redis connection
 require("dotenv").config();
 const { setupCronJobs } = require("./Controllers/LeaderboardController.js");
 const { schedulePropertySync } = require("./Controllers/XmlParser.js");
+const {scheduleNewOffPlanSync} = require("./Controllers/NewOffplanController.js")
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -87,6 +88,8 @@ const upload = multer({
 // Agents with salesforce sync cron job (CRON JOBS)
 setupCronJobs();
 schedulePropertySync();
+// scheduleNewOffPlanSync()
+
 
 // Then mount your API routes
 app.use("/", router);

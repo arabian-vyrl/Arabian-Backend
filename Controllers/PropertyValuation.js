@@ -8,36 +8,25 @@ const createPropertyValuation = async (req, res) => {
       firstName,
       lastName,
       phone,
-      telephone,
+      email,
       preferredDate,
       preferredTime,
       propertyAddress,
 
       // Step 1 Fields
-      communityTowerName,
-      relation,
-
+     
       // Step 2 Fields
-      propertyType,
-      numberOfBedrooms,
-      numberOfBathrooms,
-      unitSize,
-      floor,
-      views,
-      upgrades,
 
-      name,
-      email,
 
       // Optional
-      currentStep,
+
     } = req.body;
 
-    if (!firstName || !lastName || !phone || !preferredDate || !preferredTime) {
+    if (!firstName || !lastName || !phone || !email ) {
       return res.status(400).json({
         success: false,
         message:
-          "First Name, Last Name, Phone, Preferred Date and Preferred Time are required.",
+          "First Name, Last Name, Phone, Email are required.",
       });
     }
 
@@ -45,22 +34,11 @@ const createPropertyValuation = async (req, res) => {
       firstName,
       lastName,
       phone,
-      telephone,
+      email,
       preferredDate,
       preferredTime,
       propertyAddress,
-      communityTowerName,
-      relation,
-      propertyType,
-      numberOfBedrooms,
-      numberOfBathrooms,
-      unitSize,
-      floor,
-      views,
-      upgrades,
-      name,
-      email,
-      currentStep: currentStep || 1,
+      // currentStep: currentStep || 1,
     });
 
     await propertyValuation.save();
@@ -74,23 +52,11 @@ const createPropertyValuation = async (req, res) => {
       firstName: propertyValuation.firstName,
       last_name: propertyValuation.lastName,
       tele_phone: propertyValuation.phone,
-      telephone: propertyValuation.telephone,
-      preferredDate: propertyValuation.preferredDate,
-      preferredTime: propertyValuation.preferredTime,
-      propertyAddress: propertyValuation.propertyAddress,
-      communityTowerName: propertyValuation.communityTowerName,
-      relation: propertyValuation.relation,
-      propertyType: propertyValuation.propertyType,
-      numberOfBedrooms: propertyValuation.numberOfBedrooms,
-      numberOfBathrooms: propertyValuation.numberOfBathrooms,
-      unitSize: propertyValuation.unitSize,
-      floor: propertyValuation.floor,
-      views: propertyValuation.views,
-      upgrades: propertyValuation.upgrades,
-      name: propertyValuation.name,
       email: propertyValuation.email,
-      currentStep: propertyValuation.currentStep,
-    };
+      preferredDate: propertyValuation.preferredDate, 
+      preferredTime: propertyValuation.preferredTime,
+      propertyAddress: propertyValuation.propertyAddress
+     };
 
     salesforceService.syncWithRetry(
       PropertyValuation,

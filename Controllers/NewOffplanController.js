@@ -801,6 +801,55 @@
 // Fixed Controller: NewOffplanController.js
 const OffPlanProperty = require("../Models/NewOffplanModel");
 const axios = require("axios");
+const cron = require("node-cron");
+
+const scheduleNewOffPlanSync = () => {
+  const TZ = process.env.CRON_TZ || "Etc/UTC";
+
+  cron.schedule(
+    "0 1 * * *",
+    async () => {
+      console.log(`🔄 [${new Date().toISOString()}] OffPlan sync started`);
+      // Fake req/res
+      const fakeReq = {
+        query: {
+          page: 1,
+          per_page: 50, 
+        },
+      };
+
+      const fakeRes = {
+        _status: 200,
+        status(code) {
+          this._status = code;
+          return this;
+        },
+        json(payload) {
+          console.log(
+            `✅ [${new Date().toISOString()}] OffPlan sync completed:`,
+            payload?.summary || payload
+          );
+          return payload;
+        },
+      };
+
+      try {
+        await fetchAndSaveProperties(fakeReq, fakeRes);
+      } catch (error) {
+        console.error(
+          `❌ [${new Date().toISOString()}] OffPlan sync failed:`,
+          error.message
+        );
+      }
+    },
+    { timezone: TZ }
+  );
+
+  console.log(
+    `NewOffPlan scheduler initialized - Running daily at 01:00 and 13:00 (${TZ})`
+  );
+};
+
 
 // Fetch data from API and save to database
 const fetchAndSaveProperties = async (req, res) => {
@@ -810,12 +859,10 @@ const fetchAndSaveProperties = async (req, res) => {
     const baseUrl =
       process.env.AllOffPlanPropertyiesListUrl ||
       "https://search-listings-production.up.railway.app/v1/properties";
-
     const headers = {
       "X-API-Key": `${process.env.OffPlanApiKey}`,
       Accept: "application/json",
     };
-
     const countryCode = "AE";
 
     let page = Number(req.query.page || 1);
@@ -1989,5 +2036,6 @@ module.exports = {
   filterDashboardProperties,
   offPlanFilterByCommunity,
   getOffPlanDeveloperSuggestions,
-  filterByHandoverQuarter
+  filterByHandoverQuarter, 
+  scheduleNewOffPlanSync
 };

@@ -1095,7 +1095,16 @@ const createPodcast = async (req, res) => {
     // ----------------------------
     // TAG NORMALIZATION
     // ----------------------------
-    const normalizedTags = normalizeTags(tags);
+    let parsedTags = tags;
+    if (typeof tags === "string") {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (e) {
+        console.error("Error parsing tags:", e);
+        parsedTags = [];
+      }
+    }
+    const normalizedTags = normalizeTags(parsedTags);
 
     // ----------------------------
     // CREATE PODCAST
