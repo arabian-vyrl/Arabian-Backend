@@ -814,7 +814,7 @@ const scheduleNewOffPlanSync = () => {
       const fakeReq = {
         query: {
           page: 1,
-          per_page: 50, 
+          per_page: 50,
         },
       };
 
@@ -827,7 +827,7 @@ const scheduleNewOffPlanSync = () => {
         json(payload) {
           console.log(
             `✅ [${new Date().toISOString()}] OffPlan sync completed:`,
-            payload?.summary || payload
+            payload?.summary || payload,
           );
           return payload;
         },
@@ -838,20 +838,286 @@ const scheduleNewOffPlanSync = () => {
       } catch (error) {
         console.error(
           `❌ [${new Date().toISOString()}] OffPlan sync failed:`,
-          error.message
+          error.message,
         );
       }
     },
-    { timezone: TZ }
+    { timezone: TZ },
   );
 
   console.log(
-    `NewOffPlan scheduler initialized - Running daily at 01:00 and 13:00 (${TZ})`
+    `NewOffPlan scheduler initialized - Running daily at 01:00 and 13:00 (${TZ})`,
   );
 };
 
-
 // Fetch data from API and save to database
+// const fetchAndSaveProperties = async (req, res) => {
+//   console.log(process.env.AllOffPlanPropertyiesListUrl);
+//   try {
+//     console.log("Starting API fetch process...");
+//     const baseUrl =
+//       process.env.AllOffPlanPropertyiesListUrl ||
+//       "https://search-listings-production.up.railway.app/v1/properties";
+//     const headers = {
+//       "X-API-Key": `${process.env.OffPlanApiKey}`,
+//       Accept: "application/json",
+//     };
+//     const countryCode = "AE";
+
+//     let page = Number(req.query.page || 1);
+//     const perPage = Number(req.query.per_page || 12);
+
+//     let totalFromAPI = 0;
+//     let totalProcessed = 0;
+//     const errors = [];
+
+//     while (true) {
+//       console.log(`Fetching page ${page}...`);
+//       const { data, status } = await axios.get(baseUrl, {
+//         headers,
+//         params: { page, per_page: perPage, country: countryCode },
+//       });
+
+//       console.log("API status:", status);
+
+//       const apiItems = data?.items || [];
+//       const pagination = data?.pagination || {};
+//       totalFromAPI += apiItems.length;
+
+//       if (!Array.isArray(apiItems) || apiItems.length === 0) {
+//         console.log("No items on this page; stopping.");
+//         break;
+//       }
+
+//       // Prepare bulk ops (upsert by apiId)
+//       const bulkOps = apiItems.map((item) => {
+//         // parse lat/lng
+//         let lat = null,
+//           lng = null;
+//         if (item.coordinates) {
+//           const [a, b] = String(item.coordinates)
+//             .split(",")
+//             .map((v) => v.trim());
+//           lat = a ? parseFloat(a) : null;
+//           lng = b ? parseFloat(b) : null;
+//         }
+
+//         // parse cover image JSON string
+//         let coverImage = {};
+//         try {
+//           if (item.cover_image_url)
+//             coverImage = JSON.parse(item.cover_image_url);
+//         } catch (e) {
+//           console.warn(
+//             `cover_image_url parse failed for ${item.name} (ID ${item.id}): ${e.message}`,
+//           );
+//         }
+
+//         const formatQuarter = (dateStr) => {
+//           if (!dateStr) return "TBA";
+
+//           const d = new Date(dateStr);
+//           if (Number.isNaN(d.getTime())) return "TBA";
+
+//           const quarter = Math.floor(d.getMonth() / 3) + 1;
+//           return `Q${quarter} ${d.getFullYear()}`;
+//         };
+
+//         const handOver = item.completion_datetime;
+//         const handoverQuarter = handOver ? formatQuarter(handOver) : "TBA";
+
+//         const completionDate = item.completion_datetime
+//           ? new Date(item.completion_datetime)
+//           : null;
+
+//         const doc = {
+//           apiId: item.id,
+//           name: item.name,
+//           area: item.area,
+//           developer: item.developer,
+//           coordinates: item.coordinates || "",
+//           latitude: lat,
+//           longitude: lng,
+//           minPrice: item.min_price ?? null,
+//           maxPrice: item.max_price ?? null,
+//           minPriceAed: item.min_price_aed ?? null,
+//           minPricePerAreaUnit: item.min_price_per_area_unit ?? null,
+//           priceCurrency: item.price_currency || "AED",
+//           areaUnit: item.area_unit || "sqft",
+//           status: item.status, // e.g. "Presale"
+//           saleStatus: item.sale_status, // e.g. "Presale(EOI)"
+//           handoverQuarter: handoverQuarter,
+//           completionDate,
+//           isPartnerProject: !!item.is_partner_project,
+//           hasEscrow: !!item.has_escrow,
+//           postHandover: !!item.post_handover,
+//           coverImage,
+//           active: true,
+//         };
+
+//         return {
+//           updateOne: {
+//             filter: { apiId: item.id },
+//             update: { $set: doc },
+//             upsert: true,
+//           },
+//         };
+//       });
+
+//       if (bulkOps.length) {
+//         try {
+//           const result = await OffPlanProperty.bulkWrite(bulkOps, {
+//             ordered: false,
+//           });
+//           const modified =
+//             (result.upsertedCount || 0) +
+//             (result.modifiedCount || 0) +
+//             (result.matchedCount || 0);
+//           totalProcessed += modified;
+//           console.log(
+//             `Page ${page}: upserts=${result.upsertedCount || 0}, modified=${
+//               result.modifiedCount || 0
+//             }`,
+//           );
+//         } catch (e) {
+//           console.error("Bulk write error:", e?.message || e);
+//           errors.push({
+//             page,
+//             error: e?.message || String(e),
+//           });
+//         }
+//       }
+
+//       if (!pagination?.has_next) {
+//         console.log("No more pages.");
+//         break;
+//       }
+//       page += 1;
+//     }
+
+//     const totalInDB = await OffPlanProperty.countDocuments();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: `Sync complete`,
+//       summary: {
+//         totalFromAPI,
+//         totalProcessed,
+//         totalErrors: errors.length,
+//         totalInDatabase: totalInDB,
+//       },
+//       errors: errors.length ? errors : undefined,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error in fetchAndSaveProperties:", error);
+//     if (error.response) {
+//       return res.status(error.response.status || 500).json({
+//         success: false,
+//         message: `API Error: ${error.response.status} - ${error.response.statusText}`,
+//         error: error.response.data || error.message,
+//       });
+//     }
+//     if (error.code === "ECONNREFUSED" || error.code === "ENOTFOUND") {
+//       return res.status(503).json({
+//         success: false,
+//         message: "Unable to connect to API endpoint",
+//         error: error.message,
+//       });
+//     }
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch and save properties",
+//       error: error.message,
+//     });
+//   }
+// };
+
+function checkForChanges(existing, newDoc) {
+  // Helper to normalize values for comparison
+  const normalize = (val) => {
+    if (val === null || val === undefined || val === "" || val === 0)
+      return null;
+    return val;
+  };
+
+  // Helper to compare dates
+  const compareDates = (date1, date2) => {
+    if (!date1 && !date2) return true; // Both null/undefined
+    if (!date1 || !date2) return false; // One is null
+    return new Date(date1).getTime() === new Date(date2).getTime();
+  };
+
+  // Check simple fields
+  const fieldsToCheck = [
+    "name",
+    "area",
+    "developer",
+    "coordinates",
+    "status",
+    "saleStatus",
+    "handoverQuarter",
+    "priceCurrency",
+    "areaUnit",
+  ];
+
+  for (const field of fieldsToCheck) {
+    if (existing[field] !== newDoc[field]) {
+      console.log(
+        `  Change in ${field}: "${existing[field]}" -> "${newDoc[field]}"`,
+      );
+      return true;
+    }
+  }
+
+  // Check numeric/nullable fields with normalization
+  const numericFields = [
+    "latitude",
+    "longitude",
+    "minPrice",
+    "maxPrice",
+    "minPriceAed",
+    "minPricePerAreaUnit",
+  ];
+
+  for (const field of numericFields) {
+    if (normalize(existing[field]) !== normalize(newDoc[field])) {
+      console.log(
+        `  Change in ${field}: ${existing[field]} -> ${newDoc[field]}`,
+      );
+      return true;
+    }
+  }
+
+  // Check boolean fields
+  const booleanFields = ["isPartnerProject", "hasEscrow", "postHandover"];
+  for (const field of booleanFields) {
+    if (!!existing[field] !== !!newDoc[field]) {
+      console.log(
+        `  Change in ${field}: ${existing[field]} -> ${newDoc[field]}`,
+      );
+      return true;
+    }
+  }
+
+  // Check completion date
+  if (!compareDates(existing.completionDate, newDoc.completionDate)) {
+    console.log(
+      `  Change in completionDate: ${existing.completionDate} -> ${newDoc.completionDate}`,
+    );
+    return true;
+  }
+
+  // Check coverImage object
+  const existingCoverImage = JSON.stringify(existing.coverImage || {});
+  const newCoverImage = JSON.stringify(newDoc.coverImage || {});
+  if (existingCoverImage !== newCoverImage) {
+    console.log(`  Change in coverImage`);
+    return true;
+  }
+
+  return false; // No changes detected
+}
+
 const fetchAndSaveProperties = async (req, res) => {
   console.log(process.env.AllOffPlanPropertyiesListUrl);
   try {
@@ -867,17 +1133,46 @@ const fetchAndSaveProperties = async (req, res) => {
 
     let page = Number(req.query.page || 1);
     const perPage = Number(req.query.per_page || 12);
+    const force = req.query.force === "true";
 
     let totalFromAPI = 0;
     let totalProcessed = 0;
+    let newInserts = 0;
+    let updated = 0;
+    let skipped = 0;
     const errors = [];
+
+    console.log(
+      `Force mode: ${force ? "ENABLED - Will update all existing records" : "DISABLED - Will only insert new records"}`,
+    );
 
     while (true) {
       console.log(`Fetching page ${page}...`);
-      const { data, status } = await axios.get(baseUrl, {
-        headers,
-        params: { page, per_page: perPage, country: countryCode },
-      });
+
+      let data, status;
+      try {
+        const response = await axios.get(baseUrl, {
+          headers,
+          params: { page, per_page: perPage, country: countryCode },
+          timeout: 30000, // 30 second timeout
+        });
+        data = response.data;
+        status = response.status;
+      } catch (axiosError) {
+        console.error(`API Error on page ${page}:`, axiosError.message);
+
+        // If it's a connection error and we've processed some data, break gracefully
+        if (
+          axiosError.code === "ECONNRESET" ||
+          axiosError.code === "ETIMEDOUT"
+        ) {
+          console.log(
+            "Connection lost. Ending sync with data processed so far.",
+          );
+          break;
+        }
+        throw axiosError; // Re-throw other errors
+      }
 
       console.log("API status:", status);
 
@@ -890,100 +1185,117 @@ const fetchAndSaveProperties = async (req, res) => {
         break;
       }
 
-      // Prepare bulk ops (upsert by apiId)
-      const bulkOps = apiItems.map((item) => {
-        // parse lat/lng
-        let lat = null,
-          lng = null;
-        if (item.coordinates) {
-          const [a, b] = String(item.coordinates)
-            .split(",")
-            .map((v) => v.trim());
-          lat = a ? parseFloat(a) : null;
-          lng = b ? parseFloat(b) : null;
-        }
-
-        // parse cover image JSON string
-        let coverImage = {};
+      // Process items based on force mode
+      for (const item of apiItems) {
         try {
-          if (item.cover_image_url)
-            coverImage = JSON.parse(item.cover_image_url);
+          // Parse lat/lng
+          let lat = null,
+            lng = null;
+          if (item.coordinates) {
+            const [a, b] = String(item.coordinates)
+              .split(",")
+              .map((v) => v.trim());
+            lat = a ? parseFloat(a) : null;
+            lng = b ? parseFloat(b) : null;
+          }
+
+          // Parse cover image JSON string
+          let coverImage = {};
+          try {
+            if (item.cover_image_url)
+              coverImage = JSON.parse(item.cover_image_url);
+          } catch (e) {
+            console.warn(
+              `cover_image_url parse failed for ${item.name} (ID ${item.id}): ${e.message}`,
+            );
+          }
+
+          const formatQuarter = (dateStr) => {
+            if (!dateStr) return "TBA";
+            const d = new Date(dateStr);
+            if (Number.isNaN(d.getTime())) return "TBA";
+            const quarter = Math.floor(d.getMonth() / 3) + 1;
+            return `Q${quarter} ${d.getFullYear()}`;
+          };
+
+          const handOver = item.completion_datetime;
+          const handoverQuarter = handOver ? formatQuarter(handOver) : "TBA";
+          const completionDate = item.completion_datetime
+            ? new Date(item.completion_datetime)
+            : null;
+
+          const doc = {
+            apiId: item.id,
+            name: (item.name || "").trim(),
+            area: (item.area || "").trim(),
+            developer: (item.developer || "").trim(),
+            coordinates: item.coordinates || "",
+            latitude: lat,
+            longitude: lng,
+            minPrice: item.min_price ?? null,
+            maxPrice: item.max_price ?? null,
+            minPriceAed: item.min_price_aed ?? null,
+            minPricePerAreaUnit: item.min_price_per_area_unit ?? null,
+            priceCurrency: item.price_currency || "AED",
+            areaUnit: item.area_unit || "sqft",
+            status: item.status,
+            saleStatus: item.sale_status,
+            handoverQuarter: handoverQuarter,
+            completionDate,
+            isPartnerProject: !!item.is_partner_project,
+            hasEscrow: !!item.has_escrow,
+            postHandover: !!item.post_handover,
+            coverImage,
+            active: true,
+          };
+
+          // Check if property exists
+          const existingProperty = await OffPlanProperty.findOne({
+            apiId: item.id,
+          }).lean();
+
+          if (!existingProperty) {
+            // New property - always insert
+            await OffPlanProperty.create(doc);
+            newInserts++;
+            totalProcessed++;
+            console.log(
+              `✓ Inserted new property: ${item.name} (ID: ${item.id})`,
+            );
+          } else if (force) {
+            // Force mode - update everything
+            await OffPlanProperty.updateOne({ apiId: item.id }, { $set: doc });
+            updated++;
+            totalProcessed++;
+            console.log(`✓ Force updated: ${item.name} (ID: ${item.id})`);
+          } else {
+            // Normal mode - check if any field has changed
+            const hasChanges = checkForChanges(existingProperty, doc);
+
+            if (hasChanges) {
+              // Only update changed fields
+              await OffPlanProperty.updateOne(
+                { apiId: item.id },
+                { $set: doc },
+              );
+              updated++;
+              totalProcessed++;
+              console.log(
+                `✓ Updated (changes detected): ${item.name} (ID: ${item.id})`,
+              );
+            } else {
+              // No changes - skip
+              skipped++;
+              console.log(
+                `- Skipped (no changes): ${item.name} (ID: ${item.id})`,
+              );
+            }
+          }
         } catch (e) {
-          console.warn(
-            `cover_image_url parse failed for ${item.name} (ID ${item.id}): ${e.message}`,
-          );
-        }
-
-        const formatQuarter = (dateStr) => {
-          if (!dateStr) return "TBA";
-
-          const d = new Date(dateStr);
-          if (Number.isNaN(d.getTime())) return "TBA";
-
-          const quarter = Math.floor(d.getMonth() / 3) + 1;
-          return `Q${quarter} ${d.getFullYear()}`;
-        };
-
-        const handOver = item.completion_datetime;
-        const handoverQuarter = handOver ? formatQuarter(handOver) : "TBA";
-
-        const completionDate = item.completion_datetime
-          ? new Date(item.completion_datetime)
-          : null;
-
-        const doc = {
-          apiId: item.id,
-          name: item.name,
-          area: item.area,
-          developer: item.developer,
-          coordinates: item.coordinates || "",
-          latitude: lat,
-          longitude: lng,
-          minPrice: item.min_price ?? null,
-          maxPrice: item.max_price ?? null,
-          minPriceAed: item.min_price_aed ?? null,
-          minPricePerAreaUnit: item.min_price_per_area_unit ?? null,
-          priceCurrency: item.price_currency || "AED",
-          areaUnit: item.area_unit || "sqft",
-          status: item.status, // e.g. "Presale"
-          saleStatus: item.sale_status, // e.g. "Presale(EOI)"
-          handoverQuarter: handoverQuarter,
-          completionDate,
-          isPartnerProject: !!item.is_partner_project,
-          hasEscrow: !!item.has_escrow,
-          postHandover: !!item.post_handover,
-          coverImage,
-          active: true,
-        };
-
-        return {
-          updateOne: {
-            filter: { apiId: item.id },
-            update: { $set: doc },
-            upsert: true,
-          },
-        };
-      });
-
-      if (bulkOps.length) {
-        try {
-          const result = await OffPlanProperty.bulkWrite(bulkOps, {
-            ordered: false,
-          });
-          const modified =
-            (result.upsertedCount || 0) +
-            (result.modifiedCount || 0) +
-            (result.matchedCount || 0);
-          totalProcessed += modified;
-          console.log(
-            `Page ${page}: upserts=${result.upsertedCount || 0}, modified=${
-              result.modifiedCount || 0
-            }`,
-          );
-        } catch (e) {
-          console.error("Bulk write error:", e?.message || e);
+          console.error(`Error processing item ${item.id}:`, e?.message || e);
           errors.push({
-            page,
+            apiId: item.id,
+            name: item.name,
             error: e?.message || String(e),
           });
         }
@@ -1001,8 +1313,12 @@ const fetchAndSaveProperties = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `Sync complete`,
+      mode: force ? "Force Update" : "Smart Sync",
       summary: {
         totalFromAPI,
+        newInserts,
+        updated,
+        skipped,
         totalProcessed,
         totalErrors: errors.length,
         totalInDatabase: totalInDB,
@@ -1022,6 +1338,13 @@ const fetchAndSaveProperties = async (req, res) => {
       return res.status(503).json({
         success: false,
         message: "Unable to connect to API endpoint",
+        error: error.message,
+      });
+    }
+    if (error.code === "ECONNRESET" || error.code === "ETIMEDOUT") {
+      return res.status(503).json({
+        success: false,
+        message: "Connection to API was lost. Partial sync may have completed.",
         error: error.message,
       });
     }
@@ -1751,12 +2074,59 @@ const filterByMaxPrice = async (req, res) => {
   }
 };
 
+// const OffSearchProperty = async (req, res) => {
+//   try {
+//     const { prefix, limit = 5 } = req.query;
+//     const minSuggestions = parseInt(limit);
+
+//     // Validation
+//     if (!prefix) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Please provide a prefix",
+//       });
+//     }
+
+//     if (prefix.length < 2) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Prefix must be at least 2 characters long",
+//         data: [],
+//       });
+//     }
+
+//     // Search only in name field for address suggestions
+//     const query = {
+//       active: true, //Added this
+//       name: { $regex: new RegExp(`\\b${prefix}`, "i") },
+//     };
+
+//     // Return full property details
+//     const suggestions = await OffPlanProperty.find(query)
+//       .limit(minSuggestions)
+//       .lean();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: `Found ${suggestions.length} address suggestions`,
+//       data: suggestions,
+//       count: suggestions.length,
+//     });
+//   } catch (err) {
+//     console.error("Address suggestion error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//       data: [],
+//     });
+//   }
+// };
+
 const OffSearchProperty = async (req, res) => {
   try {
-    const { prefix, limit = 5 } = req.query;
+    const { prefix, limit = 50 } = req.query;
     const minSuggestions = parseInt(limit);
 
-    // Validation
     if (!prefix) {
       return res.status(400).json({
         success: false,
@@ -1772,29 +2142,41 @@ const OffSearchProperty = async (req, res) => {
       });
     }
 
-    // Search only in name field for address suggestions
+    // ✅ Escape special regex characters
+    const escapedPrefix = prefix.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    // ✅ Exact match regex
+    const searchRegex = new RegExp(`^${escapedPrefix}$`, "i");
+
     const query = {
-      active: true, //Added this
-      name: { $regex: new RegExp(`\\b${prefix}`, "i") },
+      active: true,
+      $or: [
+        { name: searchRegex },
+        { area: searchRegex },
+        { developer: searchRegex },
+      ],
     };
 
-    // Return full property details
     const suggestions = await OffPlanProperty.find(query)
       .limit(minSuggestions)
       .lean();
 
     return res.status(200).json({
       success: true,
-      message: `Found ${suggestions.length} address suggestions`,
+      message:
+        suggestions.length > 0
+          ? `Found ${suggestions.length} exact matches`
+          : `No exact match found`,
       data: suggestions,
       count: suggestions.length,
     });
   } catch (err) {
-    console.error("Address suggestion error:", err);
+    console.error("Search error:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
       data: [],
+      count: 0,
     });
   }
 };
@@ -2021,7 +2403,6 @@ const filterByHandoverQuarter = async (req, res) => {
   }
 };
 
-
 module.exports = {
   fetchAndSaveProperties,
   getOffPlanAddressSuggestions,
@@ -2036,6 +2417,6 @@ module.exports = {
   filterDashboardProperties,
   offPlanFilterByCommunity,
   getOffPlanDeveloperSuggestions,
-  filterByHandoverQuarter, 
-  scheduleNewOffPlanSync
+  filterByHandoverQuarter,
+  scheduleNewOffPlanSync,
 };

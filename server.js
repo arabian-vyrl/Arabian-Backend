@@ -3,7 +3,9 @@ require("./Config/redis.js"); // Initialize Redis connection
 require("dotenv").config();
 const { setupCronJobs } = require("./Controllers/LeaderboardController.js");
 const { schedulePropertySync } = require("./Controllers/XmlParser.js");
-const {scheduleNewOffPlanSync} = require("./Controllers/NewOffplanController.js")
+const {
+  scheduleNewOffPlanSync,
+} = require("./Controllers/NewOffplanController.js");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -18,17 +20,19 @@ const cookieParser = require("cookie-parser");
 
 // Set up middlewares
 app.set("trust proxy", 1);
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "https://arabiann.netlify.app"
-  ],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+      "https://arabiann.netlify.app",
+    ],
+    credentials: true,
+  }),
+);
 
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -59,7 +63,7 @@ const agentStorage = new CloudinaryStorage({
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, "uploads"); 
+    const uploadPath = path.join(__dirname, "uploads");
 
     // Create directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {
@@ -74,7 +78,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, file, cb) => {ddd
+const fileFilter = (req, file, cb) => {
+  ddd;
   if (file.mimetype.startsWith("image/")) cb(null, true);
   else cb(new Error("Only image files are allowed!"), false);
 };
@@ -88,8 +93,7 @@ const upload = multer({
 // Agents with salesforce sync cron job (CRON JOBS)
 setupCronJobs();
 schedulePropertySync();
-// scheduleNewOffPlanSync()
-
+scheduleNewOffPlanSync();
 
 // Then mount your API routes
 app.use("/", router);
