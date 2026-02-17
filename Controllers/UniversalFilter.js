@@ -177,10 +177,11 @@ const UniversalSpecializedFilter = async (req, res) => {
       }
     }
 
-    // Address text search on pba__addresstext_pb
+    // Address text search on propertyfinder_region
     if (req.query.address) {
-      baseMatch["custom_fields.pba__addresstext_pb"] = new RegExp(
-        req.query.address,
+      const normalizedAddress = req.query.address.replace(/\s*\(.*?\)\s*/g, "").trim();
+      baseMatch["custom_fields.propertyfinder_region"] = new RegExp(
+        normalizedAddress,
         "i"
       );
     }
@@ -790,6 +791,10 @@ const getAddressSuggestions = async (req, res) => {
       req.query.type ||
       "Sale";
     const prefix = req.query.prefix;
+
+
+    console.log("Listing Type", listingType)
+    console.log("Prefix", prefix)
     const maxSuggestions = parseInt(req.query.limit) || 5;
 
     console.log(

@@ -480,7 +480,7 @@ const CategoryController = require("../Controllers/CategoryController");
 // testing Routes
 const testController2 = require("../Controllers/testController2");
 const testController = require("../Controllers/testController");
-
+const footerSubscribeEmail = require("../Controllers/FooterSubscribe") 
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -845,6 +845,10 @@ router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew);
 // Route for testing Coordinates
 router.get("/get-coordinates", testController2.getPropertiesWithCoordinates);
 router.get("/test-controller-geo-pionts", testController.MatchgeoPiont);
+
+
+// Send Email from Footer
+router.post("/subscribe", footerSubscribeEmail.subscribeEmail);
 
 // ========== OPTIMIZED GEO POINT MATCHING ROUTES ==========
 // Option 1: Optimized non-blocking (still waits for completion but doesn't freeze server)
