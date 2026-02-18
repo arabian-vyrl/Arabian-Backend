@@ -612,6 +612,8 @@ router.get(
   NewOffPlanProperties.offPlanFilterByCommunity,
 );
 
+router.get("/universalFilterNewOffPlan", NewOffPlanProperties.filterOffPlanProperties)
+
 // toggle Status of the newOffplan Properties
 router.put(
   "/update-status-offplan-properties/:id",
