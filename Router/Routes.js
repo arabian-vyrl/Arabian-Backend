@@ -851,6 +851,9 @@ router.get("/test-controller-geo-pionts", testController.MatchgeoPiont);
 
 // Send Email from Footer
 router.post("/subscribe", footerSubscribeEmail.subscribeEmail);
+// Download Brochure & FloorPlan
+router.post("/download-request", footerSubscribeEmail.downloadFile);
+
 
 // ========== OPTIMIZED GEO POINT MATCHING ROUTES ==========
 // Option 1: Optimized non-blocking (still waits for completion but doesn't freeze server)

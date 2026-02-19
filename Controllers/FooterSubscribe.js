@@ -46,6 +46,79 @@ const subscribeEmail = async (req, res) => {
   }
 };
 
+const downloadFile = async (req, res) => {
+  try {
+    const { name, email, phone, source, type } = req.body;
+
+    console.log(name, email, phone, source, type);
+
+    // Validation
+    if (!name || !email || !phone || !source || !type) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format.",
+      });
+    }
+
+    // Admin email
+    const adminMailOptions = {
+      from: `"${type.charAt(0).toUpperCase() + type.slice(1)} Request" <${process.env.NODE_MAILER_EMAIL}>`,
+      to: "adeel8128377@gmail.com",
+      subject: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Download Request`,
+      html: `
+        <h3>New Download Request</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Property Link:</strong> 
+          <a href="${source}" target="_blank">${source}</a>
+        </p>
+        <p><strong>Download Type:</strong> ${type}</p>
+      `,
+    };
+
+    // User email - simple notification
+    const userMailOptions = {
+      from: `${process.env.NODE_MAILER_EMAIL}`,
+      to: email,
+      subject: `Your ${type.charAt(0).toUpperCase() + type.slice(1)} Download Request`,
+      html: `
+        <p>Hi ${name},</p>
+        <p>Thank you for your interest. Your request for the ${type} has been received successfully.</p>
+        <p>Best regards,</p>
+      `,
+    };
+
+    // Send emails
+    await transporter.sendMail(adminMailOptions);
+    // await transporter.sendMail(userMailOptions);
+
+    return res.status(200).json({
+      success: true,
+      message: `${type.charAt(0).toUpperCase() + type.slice(1)} request submitted successfully.`,
+    });
+
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error sending email",
+      error: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
   subscribeEmail,
+  downloadFile
 };
