@@ -1513,6 +1513,13 @@ const axios = require("axios");
 const Agent = require("../Models/AgentModel");
 const cron = require("node-cron");
 
+
+
+// Cloudinary image transformer
+const generateTransformedAgentImageUrl = (imagePath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Global lock to prevent overlapping cron runs
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2473,6 +2480,163 @@ const GetSalesForceToken = async (req, res) => {
  * - Prefers in-memory cache while sync is running (or on DB failure).
  * - Always sorted by totalCommission desc, then sequenceNumber.
  */
+
+
+// Old one without image transformer
+// const getLeaderboardAgents = async (req, res) => {
+//   try {
+//     const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
+//     const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
+//     const skip = (page - 1) * limit;
+
+//     // Serve from cache while master sync is in progress
+//     if (masterSyncRunning && lastLeaderboardCache) {
+//       console.log(
+//         "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
+//       );
+      
+//       const allAgents = lastLeaderboardCache.allAgents;
+//       const total = allAgents.length;
+//       const totalPages = Math.ceil(total / limit);
+//       const paginatedAgents = allAgents.slice(skip, skip + limit);
+
+//       return res.status(200).json({
+//         success: true,
+//         data: paginatedAgents,
+//         pagination: {
+//           page,
+//           limit,
+//           totalItems: total,
+//           totalPages,
+//           hasPrev: page > 1,
+//           hasNext: page < totalPages,
+//         },
+//         globalTotalCommission: lastLeaderboardCache.globalTotalCommission,
+//         cached: true,
+//         cachedAt: lastLeaderboardCache.cachedAt,
+//       });
+//     }
+
+//     // Normal: query DB (same aggregation as cache builder)
+//     const pipeline = [
+//       {
+//         $match: {
+//           activeOnLeaderboard: true
+//         }
+//       },
+//       {
+//         $project: {
+//           agentName: 1,
+//           agentLanguage: 1,
+//           designation: 1,
+//           email: 1,
+//           whatsapp: 1,
+//           phone: 1,
+//           imageUrl: 1,
+//           isActive: 1,
+//           agentId: 1,
+//           leaderboard: 1,
+//           sequenceNumber: 1,
+//           reraNumber: 1,
+//           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
+//         },
+//       },
+//       {
+//         $addFields: {
+//           _commission: { $toLong: { $ifNull: ["$leaderboard.totalCommission", 0] } },
+//           _tieSeq: { $toLong: { $ifNull: ["$sequenceNumber", 999999] } },
+//         },
+//       },
+//       { $sort: { _commission: -1, _tieSeq: 1 } },
+//     ];
+
+//     const allAgents = await Agent.aggregate(pipeline).allowDiskUse(true);
+
+//     const globalTotalCommission = allAgents.reduce(
+//       (sum, a) => sum + (a.leaderboard?.totalCommission ?? 0),
+//       0
+//     );
+
+//     const agentsWithPositions = allAgents.map((agent, index) => ({
+//       ...agent,
+//       position: index + 1,
+//     }));
+
+//     const paginatedAgents = agentsWithPositions.slice(skip, skip + limit);
+//     const total = agentsWithPositions.length;
+//     const totalPages = Math.ceil(total / limit);
+
+//     const mapped = paginatedAgents.map((a) => ({
+//       position: a.position,
+//       name: a.agentName,
+//       imageUrl: a.imageUrl,
+//       leaderboard: {
+//         activePropertiesThisMonth: a.leaderboard?.activePropertiesThisMonth ?? 0,
+//         propertiesSold: a.leaderboard?.propertiesSold ?? 0,
+//         totalCommission: a.leaderboard?.totalCommission ?? 0,
+//         lastDealDate: a.leaderboard?.lastDealDate ?? null,
+//         viewings: a.leaderboard?.viewings ?? 0,
+//         lastDealDays: a.leaderboard?.lastDealDays ?? 0,
+//         offers: a.leaderboard?.offers ?? 0,
+//       },
+//       propertiesCount: a.propertiesCount ?? 0,
+//       agentId: a.agentId,
+//     }));
+
+//     return res.status(200).json({
+//       success: true,
+//       data: mapped,
+//       pagination: {
+//         page,
+//         limit,
+//         totalItems: total,
+//         totalPages,
+//         hasPrev: page > 1,
+//         hasNext: page < totalPages,
+//       },
+//       globalTotalCommission,
+//       cached: false,
+//     });
+//   } catch (err) {
+//     // Fallback to in-memory cache if DB query fails
+//     if (lastLeaderboardCache) {
+//       console.log("⚠️ [LEADERBOARD] DB error, falling back to cached data");
+      
+//       const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
+//       const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
+//       const skip = (page - 1) * limit;
+      
+//       const allAgents = lastLeaderboardCache.allAgents;
+//       const total = allAgents.length;
+//       const totalPages = Math.ceil(total / limit);
+//       const paginatedAgents = allAgents.slice(skip, skip + limit);
+
+//       return res.status(200).json({
+//         success: true,
+//         data: paginatedAgents,
+//         pagination: {
+//           page,
+//           limit,
+//           totalItems: total,
+//           totalPages,
+//           hasPrev: page > 1,
+//           hasNext: page < totalPages,
+//         },
+//         globalTotalCommission: lastLeaderboardCache.globalTotalCommission,
+//         cached: true,
+//         cachedAt: lastLeaderboardCache.cachedAt,
+//         fallback: true,
+//       });
+//     }
+    
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
+
+// With image transformer
+
+
 const getLeaderboardAgents = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
@@ -2547,10 +2711,26 @@ const getLeaderboardAgents = async (req, res) => {
       0
     );
 
-    const agentsWithPositions = allAgents.map((agent, index) => ({
-      ...agent,
-      position: index + 1,
-    }));
+    const agentsWithPositions = allAgents.map((agent, index) => {
+      // Transform the agent image (if it exists)
+      if (agent.imageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = agent.imageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = agent.imageUrl.split('/').slice(-1)[0];
+          // Generate the transformed agent image URL
+          const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+          agent.imageUrl = transformedAgentImageUrl; // Update the agent image URL
+        }
+      }
+
+      return {
+        ...agent,
+        position: index + 1,
+      };
+    });
 
     const paginatedAgents = agentsWithPositions.slice(skip, skip + limit);
     const total = agentsWithPositions.length;
@@ -2559,7 +2739,7 @@ const getLeaderboardAgents = async (req, res) => {
     const mapped = paginatedAgents.map((a) => ({
       position: a.position,
       name: a.agentName,
-      imageUrl: a.imageUrl,
+      imageUrl: a.imageUrl, // Now this will have the transformed image URL
       leaderboard: {
         activePropertiesThisMonth: a.leaderboard?.activePropertiesThisMonth ?? 0,
         propertiesSold: a.leaderboard?.propertiesSold ?? 0,
@@ -2622,6 +2802,7 @@ const getLeaderboardAgents = async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }
 };
+
 
 /** ───────────────────────────────────────────────────────────────────────────
  *  Manual sync endpoints (deals / commissions / viewings)

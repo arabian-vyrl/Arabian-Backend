@@ -1008,6 +1008,12 @@ const clampInt = (v, def = 0) => {
   return Number.isFinite(n) ? n : def;
 };
 
+
+const generateTransformedImageUrl = (imagePath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1000,h_1000,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
+};
+
+
 const createAgent = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -1068,18 +1074,70 @@ const createAgent = async (req, res) => {
   }
 };
 
+// const getAgents = async (req, res) => {
+//   try {
+//     let { isActive } = req.query;
+//     const pipeline = [];
+
+//     if (isActive === "True") {
+//       pipeline.push({ $match: { isActive: true } });
+//       //It will show All agents
+//     } else if (isActive === "False") {
+//       null;
+//     }
+//     // If no query → do not push a $match (returns all)
+
+//     pipeline.push(
+//       { $sort: { sequenceNumber: 1, agentName: 1 } },
+//       {
+//         $project: {
+//           agentName: 1,
+//           agentLanguage: 1,
+//           designation: 1,
+//           description: 1,
+//           superAgent: 1,
+//           email: 1,
+//           whatsapp: 1,
+//           instagram: 1,
+//           linkedin: 1,
+//           phone: 1,
+//           imageUrl: 1,
+//           activeSaleListings: 1,
+//           propertiesSoldLast15Days: 1,
+//           isActive: 1,
+//           agentId: 1,
+//           leaderboard: 1,
+//           sequenceNumber: 1,
+//           specialistAreas: 1,
+//           reraNumber: 1,
+//           activeOnLeaderboard: 1,
+//           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
+//           blogsCount: { $size: { $ifNull: ["$blogs", []] } },
+//         },
+//       },
+//     );
+
+//     const agents = await Agent.aggregate(pipeline).allowDiskUse(true);
+
+//     return res.status(200).json({
+//       success: true,
+//       data: agents,
+//       total: agents.length,
+//     });
+//   } catch (err) {
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
 const getAgents = async (req, res) => {
   try {
+    console.log("Working");
     let { isActive } = req.query;
     const pipeline = [];
 
     if (isActive === "True") {
       pipeline.push({ $match: { isActive: true } });
-      //It will show All agents
-    } else if (isActive === "False") {
-      null;
     }
-    // If no query → do not push a $match (returns all)
 
     pipeline.push(
       { $sort: { sequenceNumber: 1, agentName: 1 } },
@@ -1108,26 +1166,84 @@ const getAgents = async (req, res) => {
           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
           blogsCount: { $size: { $ifNull: ["$blogs", []] } },
         },
-      },
+      }
     );
 
     const agents = await Agent.aggregate(pipeline).allowDiskUse(true);
 
+    // For each agent, transform the image URL
+    const transformedAgents = agents.map(agent => {
+      const imageUrl = agent.imageUrl;
+      if (imageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = imageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = imageUrl.split('/').slice(-1)[0]; // Extract image path (file name)
+          const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+
+          // Directly mutate the agent object with the transformed image URL
+          return {
+            ...agent, // Spread the existing agent data
+            imageUrl: transformedImageUrl, // Add the transformed image URL
+          };
+        }
+      }
+
+      // If no image URL or version number is found, return the agent as is
+      return agent;
+    });
+
     return res.status(200).json({
       success: true,
-      data: agents,
-      total: agents.length,
+      data: transformedAgents,
+      total: transformedAgents.length,
     });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }
 };
 
+
+
+// const getAgentById = async (req, res) => {
+//   try {
+//     const agent = await Agent.findOne({ agentId: req.query.agentId });
+//     if (!agent)
+//       return res.status(404).json({ success: false, error: "Agent not found" });
+//     return res.status(200).json({ success: true, data: agent });
+//   } catch (err) {
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
 const getAgentById = async (req, res) => {
   try {
     const agent = await Agent.findOne({ agentId: req.query.agentId });
-    if (!agent)
+
+    if (!agent) {
       return res.status(404).json({ success: false, error: "Agent not found" });
+    }
+
+    // Check if imageUrl exists
+    if (agent.imageUrl) {
+      const imageUrl = agent.imageUrl;
+      const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
+      const match = imageUrl.match(versionRegex);
+
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = imageUrl.split('/').slice(-1)[0];  // Extract image file name
+
+        // Generate the transformed image URL
+        const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+
+        // Add the transformed image URL to the agent data
+        agent.imageUrl = transformedImageUrl;
+      }
+    }
+
     return res.status(200).json({ success: true, data: agent });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
@@ -1166,12 +1282,29 @@ const getAgentByEmail = async (req, res) => {
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
+    // Check if imageUrl exists and apply transformation
+    if (agent.imageUrl) {
+      const imageUrl = agent.imageUrl;
+      const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
+      const match = imageUrl.match(versionRegex);
+
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = imageUrl.split('/').slice(-1)[0];  // Extract image file name
+
+        // Generate the transformed image URL
+        const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+
+        // Add the transformed image URL to the agent data
+        agent.imageUrl = transformedImageUrl;
+      }
+    }
+
     return res.status(200).json({ success: true, data: agent });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }
 };
-
 const updateAgent = async (req, res) => {
   // console.log("updating agent",req.body);
   const session = await mongoose.startSession();
@@ -1369,19 +1502,47 @@ const updateAgent = async (req, res) => {
   }
 };
 
-const getAgentsBySequence = async (req, res) => {
-  try {
-    const { activeOnly = "true" } = req.query;
-    const query = isTruthy(activeOnly) ? { isActive: true } : {};
-    const agents = await Agent.find(query).sort({
-      sequenceNumber: 1,
-      agentName: 1,
-    });
-    return res.status(200).json({ success: true, data: agents });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
-  }
-};
+
+// const getAgentsBySequence = async (req, res) => {
+//   try {
+//     const { activeOnly = "true" } = req.query;
+//     const query = isTruthy(activeOnly) ? { isActive: true } : {};
+
+//     const agents = await Agent.find(query).sort({
+//       sequenceNumber: 1,
+//       agentName: 1,
+//     });
+
+//     // For each agent, apply transformation to the image URL
+//     const transformedAgents = agents.map(agent => {
+//       const imageUrl = agent.imageUrl;
+//       const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
+//       const match = imageUrl.match(versionRegex);
+
+//       if (match && match[1]) {
+//         const versionNumber = match[1];
+//         const imagePath = imageUrl.split('/').slice(-1)[0]; // Extract image path (file name)
+//         const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+
+//         // Directly mutate the agent object with the transformed image URL
+//         return {
+//           ...agent.toObject(), // Spread the existing agent data
+//           imageUrl: transformedImageUrl, // Add the transformed image URL
+//         };
+//       }
+
+//       return agent; // If no version found, return the agent as is
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       data: transformedAgents,  // Return the agents with transformed image URLs
+//       total: transformedAgents.length,
+//     });
+//   } catch (err) {
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
 
 // const deleteAgent = async (req, res) => {
 //   try {
@@ -1502,7 +1663,7 @@ module.exports = {
   getAgentById,
   getAgentByEmail,
   updateAgent,
-  getAgentsBySequence,
+  // getAgentsBySequence,
   deleteAgent,
   getAgentLanguages
 };

@@ -169,7 +169,7 @@
 // //   try {
 // //     const podcastId = req.query.id;
 // //     console.log(podcastId);
-    
+
 // //     if (!podcastId.match(/^[0-9a-fA-F]{24}$/)) {
 // //       return res.status(400).json({
 // //         success: false,
@@ -223,17 +223,17 @@
 // //       tags, 
 // //       orderNumber 
 // //     } = req.body;
-    
+
 // //     const podcast = await Podcast.findById(req.query.id);
 // //     console.log(podcast);
-    
+
 // //     if (!podcast) {
 // //       return res.status(404).json({
 // //         success: false,
 // //         message: 'Podcast not found'
 // //       });
 // //     }
-    
+
 // //     // Check if new order number conflicts with existing one
 // //     if (orderNumber && orderNumber !== podcast.orderNumber) {
 // //       const existingPodcast = await Podcast.findOne({ 
@@ -247,7 +247,7 @@
 // //         });
 // //       }
 // //     }
-    
+
 // //     // Update fields
 // //     const updateData = {};
 // //     if (title !== undefined) updateData.title = title.trim();
@@ -263,7 +263,7 @@
 // //     if (category !== undefined) updateData.category = category.trim();
 // //     if (tags !== undefined) updateData.tags = tags;
 // //     if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
-    
+
 // //     const updatedPodcast = await Podcast.findByIdAndUpdate(
 // //       req.query.id,
 // //       updateData,
@@ -272,7 +272,7 @@
 // //         runValidators: true 
 // //       }
 // //     ).select('-__v');
-    
+
 // //     res.json({
 // //       success: true,
 // //       message: 'Podcast updated successfully',
@@ -280,7 +280,7 @@
 // //     });
 // //   } catch (error) {
 // //     console.error('Error updating podcast:', error);
-    
+
 // //     // Handle validation errors
 // //     if (error.name === 'ValidationError') {
 // //       const errors = Object.values(error.errors).map(err => err.message);
@@ -290,7 +290,7 @@
 // //         errors: errors
 // //       });
 // //     }
-    
+
 // //     // Handle invalid ObjectId
 // //     if (error.name === 'CastError') {
 // //       return res.status(400).json({
@@ -298,7 +298,7 @@
 // //         message: 'Invalid podcast ID format'
 // //       });
 // //     }
-    
+
 // //     res.status(500).json({
 // //       success: false,
 // //       message: 'Error updating podcast',
@@ -310,16 +310,16 @@
 // // const deletePodcast = async (req, res) => {
 // //   try {
 // //     const podcast = await Podcast.findById(req.query.id);
-    
+
 // //     if (!podcast) {
 // //       return res.status(404).json({
 // //         success: false,
 // //         message: 'Podcast not found'
 // //       });
 // //     }
-    
+
 // //     await Podcast.findByIdAndDelete(req.query.id);
-    
+
 // //     res.json({
 // //       success: true,
 // //       message: 'Podcast deleted successfully',
@@ -333,7 +333,7 @@
 // //     });
 // //   } catch (error) {
 // //     console.error('Error deleting podcast:', error);
-    
+
 // //     // Handle invalid ObjectId
 // //     if (error.name === 'CastError') {
 // //       return res.status(400).json({
@@ -341,7 +341,7 @@
 // //         message: 'Invalid podcast ID format'
 // //       });
 // //     }
-    
+
 // //     res.status(500).json({
 // //       success: false,
 // //       message: 'Error deleting podcast',
@@ -540,7 +540,7 @@
 //   try {
 //     const podcastId = req.query.id;
 //     console.log(podcastId);
-    
+
 //     if (!podcastId.match(/^[0-9a-fA-F]{24}$/)) {
 //       return res.status(400).json({
 //         success: false,
@@ -685,17 +685,17 @@
 //       tags, 
 //       orderNumber 
 //     } = req.body;
-    
+
 //     const podcast = await Podcast.findById(req.query.id);
 //     console.log(podcast);
-    
+
 //     if (!podcast) {
 //       return res.status(404).json({
 //         success: false,
 //         message: 'Podcast not found'
 //       });
 //     }
-    
+
 //     // Check if new order number conflicts with existing one
 //     if (orderNumber && orderNumber !== podcast.orderNumber) {
 //       const existingPodcast = await Podcast.findOne({ 
@@ -709,7 +709,7 @@
 //         });
 //       }
 //     }
-    
+
 //     // Update fields
 //     const updateData = {};
 //     if (title !== undefined) updateData.title = title.trim();
@@ -723,14 +723,14 @@
 //     if (coverPhoto !== undefined) updateData.coverPhoto = coverPhoto.trim();
 //     if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl.trim();
 //     if (category !== undefined) updateData.category = category.trim();
-    
+
 //     // Handle tags update with normalization
 //     if (tags !== undefined) {
 //       updateData.tags = normalizeTags(tags);
 //     }
-    
+
 //     if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
-    
+
 //     const updatedPodcast = await Podcast.findByIdAndUpdate(
 //       req.query.id,
 //       updateData,
@@ -739,7 +739,7 @@
 //         runValidators: true 
 //       }
 //     ).select('-__v');
-    
+
 //     res.json({
 //       success: true,
 //       message: 'Podcast updated successfully',
@@ -747,7 +747,7 @@
 //     });
 //   } catch (error) {
 //     console.error('Error updating podcast:', error);
-    
+
 //     // Handle validation errors
 //     if (error.name === 'ValidationError') {
 //       const errors = Object.values(error.errors).map(err => err.message);
@@ -757,7 +757,7 @@
 //         errors: errors
 //       });
 //     }
-    
+
 //     // Handle invalid ObjectId
 //     if (error.name === 'CastError') {
 //       return res.status(400).json({
@@ -765,7 +765,7 @@
 //         message: 'Invalid podcast ID format'
 //       });
 //     }
-    
+
 //     res.status(500).json({
 //       success: false,
 //       message: 'Error updating podcast',
@@ -777,16 +777,16 @@
 // const deletePodcast = async (req, res) => {
 //   try {
 //     const podcast = await Podcast.findById(req.query.id);
-    
+
 //     if (!podcast) {
 //       return res.status(404).json({
 //         success: false,
 //         message: 'Podcast not found'
 //       });
 //     }
-    
+
 //     await Podcast.findByIdAndDelete(req.query.id);
-    
+
 //     res.json({
 //       success: true,
 //       message: 'Podcast deleted successfully',
@@ -800,7 +800,7 @@
 //     });
 //   } catch (error) {
 //     console.error('Error deleting podcast:', error);
-    
+
 //     // Handle invalid ObjectId
 //     if (error.name === 'CastError') {
 //       return res.status(400).json({
@@ -808,7 +808,7 @@
 //         message: 'Invalid podcast ID format'
 //       });
 //     }
-    
+
 //     res.status(500).json({
 //       success: false,
 //       message: 'Error deleting podcast',
@@ -833,6 +833,11 @@ const path = require("path");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+
+const generateTransformedPodcastImageUrl = (imagePath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/podcast/${imagePath}`;
+};
 
 
 // Helper function to get next order number
@@ -883,7 +888,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, 
+  limits: { fileSize: 10 * 1024 * 1024 },
 }).fields([
   { name: "coverImage", maxCount: 1 },
   { name: "bodyImage1", maxCount: 1 },
@@ -907,108 +912,6 @@ const createImageData = (file) => {
   };
 };
 
-
-// const createPodcast = async (req, res) => {
-//   try {
-//     const { 
-//       title, 
-//       shortDescription, 
-//       detailedDescription,
-//       whatsInside,
-//       coverPhoto,
-//       youtubeUrl, 
-//       category, 
-//       tags, 
-//       orderNumber 
-//     } = req.body;
-
-//     // Validate required fields
-//     if (!title || !shortDescription || !detailedDescription || !youtubeUrl || !coverPhoto) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Title, short description, detailed description, cover photo, and YouTube URL are required",
-//       });
-//     }
-
-//     // Validate whatsInside
-//     if (!whatsInside || !Array.isArray(whatsInside) || whatsInside.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "At least one point for 'what's inside' is required",
-//       });
-//     }
-
-//     // Get next order number if not provided
-//     let finalOrderNumber = orderNumber;
-//     if (!finalOrderNumber) {
-//       finalOrderNumber = await getNextOrderNumber();
-//     } else {
-//       // Check if order number already exists
-//       const existingPodcast = await Podcast.findOne({
-//         orderNumber: finalOrderNumber,
-//       });
-//       if (existingPodcast) {
-//         return res.status(400).json({
-//           success: false,
-//           message: `Order number ${finalOrderNumber} already exists`,
-//         });
-//       }
-//     }
-
-//     // Normalize tags (trim, lowercase, remove duplicates)
-//     const normalizedTags = normalizeTags(tags);
-
-//     const podcastData = {
-//       title: title.trim(),
-//       shortDescription: shortDescription.trim(),
-//       detailedDescription: detailedDescription.trim(),
-//       whatsInside: whatsInside.map(point => point.trim()).filter(point => point.length > 0),
-//       coverPhoto: coverPhoto.trim(),
-//       youtubeUrl: youtubeUrl.trim(),
-//       category: category?.trim() || "General",
-//       tags: normalizedTags,
-//       orderNumber: finalOrderNumber,
-//     };
-
-//     const podcast = new Podcast(podcastData);
-//     await podcast.save();
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Podcast created successfully",
-//       data: podcast,
-//     });
-//   } catch (error) {
-//     console.error("Error creating podcast:", error);
-
-//     // Handle validation errors
-//     if (error.name === "ValidationError") {
-//       const errors = Object.values(error.errors).map((err) => err.message);
-//       return res.status(400).json({
-//         success: false,
-//         message: "Validation error",
-//         errors: errors,
-//       });
-//     }
-
-//     // Handle duplicate key errors
-//     if (error.code === 11000) {
-//       const field = Object.keys(error.keyValue)[0];
-//       return res.status(400).json({
-//         success: false,
-//         message: `${field} already exists`,
-//       });
-//     }
-
-//     res.status(500).json({
-//       success: false,
-//       message: "Error creating podcast",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// Get All Podcasts
 
 
 const createPodcast = async (req, res) => {
@@ -1161,6 +1064,89 @@ const createPodcast = async (req, res) => {
 };
 
 
+// const getAllPodcasts = async (req, res) => {
+//   try {
+//     const filter = {};
+
+//     // Filter by category if provided
+//     if (req.query.category) {
+//       filter.category = req.query.category;
+//     }
+
+//     // Search functionality
+//     if (req.query.search) {
+//       filter.$or = [
+//         { title: { $regex: req.query.search, $options: "i" } },
+//         { shortDescription: { $regex: req.query.search, $options: "i" } },
+//         { detailedDescription: { $regex: req.query.search, $options: "i" } },
+//         { tags: { $in: [new RegExp(req.query.search, "i")] } },
+//       ];
+//     }
+
+//     // Sort options
+//     let sortOption = { orderNumber: 1 }; // Default sort by order number
+//     if (req.query.sortBy) {
+//       switch (req.query.sortBy) {
+//         case "title":
+//           sortOption = { title: 1 };
+//           break;
+//         case "date":
+//           sortOption = { createdDate: -1 };
+//           break;
+//         case "category":
+//           sortOption = { category: 1, orderNumber: 1 };
+//           break;
+//         default:
+//           sortOption = { orderNumber: 1 };
+//       }
+//     }
+
+//     const podcasts = await Podcast.find(filter)
+//       .sort(sortOption)
+//       .select("-__v");
+
+//     const total = await Podcast.countDocuments(filter);
+
+//     // For each podcast, apply the transformation to the cover image URL
+//     const transformedPodcasts = podcasts.map(podcast => {
+//       const coverImageUrl = podcast.coverImage?.url;
+
+//       if (coverImageUrl) {
+//         const versionRegex = /\/v(\d+)\//;
+//         const match = coverImageUrl.match(versionRegex);
+
+//         if (match && match[1]) {
+//           const versionNumber = match[1];
+//           const imagePath = coverImageUrl.split('/').slice(-1)[0];
+
+//           // Generate the transformed image URL for the podcast cover image
+//           const transformedCoverImageUrl = generateTransformedPodcastImageUrl(imagePath, versionNumber);
+//           podcast.coverImage.url = transformedCoverImageUrl;
+//         }
+//       }
+
+//       return podcast;
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Podcasts retrieved successfully",
+//       data: transformedPodcasts,
+//       total: total,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching podcasts:", error);
+
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching podcasts",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// Get Single Podcast by ID
+
 
 const getAllPodcasts = async (req, res) => {
   try {
@@ -1205,10 +1191,31 @@ const getAllPodcasts = async (req, res) => {
 
     const total = await Podcast.countDocuments(filter);
 
+    // For each podcast, apply transformation to the cover image URL
+    const transformedPodcasts = podcasts.map(podcast => {
+      const coverImageUrl = podcast.coverPhoto?.url;
+
+      if (coverImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = coverImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = coverImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the podcast cover image
+          const transformedCoverImageUrl = generateTransformedPodcastImageUrl(imagePath, versionNumber);
+          podcast.coverPhoto.url = transformedCoverImageUrl;
+        }
+      }
+
+      return podcast;
+    });
+
     res.status(200).json({
       success: true,
       message: "Podcasts retrieved successfully",
-      data: podcasts,
+      data: transformedPodcasts,
       total: total,
     });
   } catch (error) {
@@ -1222,7 +1229,7 @@ const getAllPodcasts = async (req, res) => {
   }
 };
 
-// Get Single Podcast by ID
+// This is not being used
 const getPodcastById = async (req, res) => {
   try {
     const podcastId = req.query.id;
@@ -1268,16 +1275,18 @@ const getPodcastById = async (req, res) => {
   }
 };
 
-// Get Single Podcast by Slug
+// Get Single Podcast by Slug This is also not being used  
 const getPodcastBySlug = async (req, res) => {
   try {
     const slug = req.query.slug;
+
     if (!slug) {
       return res.status(400).json({
         success: false,
         message: "Podcast slug is required",
       });
     }
+
     const podcast = await Podcast.findOne({ slug }).select("-__v");
 
     if (!podcast) {
@@ -1287,13 +1296,33 @@ const getPodcastBySlug = async (req, res) => {
       });
     }
 
+    // ✅ Apply transformation
+    const coverImageUrl = podcast.coverPhoto?.url;
+
+    if (coverImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = coverImageUrl.match(versionRegex);
+
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = coverImageUrl.split("/").pop();
+
+        podcast.coverPhoto.url = generateTransformedPodcastImageUrl(
+          imagePath,
+          versionNumber
+        );
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: "Podcast fetched successfully",
       data: podcast,
     });
+
   } catch (error) {
     console.error("getPodcastBySlug error:", error.message);
+
     res.status(500).json({
       success: false,
       message: "Failed to fetch podcast",
@@ -1302,7 +1331,7 @@ const getPodcastBySlug = async (req, res) => {
   }
 };
 
-// NEW: Get Podcasts by Tags
+// NEW: Get Podcasts by Tags This is also not being used 
 const getPodcastsByTags = async (req, res) => {
   try {
     const { tags, limit = 10 } = req.query;
@@ -1342,9 +1371,9 @@ const getPodcastsByTags = async (req, res) => {
     const podcasts = await Podcast.find({
       tags: { $in: tagArray }
     })
-    .sort({ orderNumber: 1 })
-    .limit(parsedLimit)
-    .select("-__v");
+      .sort({ orderNumber: 1 })
+      .limit(parsedLimit)
+      .select("-__v");
 
     res.status(200).json({
       success: true,
@@ -1404,17 +1433,17 @@ const getAllTags = async (req, res) => {
 //       tags, 
 //       orderNumber 
 //     } = req.body;
-    
+
 //     const podcast = await Podcast.findById(req.query.id);
 //     console.log(podcast);
-    
+
 //     if (!podcast) {
 //       return res.status(404).json({
 //         success: false,
 //         message: 'Podcast not found'
 //       });
 //     }
-    
+
 //     // Check if new order number conflicts with existing one
 //     if (orderNumber && orderNumber !== podcast.orderNumber) {
 //       const existingPodcast = await Podcast.findOne({ 
@@ -1438,7 +1467,7 @@ const getAllTags = async (req, res) => {
 //         parsedWhatsInside = [];
 //       }
 //     }
-    
+
 //     // Update fields
 //     const updateData = {};
 //     if (title !== undefined) updateData.title = title.trim();
@@ -1452,14 +1481,14 @@ const getAllTags = async (req, res) => {
 //     if (coverPhoto !== undefined) updateData.coverPhoto = coverPhoto.trim();
 //     if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl.trim();
 //     if (category !== undefined) updateData.category = category.trim();
-    
+
 //     // Handle tags update with normalization
 //     if (tags !== undefined) {
 //       updateData.tags = normalizeTags(tags);
 //     }
-    
+
 //     if (orderNumber !== undefined) updateData.orderNumber = orderNumber;
-    
+
 //     const updatedPodcast = await Podcast.findByIdAndUpdate(
 //       req.query.id,
 //       updateData,
@@ -1468,7 +1497,7 @@ const getAllTags = async (req, res) => {
 //         runValidators: true 
 //       }
 //     ).select('-__v');
-    
+
 //     res.json({
 //       success: true,
 //       message: 'Podcast updated successfully',
@@ -1476,7 +1505,7 @@ const getAllTags = async (req, res) => {
 //     });
 //   } catch (error) {
 //     console.error('Error updating podcast:', error);
-    
+
 //     // Handle validation errors
 //     if (error.name === 'ValidationError') {
 //       const errors = Object.values(error.errors).map(err => err.message);
@@ -1486,7 +1515,7 @@ const getAllTags = async (req, res) => {
 //         errors: errors
 //       });
 //     }
-    
+
 //     // Handle invalid ObjectId
 //     if (error.name === 'CastError') {
 //       return res.status(400).json({
@@ -1494,7 +1523,7 @@ const getAllTags = async (req, res) => {
 //         message: 'Invalid podcast ID format'
 //       });
 //     }
-    
+
 //     res.status(500).json({
 //       success: false,
 //       message: 'Error updating podcast',
@@ -1639,16 +1668,16 @@ const updatePodcast = async (req, res) => {
 const deletePodcast = async (req, res) => {
   try {
     const podcast = await Podcast.findById(req.query.id);
-    
+
     if (!podcast) {
       return res.status(404).json({
         success: false,
         message: 'Podcast not found'
       });
     }
-    
+
     await Podcast.findByIdAndDelete(req.query.id);
-    
+
     res.json({
       success: true,
       message: 'Podcast deleted successfully',
@@ -1662,7 +1691,7 @@ const deletePodcast = async (req, res) => {
     });
   } catch (error) {
     console.error('Error deleting podcast:', error);
-    
+
     // Handle invalid ObjectId
     if (error.name === 'CastError') {
       return res.status(400).json({
@@ -1670,7 +1699,7 @@ const deletePodcast = async (req, res) => {
         message: 'Invalid podcast ID format'
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: 'Error deleting podcast',

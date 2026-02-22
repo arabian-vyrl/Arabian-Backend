@@ -4,6 +4,19 @@ const path = require("path");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+// Helper function to generate transformed image URL
+
+const generateTransformedBlogImageUrl = (imagePath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/blogs/${imagePath}`;
+};
+
+const generateTransformedAgentImageUrl = (imagePath, version) => {
+
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
+
+};
+
+
 
 
 const stripHtmlTags = (html) => {
@@ -89,7 +102,7 @@ const createImageData = (file) => {
   return {
     url: file.path,
     publicId: file.filename,
-    filename: file.filename, 
+    filename: file.filename,
     format: file.format,
     bytes: file.size,
     width: file.width,
@@ -111,11 +124,11 @@ const destroyPublicId = async (publicId) => {
 
 
 const createBlog = async (req, res) => {
- try {
+  try {
     const {
       agentEmail,
       title,
-      Description, 
+      Description,
       metaTitle,
       metaDescription,
       tags,
@@ -195,7 +208,7 @@ const createBlog = async (req, res) => {
           blogs: {
             blogId: savedBlog._id,
             title: savedBlog.title,
-            slug: savedBlog.slug || "",     
+            slug: savedBlog.slug || "",
             description: savedBlog.metaInfo?.metaDescription || savedBlog.Description || "",
             imageUrl: savedBlog.coverImage.url || null,
             isPublished: savedBlog.isPublished,
@@ -205,7 +218,7 @@ const createBlog = async (req, res) => {
           },
         },
       },
-      { new: true } 
+      { new: true }
     );
 
     res.status(201).json({
@@ -406,7 +419,7 @@ const updateBlog = async (req, res) => {
     if (status) {
       const blogStatus = status === "published" ? "published" : "draft";
       const wasPublished = blog.isPublished;
-      
+
       blog.status = blogStatus;
       blog.isPublished = blogStatus === "published";
 
@@ -429,7 +442,7 @@ const updateBlog = async (req, res) => {
     const updatedBlog = await blog.save();
     console.log("BLOG SAVED SUCCESSFULLY");
 
- 
+
     if (agentChanged && oldAgentEmail) {
       try {
         await Agent.findOneAndUpdate(
@@ -485,10 +498,10 @@ const updateBlog = async (req, res) => {
     console.log("BLOG UPDATED SUCCESSFULLY - New title:", updatedBlog.title);
     res.status(200).json({
       success: true,
-      message: agentChanged 
-        ? "Blog updated and reassigned to new agent successfully" 
+      message: agentChanged
+        ? "Blog updated and reassigned to new agent successfully"
         : "Blog updated successfully",
-      data: { 
+      data: {
         blog: updatedBlog,
         agentChanged,
       },
@@ -502,6 +515,43 @@ const updateBlog = async (req, res) => {
     });
   }
 };
+
+// const GetAllBlogs = async (req, res) => {
+//   try {
+//     const { isPublished, isViewing } = req.query;
+
+//     const filter = {};
+//     if (isPublished !== undefined) {
+//       filter.isPublished = isPublished === "true";
+//     }
+
+//     let selectFields =
+//       "_id title slug description coverImage metaInfo isPublished publishedAt author createdAt";
+//     if (isViewing === "true") {
+//       selectFields += " content";
+//     }
+
+//     const blogs = await Blog.find(filter)
+//       .select(selectFields)
+//       .populate(
+//         "author",
+//         "agentName email imageUrl designation"
+//       )
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).json({
+//       success: true,
+//       totalBlogs: blogs.length,
+//       data: blogs,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch blogs",
+//       error: error.message,
+//     });
+//   }
+// };
 
 const GetAllBlogs = async (req, res) => {
   try {
@@ -520,16 +570,52 @@ const GetAllBlogs = async (req, res) => {
 
     const blogs = await Blog.find(filter)
       .select(selectFields)
-      .populate(
-        "author",
-        "agentName email imageUrl designation"
-      )
+      .populate("author", "agentName email imageUrl designation")
       .sort({ createdAt: -1 });
+
+    // For each blog, apply transformation to the cover image
+    const transformedBlogs = blogs.map(blog => {
+      // Transform the cover image
+      const coverImageUrl = blog.coverImage.url;
+
+      if (coverImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = coverImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = coverImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the cover image
+          const transformedCoverImageUrl = generateTransformedBlogImageUrl(imagePath, versionNumber);
+          blog.coverImage.url = transformedCoverImageUrl;  // Update the cover image URL
+        }
+      }
+
+      // Transform the author image (agent image)
+      const agentImageUrl = blog.author.agentImage.url;
+
+      if (agentImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = agentImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = agentImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the agent image
+          const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+          blog.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+        }
+      }
+
+      return blog;
+    });
 
     res.status(200).json({
       success: true,
-      totalBlogs: blogs.length,
-      data: blogs,
+      totalBlogs: transformedBlogs.length,
+      data: transformedBlogs,  // Return the blogs with transformed image URLs
     });
   } catch (error) {
     res.status(500).json({
@@ -541,25 +627,52 @@ const GetAllBlogs = async (req, res) => {
 };
 
 
-
+// This is not being used
 const getSingleBlog = async (req, res) => {
   try {
-    const blogId = req.query.id;
+    console.log("WORKING")
+    // const blogId = req.query.id;
     if (!blogId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Blog ID is required" });
+      return res.status(400).json({ success: false, message: "Blog ID is required" });
     }
 
     const blog = await Blog.findById(blogId).populate(
-      "author.agentEmail",
+      "author",
       "agentName email imageUrl designation specialistAreas phone whatsapp description"
     );
 
     if (!blog)
-      return res
-        .status(404)
-        .json({ success: false, message: "Blog not found" });
+      return res.status(404).json({ success: false, message: "Blog not found" });
+
+    // Transform the cover image URL
+    const coverImageUrl = blog.coverImage.url;
+    if (coverImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = coverImageUrl.match(versionRegex);
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = coverImageUrl.split('/').slice(-1)[0];
+        const transformedCoverImageUrl = generateTransformedBlogImageUrl(imagePath, versionNumber);
+        blog.coverImage.url = transformedCoverImageUrl;
+      }
+    }
+
+    // Transform the agent image URL (author's image)
+    const agentImageUrl = blog.author.agentImage.url;
+
+    if (agentImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = agentImageUrl.match(versionRegex);
+
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = agentImageUrl.split('/').slice(-1)[0];
+
+        // Generate the transformed image URL for the agent image
+        const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+        blog.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -578,7 +691,7 @@ const getSingleBlog = async (req, res) => {
 
 const getBlogBySlug = async (req, res) => {
   try {
-    const slug = req.query.slug; 
+    const slug = req.query.slug;
 
     if (!slug) {
       return res.status(400).json({
@@ -587,10 +700,8 @@ const getBlogBySlug = async (req, res) => {
       });
     }
 
-    const blog = await Blog.findOne({ slug }).populate(
-      "author.agentEmail",
-      "agentName email imageUrl designation specialistAreas phone whatsapp description"
-    );
+    const blog = await Blog.findOne({ slug })
+      .populate("author", "agentName email imageUrl designation specialistAreas phone whatsapp description");
 
     if (!blog) {
       return res.status(404).json({
@@ -599,13 +710,43 @@ const getBlogBySlug = async (req, res) => {
       });
     }
 
+    // Transform the cover image
+    const coverImageUrl = blog.coverImage.url;
+    if (coverImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = coverImageUrl.match(versionRegex);
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = coverImageUrl.split('/').slice(-1)[0];
+        const transformedCoverImageUrl = generateTransformedBlogImageUrl(imagePath, versionNumber);
+        blog.coverImage.url = transformedCoverImageUrl;
+      }
+    }
+
+    // Transform the author image (agent image)
+    const agentImageUrl = blog.author.agentImage.url;
+
+    if (agentImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = agentImageUrl.match(versionRegex);
+
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = agentImageUrl.split('/').slice(-1)[0];
+
+        // Generate the transformed image URL for the agent image
+        const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+        blog.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: "Blog fetched successfully",
       data: blog,
     });
   } catch (error) {
-    console.error("getSingleBlog error:", error.message);
+    console.error("getBlogBySlug error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch blog",
@@ -614,8 +755,7 @@ const getBlogBySlug = async (req, res) => {
   }
 };
 
-
-
+// This is also not being used
 const getBlogsByTags = async (req, res) => {
   try {
     const { tags, limit = 6, excludeId, isPublished } = req.query;
@@ -626,6 +766,7 @@ const getBlogsByTags = async (req, res) => {
         message: "Tags are required. Pass tags as comma-separated values.",
       });
     }
+
     const tagsArray = tags
       .split(",")
       .map((t) => t.trim().toLowerCase())
@@ -646,30 +787,50 @@ const getBlogsByTags = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(parseInt(limit, 10));
 
-    const data = blogs
-      .map((b) => {
-        const matchingTags = (b.metaInfo?.tags || []).filter((t) =>
-          tagsArray.includes(String(t).toLowerCase())
-        );
+    // For each blog, apply transformation to the cover image and author image
+    const transformedBlogs = blogs.map(blog => {
+      // Transform the cover image
+      const coverImageUrl = blog.coverImage.url;
 
-        return {
-          _id: b._id,
-          title: b.title || b.metaInfo.metaTitle,
-          slug: b.slug,
-          isPublished: b.isPublished,
-          status: b.status,
-          coverImage: b.coverImage,
-          metaInfo: b.metaInfo,
-          matchScore: matchingTags.length,
-        };
-      })
-      .sort((a, b) => b.matchScore - a.matchScore);
+      if (coverImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = coverImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = coverImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the cover image
+          const transformedCoverImageUrl = generateTransformedBlogImageUrl(imagePath, versionNumber);
+          blog.coverImage.url = transformedCoverImageUrl;  // Update the cover image URL
+        }
+      }
+
+      // Transform the author image (agent image)
+      const agentImageUrl = blog.author.agentImage.url;
+
+      if (agentImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = agentImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = agentImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the agent image
+          const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+          blog.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+        }
+      }
+
+      return blog;
+    });
 
     res.status(200).json({
       success: true,
       message: "Blogs with matching tags fetched successfully",
-      count: data.length,
-      data,
+      count: transformedBlogs.length,  // Return the number of transformed blogs
+      data: transformedBlogs,  // Return the transformed blogs
     });
   } catch (error) {
     console.error("getBlogsByTags error:", error.message);
@@ -736,6 +897,7 @@ const deleteBlog = async (req, res) => {
 };
 
 // ---------- LIST BY AGENT ----------
+// This is also not being used
 const getBlogsByAgent = async (req, res) => {
   try {
     const { agentEmail } = req.params;
@@ -785,7 +947,8 @@ const getBlogsByAgent = async (req, res) => {
 };
 
 // ---------- AGENTS WITH BLOGS ----------
-const getAgentsWithBlogs = async (req, res) => {
+// This is also not being used
+async function getAgentsWithBlogs(req, res) {
   try {
     const { limit = 20 } = req.query;
     const agentsWithBlogs = await Agent.findAgentsWithBlogs(
@@ -804,7 +967,7 @@ const getAgentsWithBlogs = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
 // ---------- PUBLISH TOGGLE ----------
 const toggleBlogPublishStatus = async (req, res) => {

@@ -6,6 +6,25 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
+
+
+
+
+
+
+
+const generateTransformedNewsImageUrl = (imagePath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/news/${imagePath}`;
+};
+
+
+const generateTransformedAgentImageUrl = (imagePath, version) => {
+
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
+
+};
+
+
 /* ---------- Helper Functions ---------- */
 const stripHtmlTags = (html) => {
   if (!html) return "";
@@ -506,6 +525,46 @@ const updateNews = async (req, res) => {
 };
 
 /* ---------- READS ---------- */
+// const GetAllNews = async (req, res) => {
+//   try {
+//     const { isPublished, isViewing } = req.query;
+
+//     const filter = {};
+//     if (isPublished !== undefined) {
+//       filter.isPublished = isPublished === "true";
+//     }
+
+//     // Base fields
+//     let selectFields =
+//       "_id title slug description coverImage metaInfo isPublished publishedAt author createdAt";
+//     // If viewing a single/full news item
+//     if (isViewing === "true") {
+//       selectFields += " content";
+//     }
+
+//     const newsItems = await News.find(filter)
+//       .select(selectFields)
+//       .populate(
+//         "author",
+//         "agentName email imageUrl designation"
+//       )
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).json({
+//       success: true,
+//       totalNews: newsItems.length,
+//       data: newsItems,
+//     });
+//   } catch (error) {
+//     console.error("GetAllNews error:", error.message);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch news",
+//       error: error.message,
+//     });
+//   }
+// };
+
 const GetAllNews = async (req, res) => {
   try {
     const { isPublished, isViewing } = req.query;
@@ -515,37 +574,71 @@ const GetAllNews = async (req, res) => {
       filter.isPublished = isPublished === "true";
     }
 
-    // Base fields
     let selectFields =
       "_id title slug description coverImage metaInfo isPublished publishedAt author createdAt";
-    // If viewing a single/full news item
     if (isViewing === "true") {
       selectFields += " content";
     }
 
-    const newsItems = await News.find(filter)
+    const news = await News.find(filter)
       .select(selectFields)
-      .populate(
-        "author",
-        "agentName email imageUrl designation"
-      )
+      .populate("author", "agentName email imageUrl designation")
       .sort({ createdAt: -1 });
+
+    // For each blog, apply transformation to the cover image
+    const transformedNews = news.map(news => {
+      // Transform the cover image
+      const coverImageUrl = news.coverImage.url;
+
+      if (coverImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = coverImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = coverImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the cover image
+          const transformedCoverImageUrl = generateTransformedNewsImageUrl(imagePath, versionNumber);
+          news.coverImage.url = transformedCoverImageUrl;  // Update the cover image URL
+        }
+      }
+
+      // Transform the author image (agent image)
+      const agentImageUrl = news.author.agentImage.url;
+
+      if (agentImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = agentImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = agentImageUrl.split('/').slice(-1)[0];
+
+          // Generate the transformed image URL for the agent image
+          const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+          news.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+        }
+      }
+
+      return news;
+    });
 
     res.status(200).json({
       success: true,
-      totalNews: newsItems.length,
-      data: newsItems,
+      totalBlogs: transformedNews.length,
+      data: transformedNews,  // Return the blogs with transformed image URLs
     });
   } catch (error) {
-    console.error("GetAllNews error:", error.message);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch news",
+      message: "Failed to fetch blogs",
       error: error.message,
     });
   }
 };
 
+// Not being used
 const getSingleNews = async (req, res) => {
   try {
     const newsId = req.query.id;
@@ -588,13 +681,43 @@ const getNewsBySlug = async (req, res) => {
       });
     }
 
-    const news = await News.findOne({ slug });
+    const news = await News.findOne({ slug }).populate(
+      "author",
+      "agentName email imageUrl designation specialistAreas phone whatsapp description"
+    );
 
     if (!news) {
       return res.status(404).json({
         success: false,
         message: "News not found",
       });
+    }
+
+    // Transform the cover image URL
+    const coverImageUrl = news.coverImage.url;
+    if (coverImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = coverImageUrl.match(versionRegex);
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = coverImageUrl.split('/').slice(-1)[0];
+        const transformedCoverImageUrl = generateTransformedNewsImageUrl(imagePath, versionNumber);
+        news.coverImage.url = transformedCoverImageUrl;  // Update the cover image URL
+      }
+    }
+
+    // Transform the agent image (author's image)
+    const agentImageUrl = news.author.agentImage.url;
+    console.log("Agent Image URl",agentImageUrl)
+    if (agentImageUrl) {
+      const versionRegex = /\/v(\d+)\//;
+      const match = agentImageUrl.match(versionRegex);
+      if (match && match[1]) {
+        const versionNumber = match[1];
+        const imagePath = agentImageUrl.split('/').slice(-1)[0];
+        const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+        news.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+      }
     }
 
     res.status(200).json({
@@ -612,15 +735,18 @@ const getNewsBySlug = async (req, res) => {
   }
 };
 
+
 const getNewsByTags = async (req, res) => {
   try {
     const { tags, limit = 6, excludeId, isPublished } = req.query;
+
     if (!tags) {
       return res.status(400).json({
         success: false,
         message: "Tags are required. Pass tags as comma-separated values.",
       });
     }
+
     const tagsArray = tags
       .split(",")
       .map((t) => t.trim().toLowerCase())
@@ -650,30 +776,44 @@ const getNewsByTags = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(parseInt(limit, 10));
 
-    const data = items
-      .map((n) => {
-        const matchingTags = (n.metaInfo?.tags || []).filter((t) =>
-          tagsArray.includes(String(t).toLowerCase())
-        );
+    // For each news, apply transformation to the cover image and author image
+    const transformedNews = items.map((n) => {
+      // Transform the cover image
+      const coverImageUrl = n.coverImage.url;
+      if (coverImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = coverImageUrl.match(versionRegex);
 
-        return {
-          _id: n._id,
-          title: n.title || n.metaInfo.metaTitle,
-          isPublished: n.isPublished,
-          slug: n.slug,
-          status: n.status,
-          coverImage: n.coverImage,
-          metaInfo: n.metaInfo,
-          matchScore: matchingTags.length,
-        };
-      })
-      .sort((a, b) => b.matchScore - a.matchScore);
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = coverImageUrl.split('/').slice(-1)[0];
+          const transformedCoverImageUrl = generateTransformedNewsImageUrl(imagePath, versionNumber);
+          n.coverImage.url = transformedCoverImageUrl;  // Update the cover image URL
+        }
+      }
+
+      // Transform the author image (agent image)
+      const agentImageUrl = n.author.agentImage.url;
+      if (agentImageUrl) {
+        const versionRegex = /\/v(\d+)\//;
+        const match = agentImageUrl.match(versionRegex);
+
+        if (match && match[1]) {
+          const versionNumber = match[1];
+          const imagePath = agentImageUrl.split('/').slice(-1)[0];
+          const transformedAgentImageUrl = generateTransformedAgentImageUrl(imagePath, versionNumber);
+          n.author.agentImage.url = transformedAgentImageUrl;  // Update the agent image URL
+        }
+      }
+
+      return n;
+    });
 
     res.status(200).json({
       success: true,
       message: "News with matching tags fetched successfully",
-      count: data.length,
-      data,
+      count: transformedNews.length,
+      data: transformedNews,
     });
   } catch (error) {
     console.error("getNewsByTags error:", error.message);
@@ -684,7 +824,6 @@ const getNewsByTags = async (req, res) => {
     });
   }
 };
-
 /* ---------- DELETE ---------- */
 const deleteNews = async (req, res) => {
   try {
