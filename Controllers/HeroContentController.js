@@ -223,6 +223,28 @@ const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
+
+
+
+// For cloudinary
+const extractVideoPath = (url) => {
+  const regex = /video\/upload\/(v\d+\/hero\/[a-zA-Z0-9\-]+\.mp4)/;
+  const match = url.match(regex);
+  
+  // If match found, return the extracted path, else return null
+  return match ? match[1] : null;
+};
+
+// Helper function to generate transformed video URL
+const generateTransformedVideoUrl = (videoPath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/video/upload/f_auto,q_auto,h_1080/${videoPath}`;
+};
+
+// Helper function to generate transformed image URL
+const generateTransformedImageUrl = (imagePath, version) => {
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1000,h_1000,c_limit,q_auto,f_auto/v${version}/hero/${imagePath}`;
+};
+
 // ---------- Cloudinary Multer Storage for hero (image + video) ----------
 
 const HERO_ALLOWED_EXT = [
@@ -249,6 +271,42 @@ const heroFileFilter = (_req, file, cb) => {
     false
   );
 };
+
+// const heroStorage = new CloudinaryStorage({
+//   cloudinary,
+//   params: async (req, file) => {
+//     const folder = "hero";
+//     const isVideo = (file.mimetype || "").startsWith("video/");
+
+//     const base =
+//       (file.originalname || "hero-media")
+//         .toLowerCase()
+//         .replace(/\.[a-z0-9]+$/, "")
+//         .replace(/[^\w]+/g, "-")
+//         .slice(0, 50) || "hero-media";
+
+//     const public_id = `${Date.now()}-${Math.round(Math.random() * 1e6)}-${base}`;
+
+//     const common = {
+//       folder,
+//       public_id,
+//       allowed_formats: HERO_ALLOWED_EXT,
+//       overwrite: false,
+//       resource_type: isVideo ? "video" : "image",
+//     };
+
+//     // Apply transformations only for images
+//     if (!isVideo) {
+//       return {
+//         ...common,
+//         transformation: [{ quality: "auto:good", fetch_format: "auto" }],
+//       };
+//     }
+
+//     return common;
+//   },
+// });
+
 
 const heroStorage = new CloudinaryStorage({
   cloudinary,
@@ -285,6 +343,7 @@ const heroStorage = new CloudinaryStorage({
   },
 });
 
+
 // 👉 This is what your router will use: HeroController.upload.single("media")
 const upload = multer({
   storage: heroStorage,
@@ -294,6 +353,18 @@ const upload = multer({
 
 // ---------- Helpers ----------
 
+// const createHeroMediaData = (file) => {
+//   if (!file) return null;
+//   const isVideo = (file.mimetype || "").startsWith("video/");
+
+//   return {
+//     url: file.path, // Cloudinary secure_url
+//     mediaType: isVideo ? "video" : "image",
+//     publicId: file.filename, // Cloudinary public_id
+//     resourceType: file.resource_type || (isVideo ? "video" : "image"),
+//   };
+// };
+// Helper function to create media data
 const createHeroMediaData = (file) => {
   if (!file) return null;
   const isVideo = (file.mimetype || "").startsWith("video/");
@@ -306,6 +377,23 @@ const createHeroMediaData = (file) => {
   };
 };
 
+// const destroyHeroMedia = async (publicId, resourceType = "image") => {
+//   if (!publicId) return;
+//   try {
+//     await cloudinary.uploader.destroy(publicId, {
+//       resource_type: resourceType,
+//       invalidate: true,
+//     });
+//     console.log(`🗑️ Cloudinary hero destroyed: ${publicId}`);
+//   } catch (e) {
+//     console.warn("⚠️ Cloudinary hero destroy failed:", publicId, e.message);
+//   }
+// };
+
+// ---------- CONTROLLERS ----------
+
+// Get current hero content
+// Helper function to delete old media from Cloudinary
 const destroyHeroMedia = async (publicId, resourceType = "image") => {
   if (!publicId) return;
   try {
@@ -319,9 +407,36 @@ const destroyHeroMedia = async (publicId, resourceType = "image") => {
   }
 };
 
-// ---------- CONTROLLERS ----------
 
-// Get current hero content
+// const getHero = async (_req, res) => {
+//   try {
+//     console.log("📥 GET /get-hero - Fetching hero content...");
+//     const hero = await HeroContent.findOne();
+
+//     if (!hero) {
+//       console.log("⚠️ No hero content found");
+//       return res.status(404).json({
+//         success: false,
+//         message: "No hero content found",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: hero,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error fetching hero:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+
+
+
 const getHero = async (_req, res) => {
   try {
     console.log("📥 GET /get-hero - Fetching hero content...");
@@ -333,6 +448,18 @@ const getHero = async (_req, res) => {
         success: false,
         message: "No hero content found",
       });
+    }
+
+    // If it's a video, extract the path and transform the URL
+    if (hero.mediaType === "video") {
+      const videoPath = extractVideoPath(hero.mediaUrl); // Extracted part
+      if (videoPath) {
+        const version = videoPath.split('/')[0].replace('v', ''); // Extract version from videoPath
+        hero.mediaUrl = generateTransformedVideoUrl(videoPath, version);
+      }
+    } else if (hero.mediaType === "image") {
+      // For images, generate the transformed image URL
+      hero.mediaUrl = generateTransformedImageUrl(hero.publicId, hero.version);
     }
 
     res.status(200).json({
@@ -347,6 +474,8 @@ const getHero = async (_req, res) => {
     });
   }
 };
+
+
 
 // Add or Replace hero content (image or video)
 const addOrReplaceHero = async (req, res) => {
