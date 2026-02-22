@@ -14,13 +14,13 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 
 const generateTransformedNewsImageUrl = (imagePath, version) => {
-  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/news/${imagePath}`;
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1000,h_1000,c_limit,q_auto,f_auto/v${version}/news/${imagePath}`;
 };
 
 
 const generateTransformedAgentImageUrl = (imagePath, version) => {
 
-  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1000,h_1000,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
 
 };
 
