@@ -630,8 +630,8 @@ const GetAllBlogs = async (req, res) => {
 // This is not being used
 const getSingleBlog = async (req, res) => {
   try {
-    console.log("WORKING")
-    // const blogId = req.query.id;
+    // console.log("WORKING")
+    const blogId = req.query.id;
     if (!blogId) {
       return res.status(400).json({ success: false, message: "Blog ID is required" });
     }
