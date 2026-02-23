@@ -127,8 +127,6 @@
 
 // module.exports.cloudinary = cloudinary;
 
-
-
 // Near the top with other requires
 require("./Config/redis.js"); // Initialize Redis connection
 require("dotenv").config();
@@ -148,6 +146,7 @@ const router = require("./Router/Routes");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cookieParser = require("cookie-parser");
+const axios=require('axios')
 
 // Set up middlewares
 app.set("trust proxy", 1);
@@ -160,7 +159,7 @@ app.use(
       "https://arabiann.netlify.app",
     ],
     credentials: true,
-  })
+  }),
 );
 
 app.use(cookieParser());
@@ -182,8 +181,8 @@ const agentStorage = new CloudinaryStorage({
     folder: "agent-images",
     resource_type: "image",
     transformation: [
-      { quality: "auto", fetch_format: "auto" },  // Auto quality and format (JPEG, WebP, etc.)
-      { width: 4000, height: 3800, crop: "limit" }  // Limit the image to 800px width/height (adjust as needed)
+      { quality: "auto", fetch_format: "auto" }, // Auto quality and format (JPEG, WebP, etc.)
+      { width: 4000, height: 3800, crop: "limit" }, // Limit the image to 800px width/height (adjust as needed)
     ],
   }),
 });
@@ -217,8 +216,6 @@ const upload = multer({
   limits: { fileSize: 15 * 1024 * 1024 },
 });
 
-
-
 // Agents with salesforce sync cron job (CRON JOBS)
 setupCronJobs();
 schedulePropertySync();
@@ -226,6 +223,23 @@ scheduleNewOffPlanSync();
 
 // Then mount your API routes
 app.use("/", router);
+
+app.get("/get-google-reviews", async (req, res) => {
+  const PLACE_ID=process.env.GOOGLE_PLACE_ID
+  const GOOGLE_API_KEY=process.env.GOOGLE_MAP_API
+  try {
+    console.log(PLACE_ID, GOOGLE_API_KEY);
+    const url =
+      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${PLACE_ID}&fields=review&key=${GOOGLE_API_KEY}`;
+    console.log(url);
+    const response = await axios.get(url);
+    const reviews = response.data.result?.reviews || [];
+    res.json(reviews);
+  } catch (err) {
+    console.error("Error fetching Google reviews:", err);
+    res.status(500).json({ error: "Error fetching reviews" });
+  }
+});
 
 // Start DB and server
 ConnectDb()
@@ -271,7 +285,6 @@ module.exports.cloudinary = cloudinary;
 
 //     // AgentImage Url
 //     const transformedUrl = `https://res.cloudinary.com/dviizglsy/image/upload/w_1200,h_1200,c_limit,q_auto,f_auto/v${versionNumber}/agent-images/${imageUrlPath}`;
-
 
 //     // Send the transformed URL as a response
 //     res.json({ imageUrl: transformedUrl });
