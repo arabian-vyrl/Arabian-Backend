@@ -224,6 +224,7 @@ scheduleNewOffPlanSync();
 // Then mount your API routes
 app.use("/", router);
 
+// Google Reviews 
 app.get("/get-google-reviews", async (req, res) => {
   const PLACE_ID=process.env.GOOGLE_PLACE_ID
   const GOOGLE_API_KEY=process.env.GOOGLE_MAP_API
