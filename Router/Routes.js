@@ -288,6 +288,7 @@ router.get("/Agent", AgentController.getAgentById);
 router.get("/AgentByEmail", AgentController.getAgentByEmail);
 router.get("/delete-agent", AgentController.deleteAgent);
 router.get("/getAgentLanguages", AgentController.getAgentLanguages)
+// router.post("/backfill-agent-images", AgentController.backfillAgentCompressImages)
 
 // Leaderboard Routes
 router.get(
@@ -395,7 +396,7 @@ router.post("/auth/logout", DashboardLoginAuthController.logout);
 
 // test Routes
 router.get("/get-all-redin-data", GetLocationRedin.getAllRedinData);
-router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew);
+// router.get("/test-route-for-redin-data", GetLocationRedin.MatchgeoPiontNew);
 
 // Route for testing Coordinates
 router.get("/get-coordinates", testController2.getPropertiesWithCoordinates);

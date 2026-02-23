@@ -1133,6 +1133,10 @@ const agentSchema = new mongoose.Schema(
       // maxlength: [500, 'Description cannot exceed 500 characters']
     },
 
+    agentCompressImage: {
+       thumbnail: { type: String, default: null },
+    },
+
     // ——— NEW: Leaderboard Performance Metrics ———
     leaderboard: {
       propertiesSold: {

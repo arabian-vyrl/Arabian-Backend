@@ -2687,6 +2687,7 @@ const getLeaderboardAgents = async (req, res) => {
           whatsapp: 1,
           phone: 1,
           imageUrl: 1,
+          agentCompressImage: 1,
           isActive: 1,
           agentId: 1,
           leaderboard: 1,
@@ -2740,6 +2741,7 @@ const getLeaderboardAgents = async (req, res) => {
       position: a.position,
       name: a.agentName,
       imageUrl: a.imageUrl, // Now this will have the transformed image URL
+      compressedImageUrl: a.agentCompressImage?.thumbnail,
       leaderboard: {
         activePropertiesThisMonth: a.leaderboard?.activePropertiesThisMonth ?? 0,
         propertiesSold: a.leaderboard?.propertiesSold ?? 0,

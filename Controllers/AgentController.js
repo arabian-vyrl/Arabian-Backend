@@ -1001,6 +1001,7 @@ const path = require("path");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
 const mongoose = require("mongoose");
+const { compressImageFromUrl } = require("../Config/imageCompressor");
 
 const isTruthy = (v) => v === true || v === "true";
 const clampInt = (v, def = 0) => {
@@ -1014,65 +1015,82 @@ const generateTransformedImageUrl = (imagePath, version) => {
 };
 
 
-const createAgent = async (req, res) => {
-  const session = await mongoose.startSession();
+// const createAgent = async (req, res) => {
+//   const session = await mongoose.startSession();
 
-  try {
-    session.startTransaction();
+//   try {
+//     session.startTransaction();
 
-    // Image
-    if (req.file) {
-      req.body.imageUrl = req.file.path;
-    }
+//     // Image
+//     if (req.file) {
+//       req.body.imageUrl = req.file.path;
+//     }
 
-    // Add designation category handling
-    if (req.body.designationCategory) {
-      req.body.designationCategory = req.body.designationCategory.trim();
-    }
+//     // Add designation category handling
+//     if (req.body.designationCategory) {
+//       req.body.designationCategory = req.body.designationCategory.trim();
+//     }
 
-    // Booleans
-    if (req.body.superAgent !== undefined) {
-      req.body.superAgent = isTruthy(req.body.superAgent);
-    }
+//     // Booleans
+//     if (req.body.superAgent !== undefined) {
+//       req.body.superAgent = isTruthy(req.body.superAgent);
+//     }
 
-    if (req.body.activeOnLeaderboard !== undefined) {
-      req.body.activeOnLeaderboard = isTruthy(req.body.activeOnLeaderboard);
-    } else {
-      req.body.activeOnLeaderboard = true;
-    }
+//     if (req.body.activeOnLeaderboard !== undefined) {
+//       req.body.activeOnLeaderboard = isTruthy(req.body.activeOnLeaderboard);
+//     } else {
+//       req.body.activeOnLeaderboard = true;
+//     }
 
-    // ✅ SEQUENCE HANDLING
-    if (
-      req.body.sequenceNumber !== undefined &&
-      req.body.sequenceNumber !== ""
-    ) {
-      const desiredSeq = clampInt(req.body.sequenceNumber);
-      req.body.sequenceNumber = await Agent.insertAtSequence(
-        desiredSeq,
-        session,
-      );
-    } else {
-      const maxSeq = await Agent.getMaxSequenceNumber(session);
-      req.body.sequenceNumber = maxSeq + 1;
-    }
+//     // ✅ SEQUENCE HANDLING
+//     if (
+//       req.body.sequenceNumber !== undefined &&
+//       req.body.sequenceNumber !== ""
+//     ) {
+//       const desiredSeq = clampInt(req.body.sequenceNumber);
+//       req.body.sequenceNumber = await Agent.insertAtSequence(
+//         desiredSeq,
+//         session,
+//       );
+//     } else {
+//       const maxSeq = await Agent.getMaxSequenceNumber(session);
+//       req.body.sequenceNumber = maxSeq + 1;
+//     }
 
-    const [agent] = await Agent.create([req.body], { session });
+//     const [agent] = await Agent.create([req.body], { session });
 
-    await session.commitTransaction();
+//     await session.commitTransaction();
 
-    return res.status(201).json({
-      success: true,
-      data: agent,
-      imageUrl: agent.imageUrl,
-    });
-  } catch (err) {
-    await session.abortTransaction();
-    console.error("Create agent error:", err);
-    return res.status(400).json({ success: false, error: err.message });
-  } finally {
-    session.endSession();
-  }
-};
+
+//     // ✅ After commit, compress image async (non-blocking to response)
+//     // We do this OUTSIDE the transaction since it's an external network call
+//     // if (agent.imageUrl) {
+//     //   compressImageFromUrl(agent.imageUrl)
+//     //     .then(async (compressed) => {
+//     //       if (compressed) {
+//     //         await Agent.findOneAndUpdate(
+//     //           { agentId: agent.agentId },
+//     //           { $set: { agentCompressImage: compressed } }
+//     //         );
+//     //         console.log(`Compressed images stored for agent: ${agent.agentId}`);
+//     //       }
+//     //     })
+//     //     .catch((err) => console.error("Compression background error:", err));
+//     // }
+
+//     return res.status(201).json({
+//       success: true,
+//       data: agent,
+//       imageUrl: agent.imageUrl,
+//     });
+//   } catch (err) {
+//     await session.abortTransaction();
+//     console.error("Create agent error:", err);
+//     return res.status(400).json({ success: false, error: err.message });
+//   } finally {
+//     session.endSession();
+//   }
+// };
 
 // const getAgents = async (req, res) => {
 //   try {
@@ -1128,6 +1146,98 @@ const createAgent = async (req, res) => {
 //     return res.status(500).json({ success: false, error: err.message });
 //   }
 // };
+
+
+
+const createAgent = async (req, res) => {
+
+  console.log("Create agent request body:", req.body);
+  console.log("Create agent request body:", req.file);
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // Image
+    if (req.file) {
+      req.body.imageUrl = req.file.path;
+    }
+
+    // Add designation category handling
+    if (req.body.designationCategory) {
+      req.body.designationCategory = req.body.designationCategory.trim();
+    }
+
+    // Booleans
+    if (req.body.superAgent !== undefined) {
+      req.body.superAgent = isTruthy(req.body.superAgent);
+    }
+
+    if (req.body.activeOnLeaderboard !== undefined) {
+      req.body.activeOnLeaderboard = isTruthy(req.body.activeOnLeaderboard);
+    } else {
+      req.body.activeOnLeaderboard = true;
+    }
+
+    // ✅ SEQUENCE HANDLING
+    if (
+      req.body.sequenceNumber !== undefined &&
+      req.body.sequenceNumber !== ""
+    ) {
+      const desiredSeq = clampInt(req.body.sequenceNumber);
+      req.body.sequenceNumber = await Agent.insertAtSequence(
+        desiredSeq,
+        session,
+      );
+    } else {
+      const maxSeq = await Agent.getMaxSequenceNumber(session);
+      req.body.sequenceNumber = maxSeq + 1;
+    }
+
+    const [agent] = await Agent.create([req.body], { session });
+
+    await session.commitTransaction();
+
+
+    //     // ✅ After commit, compress image async (non-blocking to response)
+    // We do this OUTSIDE the transaction since it's an external network call
+
+
+    
+    if (agent.imageUrl) {
+      const versionMatch = agent.imageUrl.match(/\/v(\d+)\//);
+      const imageUrlToCompress = versionMatch
+        ? generateTransformedImageUrl(agent.imageUrl.split('/').slice(-1)[0], versionMatch[1])
+        : agent.imageUrl;
+
+      compressImageFromUrl(imageUrlToCompress)
+        .then(async (compressed) => {
+          if (compressed) {
+            await Agent.findOneAndUpdate(
+              { agentId: agent.agentId },
+              { $set: { agentCompressImage: compressed } }
+            );
+            console.log(`Compressed images stored for agent: ${agent.agentId}`);
+          }
+        })
+        .catch((err) => console.error("Compression background error:", err));
+    }
+
+    return res.status(201).json({
+      success: true,
+      data: agent,
+      imageUrl: agent.imageUrl,
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    console.error("Create agent error:", err);
+    return res.status(400).json({ success: false, error: err.message });
+  } finally {
+    session.endSession();
+  }
+};
+
 
 const getAgents = async (req, res) => {
   try {
@@ -1470,6 +1580,26 @@ const updateAgent = async (req, res) => {
 
     await session.commitTransaction();
 
+    // ✅ Recompress only if a new image was uploaded
+    if (req.file && updatedAgent.imageUrl) {
+      const versionMatch = updatedAgent.imageUrl.match(/\/v(\d+)\//);
+      const imageUrlToCompress = versionMatch
+        ? generateTransformedImageUrl(updatedAgent.imageUrl.split('/').slice(-1)[0], versionMatch[1])
+        : updatedAgent.imageUrl;
+
+      compressImageFromUrl(imageUrlToCompress)
+        .then(async (compressed) => {
+          if (compressed) {
+            await Agent.findOneAndUpdate(
+              { agentId },
+              { $set: { agentCompressImage: compressed } }
+            );
+            console.log(`Recompressed images for updated agent: ${agentId}`);
+          }
+        })
+        .catch((err) => console.error("Recompression error:", err));
+    }
+
     return res.status(200).json({
       success: true,
       message: `Agent updated successfully. Updated fields: ${effectiveKeys.join(
@@ -1654,8 +1784,154 @@ const getAgentLanguages = async (req, res) => {
   }
 };
 
+// const getCollectionStats = async () => {
+//   const db = Agent.db.db; 
+//   return await db.command({ collStats: Agent.collection.collectionName });
+// };
 
+// const backfillAgentCompressImages = async (req, res) => {
+//   try {
+//     // ── Collection stats BEFORE ──────────────────────────────────────────────
+//    const statsBefore = await getCollectionStats();
 
+//     // ── Find up to 10 agents missing compressed image ───────────────────────
+//     const agents = await Agent.find(
+//       {
+//         imageUrl: { $exists: true, $nin: [null, ""] },
+//         activeOnLeaderboard: true,
+//         $or: [
+//           { agentCompressImage: { $exists: false } },
+//           { agentCompressImage: null },
+//           { "agentCompressImage.thumbnail": { $exists: false } },
+//         ],
+//       },
+//       { agentId: 1, agentName: 1, imageUrl: 1 }
+//     ).limit(30);
+
+//     if (agents.length === 0) {
+//       return res.status(200).json({
+//         success: true,
+//         message: "All agents already have compressed images",
+//         summary: { agentsFound: 0, agentsSucceeded: 0, agentsFailed: 0, totalRemainingWithoutCompression: 0 },
+//       });
+//     }
+
+//     const results = [];
+//     let totalOriginalUrlBytes = 0;
+//     let totalCompressedBytes = 0;
+
+//     // ── Process each agent sequentially ─────────────────────────────────────
+//     for (const agent of agents) {
+//       const entry = {
+//         agentId: agent.agentId,
+//         agentName: agent.agentName,
+//         status: "failed",
+//         originalUrlBytes: 0,
+//         originalUrlKB: "0",
+//         compressedBytes: 0,
+//         compressedKB: "0",
+//       };
+
+//       try {
+//         entry.originalUrlBytes = Buffer.byteLength(agent.imageUrl, "utf8");
+//         entry.originalUrlKB = (entry.originalUrlBytes / 1024).toFixed(3);
+//         totalOriginalUrlBytes += entry.originalUrlBytes;
+
+//         // Build optimized Cloudinary URL before compressing
+//         const versionMatch = agent.imageUrl.match(/\/v(\d+)\//);
+//         const imageUrlToCompress = versionMatch
+//           ? generateTransformedImageUrl(
+//               agent.imageUrl.split("/").slice(-1)[0],
+//               versionMatch[1]
+//             )
+//           : agent.imageUrl;
+
+//         entry.optimizedUrl = imageUrlToCompress;
+
+//         const compressed = await compressImageFromUrl(imageUrlToCompress);
+
+//         if (compressed) {
+//           entry.compressedBytes = Buffer.byteLength(compressed.thumbnail, "utf8");
+//           entry.compressedKB = (entry.compressedBytes / 1024).toFixed(3);
+//           totalCompressedBytes += entry.compressedBytes;
+
+//           await Agent.findOneAndUpdate(
+//             { agentId: agent.agentId },
+//             { $set: { agentCompressImage: compressed } }
+//           );
+
+//           entry.status = "success";
+//           console.log(`Backfilled compression for agent: ${agent.agentId}`);
+//         } else {
+//           entry.status = "no_output";
+//           console.warn(`Compression returned null for agent: ${agent.agentId}`);
+//         }
+//       } catch (agentErr) {
+//         entry.status = "error";
+//         entry.error = agentErr.message;
+//         console.error(`Error compressing agent ${agent.agentId}:`, agentErr.message);
+//       }
+
+//       results.push(entry);
+//     }
+
+//     // ── Collection stats AFTER ───────────────────────────────────────────────
+//    const statsAfter = await getCollectionStats();
+
+//     const totalRemaining = await Agent.countDocuments({
+//       imageUrl: { $exists: true, $nin: [null, ""] },
+//       $or: [
+//         { agentCompressImage: { $exists: false } },
+//         { agentCompressImage: null },
+//         { "agentCompressImage.thumbnail": { $exists: false } },
+//       ],
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       summary: {
+//         agentsFound: agents.length,
+//         agentsSucceeded: results.filter((r) => r.status === "success").length,
+//         agentsFailed: results.filter((r) => r.status !== "success").length,
+//         totalRemainingWithoutCompression: totalRemaining,
+//         imageSizes: {
+//           totalOriginalUrlBytes,
+//           totalOriginalUrlKB: (totalOriginalUrlBytes / 1024).toFixed(3),
+//           totalCompressedBytes,
+//           totalCompressedKB: (totalCompressedBytes / 1024).toFixed(3),
+//         },
+//       },
+//       collectionStats: {
+//         before: {
+//           storageSizeBytes: statsBefore.storageSize,
+//           storageSizeKB: (statsBefore.storageSize / 1024).toFixed(2),
+//           dataSizeBytes: statsBefore.size,
+//           dataSizeKB: (statsBefore.size / 1024).toFixed(2),
+//           totalIndexSizeBytes: statsBefore.totalIndexSize,
+//           totalIndexSizeKB: (statsBefore.totalIndexSize / 1024).toFixed(2),
+//         },
+//         after: {
+//           storageSizeBytes: statsAfter.storageSize,
+//           storageSizeKB: (statsAfter.storageSize / 1024).toFixed(2),
+//           dataSizeBytes: statsAfter.size,
+//           dataSizeKB: (statsAfter.size / 1024).toFixed(2),
+//           totalIndexSizeBytes: statsAfter.totalIndexSize,
+//           totalIndexSizeKB: (statsAfter.totalIndexSize / 1024).toFixed(2),
+//         },
+//         diff: {
+//           storageSizeDiffBytes: statsAfter.storageSize - statsBefore.storageSize,
+//           storageSizeDiffKB: ((statsAfter.storageSize - statsBefore.storageSize) / 1024).toFixed(2),
+//           dataSizeDiffBytes: statsAfter.size - statsBefore.size,
+//           dataSizeDiffKB: ((statsAfter.size - statsBefore.size) / 1024).toFixed(2),
+//         },
+//       },
+//       agents: results,
+//     });
+//   } catch (err) {
+//     console.error("Backfill error:", err);
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
 
 module.exports = {
   createAgent,
@@ -1665,5 +1941,6 @@ module.exports = {
   updateAgent,
   // getAgentsBySequence,
   deleteAgent,
-  getAgentLanguages
+  getAgentLanguages,
+  // backfillAgentCompressImages,
 };
