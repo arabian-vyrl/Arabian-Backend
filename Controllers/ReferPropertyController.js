@@ -414,7 +414,7 @@ const ReferProperty = async (req, res) => {
     const sendEmail = async (to, subject, html) => {
       try {
         await transporter.sendMail({
-          from: process.env.NODE_MAILER_EMAIL,
+          from: process.env.NODE_EMAIL,
           to,
           subject,
           html,
@@ -445,7 +445,7 @@ const ReferProperty = async (req, res) => {
         <p>You can use these tracking codes to monitor the progress of each referral.</p>
         <br/>
         <p>Thank you for helping us connect with new clients.</p>
-        <p><strong>Best Regards,</strong><br/>Arabian Estate</p>
+        <p><strong>Best Regards,</strong><br/>Arabian Estates</p>
       </div>
       `
     );

@@ -12,6 +12,8 @@ const transporter = nodemailer.createTransport({
 const subscribeEmail = async (req, res) => {
   try {
     const { email } = req.body;
+
+    console.log("Email", email)
     // Validation
     if (!email) {
       return res.status(400).json({
@@ -28,7 +30,7 @@ const subscribeEmail = async (req, res) => {
     }
     const mailOptions = {
       from: `"Website Subscription" <${email}>`,
-      to: "adeel8128377@gmail.com",
+      to: process.env.NODE_MAILER_EMAIL,
       subject: "New Email Subscription",
       html: `<p>New subscriber email: <strong>${email}</strong></p>`,
     };
@@ -70,8 +72,8 @@ const downloadFile = async (req, res) => {
 
     // Admin email
     const adminMailOptions = {
-      from: `"${type.charAt(0).toUpperCase() + type.slice(1)} Request" <${process.env.NODE_MAILER_EMAIL}>`,
-      to: "adeel8128377@gmail.com",
+      from: `"${type.charAt(0).toUpperCase() + type.slice(1)} Request" <${email}>`,
+      to: process.env.NODE_MAILER_EMAIL,
       subject: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Download Request`,
       html: `
         <h3>New Download Request</h3>
@@ -115,8 +117,6 @@ const downloadFile = async (req, res) => {
     });
   }
 };
-
-
 
 module.exports = {
   subscribeEmail,
