@@ -800,8 +800,6 @@
 
 // Fixed Controller: NewOffplanController.js
 
-
-
 // const OffPlanProperty = require("../Models/NewOffplanModel");
 // const axios = require("axios");
 // const cron = require("node-cron");
@@ -1705,7 +1703,6 @@
 //   }
 // };
 
-
 // const filterByMinPrice = async (req, res) => {
 //   try {
 //     const { minPrice, page = 1, limit = 10 } = req.query;
@@ -2124,28 +2121,6 @@
 //   scheduleNewOffPlanSync,
 // };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const OffPlanProperty = require("../Models/NewOffplanModel");
 const axios = require("axios");
 const cron = require("node-cron");
@@ -2224,7 +2199,9 @@ function checkForChanges(existing, newDoc) {
 
   for (const field of fieldsToCheck) {
     if (existing[field] !== newDoc[field]) {
-      console.log(`  Change in ${field}: "${existing[field]}" -> "${newDoc[field]}"`);
+      console.log(
+        `  Change in ${field}: "${existing[field]}" -> "${newDoc[field]}"`,
+      );
       return true;
     }
   }
@@ -2240,7 +2217,9 @@ function checkForChanges(existing, newDoc) {
 
   for (const field of numericFields) {
     if (normalize(existing[field]) !== normalize(newDoc[field])) {
-      console.log(`  Change in ${field}: ${existing[field]} -> ${newDoc[field]}`);
+      console.log(
+        `  Change in ${field}: ${existing[field]} -> ${newDoc[field]}`,
+      );
       return true;
     }
   }
@@ -2248,13 +2227,17 @@ function checkForChanges(existing, newDoc) {
   const booleanFields = ["isPartnerProject", "hasEscrow", "postHandover"];
   for (const field of booleanFields) {
     if (!!existing[field] !== !!newDoc[field]) {
-      console.log(`  Change in ${field}: ${existing[field]} -> ${newDoc[field]}`);
+      console.log(
+        `  Change in ${field}: ${existing[field]} -> ${newDoc[field]}`,
+      );
       return true;
     }
   }
 
   if (!compareDates(existing.completionDate, newDoc.completionDate)) {
-    console.log(`  Change in completionDate: ${existing.completionDate} -> ${newDoc.completionDate}`);
+    console.log(
+      `  Change in completionDate: ${existing.completionDate} -> ${newDoc.completionDate}`,
+    );
     return true;
   }
 
@@ -2315,7 +2298,9 @@ const fetchAndSaveProperties = async (req, res) => {
           axiosError.code === "ECONNRESET" ||
           axiosError.code === "ETIMEDOUT"
         ) {
-          console.log("Connection lost. Ending sync with data processed so far.");
+          console.log(
+            "Connection lost. Ending sync with data processed so far.",
+          );
           break;
         }
         throw axiosError;
@@ -2334,7 +2319,8 @@ const fetchAndSaveProperties = async (req, res) => {
 
       for (const item of apiItems) {
         try {
-          let lat = null, lng = null;
+          let lat = null,
+            lng = null;
           if (item.coordinates) {
             const [a, b] = String(item.coordinates)
               .split(",")
@@ -2400,7 +2386,9 @@ const fetchAndSaveProperties = async (req, res) => {
             await OffPlanProperty.create(doc);
             newInserts++;
             totalProcessed++;
-            console.log(`✓ Inserted new property: ${item.name} (ID: ${item.id})`);
+            console.log(
+              `✓ Inserted new property: ${item.name} (ID: ${item.id})`,
+            );
           } else if (force) {
             await OffPlanProperty.updateOne({ apiId: item.id }, { $set: doc });
             updated++;
@@ -2409,13 +2397,20 @@ const fetchAndSaveProperties = async (req, res) => {
           } else {
             const hasChanges = checkForChanges(existingProperty, doc);
             if (hasChanges) {
-              await OffPlanProperty.updateOne({ apiId: item.id }, { $set: doc });
+              await OffPlanProperty.updateOne(
+                { apiId: item.id },
+                { $set: doc },
+              );
               updated++;
               totalProcessed++;
-              console.log(`✓ Updated (changes detected): ${item.name} (ID: ${item.id})`);
+              console.log(
+                `✓ Updated (changes detected): ${item.name} (ID: ${item.id})`,
+              );
             } else {
               skipped++;
-              console.log(`- Skipped (no changes): ${item.name} (ID: ${item.id})`);
+              console.log(
+                `- Skipped (no changes): ${item.name} (ID: ${item.id})`,
+              );
             }
           }
         } catch (e) {
@@ -2493,10 +2488,23 @@ const buildOffPlanFilter = (query) => {
   }
 
   // Handover quarter – exact match
-  if (query.handoverQuarter) {
-    filter.handoverQuarter = query.handoverQuarter.trim();
-  }
+  // if (query.handoverQuarter) {
+  //   filter.handoverQuarter = query.handoverQuarter.trim();
+  // }
 
+  if (query.handoverQuarter) {
+    const handover = query.handoverQuarter.trim();
+
+    // Special case: "2030 +"
+    if (/^2030\s*\+$/.test(handover)) {
+      // Show everything from 2030 onwards (up to 2050 and beyond)
+      filter.completionDate = { $gte: new Date("2031-01-01T00:00:00.000Z") };
+      // IMPORTANT: don't set filter.handoverQuarter = "2030 +"
+    } else {
+      // Keep existing behavior for normal values like "Q4 2024"
+      filter.handoverQuarter = handover;
+    }
+  }
   // Price range
   if (query.minPrice || query.maxPrice) {
     filter.minPriceAed = { $ne: null, $exists: true, $gt: 0 };
@@ -2516,9 +2524,7 @@ const buildOffPlanFilter = (query) => {
 
   // Location / name / area search via prefix
   if (query.prefix) {
-    const escaped = query.prefix
-      .trim()
-      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = query.prefix.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const searchRegex = new RegExp(escaped, "i"); // partial match
     filter.$or = [
       { name: searchRegex },
@@ -2582,7 +2588,10 @@ const filterOffPlanProperties = async (req, res) => {
 
     // Log applied filters for debugging
     console.log("🔍 Unified Filter - Applied Query Params:", req.query);
-    console.log("🔍 Unified Filter - MongoDB Filter:", JSON.stringify(filter, null, 2));
+    console.log(
+      "🔍 Unified Filter - MongoDB Filter:",
+      JSON.stringify(filter, null, 2),
+    );
 
     const totalCount = await OffPlanProperty.countDocuments(filter);
     const properties = await OffPlanProperty.find(filter)
@@ -2825,7 +2834,9 @@ const getOffPlanAddressSuggestions = async (req, res) => {
       .select("name area developer")
       .lean();
 
-    console.log(`Found ${properties.length} off-plan properties matching query`);
+    console.log(
+      `Found ${properties.length} off-plan properties matching query`,
+    );
 
     const suggestions = new Set();
 
@@ -2961,7 +2972,9 @@ const StatusUpdateOffPlanProperties = async (req, res) => {
 
     const property = await OffPlanProperty.findById(id).select("active");
     if (!property) {
-      return res.status(404).json({ success: false, message: "Property not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Property not found" });
     }
 
     const updatedProperty = await OffPlanProperty.findByIdAndUpdate(
@@ -3026,7 +3039,9 @@ const offPlanFilterByCommunity = async (req, res) => {
     const limit = parseInt(req.query.limit) || 12;
 
     if (!area) {
-      return res.status(400).json({ success: false, message: "Area is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Area is required" });
     }
 
     area = area.split("(")[0].trim();
@@ -3092,7 +3107,7 @@ module.exports = {
   filterByMinPrice,
   filterByMaxPrice,
   OffSearchProperty,
-  filterOffPlanProperties,        
+  filterOffPlanProperties,
   StatusUpdateOffPlanProperties,
   filterDashboardProperties,
   offPlanFilterByCommunity,
