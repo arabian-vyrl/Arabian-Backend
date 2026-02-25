@@ -1009,11 +1009,67 @@ const clampInt = (v, def = 0) => {
   return Number.isFinite(n) ? n : def;
 };
 
-
 const generateTransformedImageUrl = (imagePath, version) => {
   return `https://res.cloudinary.com/dviizglsy/image/upload/w_1000,h_1000,c_limit,q_auto,f_auto/v${version}/agent-images/${imagePath}`;
 };
 
+// Joining the desingation and rera field
+const addDesignationMetaStages = (
+  pipeline,
+  { defaultShowRera = true } = {},
+) => {
+  pipeline.push({
+    $lookup: {
+      from: "designationcategories",
+      let: {
+        agentDesignation: {
+          $toLower: {
+            $trim: { input: { $ifNull: ["$designation", ""] } },
+          },
+        },
+      },
+      pipeline: [
+        { $match: { isActive: true } },
+        { $unwind: "$designations" },
+        {
+          $match: {
+            $expr: {
+              $eq: ["$designations.name", "$$agentDesignation"],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            showRera: "$designations.showRera",
+            categoryName: 1,
+          },
+        },
+        { $limit: 1 },
+      ],
+      as: "designationMeta",
+    },
+  });
+
+  pipeline.push({
+    $addFields: {
+      ShowRera: {
+        $ifNull: [
+          { $arrayElemAt: ["$designationMeta.showRera", 0] },
+          defaultShowRera,
+        ],
+      },
+      designationCategoryName: {
+        $ifNull: [{ $arrayElemAt: ["$designationMeta.categoryName", 0] }, null],
+      },
+    },
+  });
+
+  // IMPORTANT: don't do `designationMeta: 0` inside an inclusion $project
+  pipeline.push({ $unset: "designationMeta" });
+
+  return pipeline;
+};
 
 // const createAgent = async (req, res) => {
 //   const session = await mongoose.startSession();
@@ -1060,7 +1116,6 @@ const generateTransformedImageUrl = (imagePath, version) => {
 //     const [agent] = await Agent.create([req.body], { session });
 
 //     await session.commitTransaction();
-
 
 //     // ✅ After commit, compress image async (non-blocking to response)
 //     // We do this OUTSIDE the transaction since it's an external network call
@@ -1147,10 +1202,7 @@ const generateTransformedImageUrl = (imagePath, version) => {
 //   }
 // };
 
-
-
 const createAgent = async (req, res) => {
-
   console.log("Create agent request body:", req.body);
   console.log("Create agent request body:", req.file);
 
@@ -1199,16 +1251,16 @@ const createAgent = async (req, res) => {
 
     await session.commitTransaction();
 
-
     //     // ✅ After commit, compress image async (non-blocking to response)
     // We do this OUTSIDE the transaction since it's an external network call
 
-
-    
     if (agent.imageUrl) {
       const versionMatch = agent.imageUrl.match(/\/v(\d+)\//);
       const imageUrlToCompress = versionMatch
-        ? generateTransformedImageUrl(agent.imageUrl.split('/').slice(-1)[0], versionMatch[1])
+        ? generateTransformedImageUrl(
+            agent.imageUrl.split("/").slice(-1)[0],
+            versionMatch[1],
+          )
         : agent.imageUrl;
 
       compressImageFromUrl(imageUrlToCompress)
@@ -1216,7 +1268,7 @@ const createAgent = async (req, res) => {
           if (compressed) {
             await Agent.findOneAndUpdate(
               { agentId: agent.agentId },
-              { $set: { agentCompressImage: compressed } }
+              { $set: { agentCompressImage: compressed } },
             );
             console.log(`Compressed images stored for agent: ${agent.agentId}`);
           }
@@ -1238,16 +1290,15 @@ const createAgent = async (req, res) => {
   }
 };
 
-
 const getAgents = async (req, res) => {
   try {
-    console.log("Working");
     let { isActive } = req.query;
     const pipeline = [];
 
-    if (isActive === "True") {
-      pipeline.push({ $match: { isActive: true } });
-    }
+    if (isActive === "True") pipeline.push({ $match: { isActive: true } });
+
+    // ✅ inject showRera + category name
+    addDesignationMetaStages(pipeline, { defaultShowRera: true });
 
     pipeline.push(
       { $sort: { sequenceNumber: 1, agentName: 1 } },
@@ -1275,33 +1326,29 @@ const getAgents = async (req, res) => {
           activeOnLeaderboard: 1,
           propertiesCount: { $size: { $ifNull: ["$properties", []] } },
           blogsCount: { $size: { $ifNull: ["$blogs", []] } },
+
+          // ✅ NEW
+          ShowRera: 1,
+          designationCategoryName: 1,
         },
-      }
+      },
     );
 
     const agents = await Agent.aggregate(pipeline).allowDiskUse(true);
 
-    // For each agent, transform the image URL
-    const transformedAgents = agents.map(agent => {
+    const transformedAgents = agents.map((agent) => {
       const imageUrl = agent.imageUrl;
       if (imageUrl) {
-        const versionRegex = /\/v(\d+)\//;
-        const match = imageUrl.match(versionRegex);
-
-        if (match && match[1]) {
+        const match = imageUrl.match(/\/v(\d+)\//);
+        if (match?.[1]) {
           const versionNumber = match[1];
-          const imagePath = imageUrl.split('/').slice(-1)[0]; // Extract image path (file name)
-          const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
-
-          // Directly mutate the agent object with the transformed image URL
+          const imagePath = imageUrl.split("/").slice(-1)[0];
           return {
-            ...agent, // Spread the existing agent data
-            imageUrl: transformedImageUrl, // Add the transformed image URL
+            ...agent,
+            imageUrl: generateTransformedImageUrl(imagePath, versionNumber),
           };
         }
       }
-
-      // If no image URL or version number is found, return the agent as is
       return agent;
     });
 
@@ -1315,13 +1362,94 @@ const getAgents = async (req, res) => {
   }
 };
 
-
-
+// Before adding show rera field
+// Before adding show rera field
 // const getAgentById = async (req, res) => {
 //   try {
 //     const agent = await Agent.findOne({ agentId: req.query.agentId });
+
+//     if (!agent) {
+//       return res.status(404).json({ success: false, error: "Agent not found" });
+//     }
+
+//     // Check if imageUrl exists
+//     if (agent.imageUrl) {
+//       const imageUrl = agent.imageUrl;
+//       const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
+//       const match = imageUrl.match(versionRegex);
+
+//       if (match && match[1]) {
+//         const versionNumber = match[1];
+//         const imagePath = imageUrl.split('/').slice(-1)[0];  // Extract image file name
+
+//         // Generate the transformed image URL
+//         const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+
+//         // Add the transformed image URL to the agent data
+//         agent.imageUrl = transformedImageUrl;
+//       }
+//     }
+
+//     return res.status(200).json({ success: true, data: agent });
+//   } catch (err) {
+//     return res.status(500).json({
+//       success: false,
+//       error: err.message,
+//     });
+//   }
+// }
+
+// After adding show rera field
+// const getAgentById = async (req, res) => {
+//   try {
+//     const { agentId } = req.query;
+//     if (!agentId) {
+//       return res
+//         .status(400)
+//         .json({ success: false, error: "agentId is required" });
+//     }
+
+//     const pipeline = [{ $match: { agentId } }];
+
+//     addDesignationMetaStages(pipeline, { defaultShowRera: true });
+
+//     pipeline.push({
+//       $project: {
+//         agentName: 1,
+//         designation: 1,
+//         reraNumber: 1,
+//         imageUrl: 1,
+//         ShowRera: 1,
+//         designationCategoryName: 1,
+//         // add other fields you need
+//       },
+//     });
+
+//     const result = await Agent.aggregate(pipeline);
+//     const agent = result?.[0];
+
 //     if (!agent)
 //       return res.status(404).json({ success: false, error: "Agent not found" });
+//     if (agent.imageUrl) {
+//       const imageUrl = agent.imageUrl;
+//       const versionRegex = /\/v(\d+)\//; // Regex to extract version number
+//       const match = imageUrl.match(versionRegex);
+
+//       if (match && match[1]) {
+//         const versionNumber = match[1];
+//         const imagePath = imageUrl.split("/").slice(-1)[0]; // Extract image file name
+
+//         // Generate the transformed image URL
+//         const transformedImageUrl = generateTransformedImageUrl(
+//           imagePath,
+//           versionNumber,
+//         );
+
+//         // Add the transformed image URL to the agent data
+//         agent.imageUrl = transformedImageUrl;
+//       }
+//     }
+
 //     return res.status(200).json({ success: true, data: agent });
 //   } catch (err) {
 //     return res.status(500).json({ success: false, error: err.message });
@@ -1330,44 +1458,60 @@ const getAgents = async (req, res) => {
 
 const getAgentById = async (req, res) => {
   try {
-    const agent = await Agent.findOne({ agentId: req.query.agentId });
+    const { agentId } = req.query;
+    if (!agentId) {
+      return res
+        .status(400)
+        .json({ success: false, error: "agentId is required" });
+    }
+
+    const pipeline = [{ $match: { agentId } }];
+
+    // ✅ Adds ShowRera + designationCategoryName without selecting fields
+    addDesignationMetaStages(pipeline, { defaultShowRera: true });
+
+    // optional safety
+    pipeline.push({ $limit: 1 });
+
+    const result = await Agent.aggregate(pipeline);
+    const agent = result?.[0];
 
     if (!agent) {
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
-    // Check if imageUrl exists
+    // ✅ Transform imageUrl
     if (agent.imageUrl) {
-      const imageUrl = agent.imageUrl;
-      const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
-      const match = imageUrl.match(versionRegex);
-
-      if (match && match[1]) {
+      const match = agent.imageUrl.match(/\/v(\d+)\//);
+      if (match?.[1]) {
         const versionNumber = match[1];
-        const imagePath = imageUrl.split('/').slice(-1)[0];  // Extract image file name
-
-        // Generate the transformed image URL
-        const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
-
-        // Add the transformed image URL to the agent data
-        agent.imageUrl = transformedImageUrl;
+        const imagePath = agent.imageUrl.split("/").slice(-1)[0];
+        agent.imageUrl = generateTransformedImageUrl(imagePath, versionNumber);
       }
     }
 
     return res.status(200).json({ success: true, data: agent });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    return res.status(500).json({ success: false, error: err.message });
   }
-}
+};
 
 const getAgentByEmail = async (req, res) => {
   try {
-    const agent = await Agent.findOne(
-      { email: req.query.email },
-      {
+    const email = (req.query.email || "").trim().toLowerCase();
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Email is required" });
+    }
+
+    const pipeline = [{ $match: { email } }];
+
+    // ✅ inject ShowRera + designationCategoryName
+    addDesignationMetaStages(pipeline, { defaultShowRera: true });
+
+    pipeline.push({
+      $project: {
         agentName: 1,
         designation: 1,
         reraNumber: 1,
@@ -1388,25 +1532,35 @@ const getAgentByEmail = async (req, res) => {
         agentLanguage: 1,
         leaderboard: 1,
         superAgent: 1,
+
+        // ✅ NEW
+        ShowRera: 1,
+        designationCategoryName: 1,
       },
-    );
+    });
+
+    const result = await Agent.aggregate(pipeline);
+    const agent = result?.[0];
 
     if (!agent) {
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
-    // Check if imageUrl exists and apply transformation
+    // ✅ Apply image transform
     if (agent.imageUrl) {
       const imageUrl = agent.imageUrl;
-      const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
+      const versionRegex = /\/v(\d+)\//; // Regex to extract version number
       const match = imageUrl.match(versionRegex);
 
       if (match && match[1]) {
         const versionNumber = match[1];
-        const imagePath = imageUrl.split('/').slice(-1)[0];  // Extract image file name
+        const imagePath = imageUrl.split("/").slice(-1)[0]; // Extract image file name
 
         // Generate the transformed image URL
-        const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+        const transformedImageUrl = generateTransformedImageUrl(
+          imagePath,
+          versionNumber,
+        );
 
         // Add the transformed image URL to the agent data
         agent.imageUrl = transformedImageUrl;
@@ -1587,7 +1741,10 @@ const updateAgent = async (req, res) => {
     if (req.file && updatedAgent.imageUrl) {
       const versionMatch = updatedAgent.imageUrl.match(/\/v(\d+)\//);
       const imageUrlToCompress = versionMatch
-        ? generateTransformedImageUrl(updatedAgent.imageUrl.split('/').slice(-1)[0], versionMatch[1])
+        ? generateTransformedImageUrl(
+            updatedAgent.imageUrl.split("/").slice(-1)[0],
+            versionMatch[1],
+          )
         : updatedAgent.imageUrl;
 
       compressImageFromUrl(imageUrlToCompress)
@@ -1595,7 +1752,7 @@ const updateAgent = async (req, res) => {
           if (compressed) {
             await Agent.findOneAndUpdate(
               { agentId },
-              { $set: { agentCompressImage: compressed } }
+              { $set: { agentCompressImage: compressed } },
             );
             console.log(`Recompressed images for updated agent: ${agentId}`);
           }
@@ -1634,63 +1791,6 @@ const updateAgent = async (req, res) => {
     session.endSession();
   }
 };
-
-
-// const getAgentsBySequence = async (req, res) => {
-//   try {
-//     const { activeOnly = "true" } = req.query;
-//     const query = isTruthy(activeOnly) ? { isActive: true } : {};
-
-//     const agents = await Agent.find(query).sort({
-//       sequenceNumber: 1,
-//       agentName: 1,
-//     });
-
-//     // For each agent, apply transformation to the image URL
-//     const transformedAgents = agents.map(agent => {
-//       const imageUrl = agent.imageUrl;
-//       const versionRegex = /\/v(\d+)\//;  // Regex to extract version number
-//       const match = imageUrl.match(versionRegex);
-
-//       if (match && match[1]) {
-//         const versionNumber = match[1];
-//         const imagePath = imageUrl.split('/').slice(-1)[0]; // Extract image path (file name)
-//         const transformedImageUrl = generateTransformedImageUrl(imagePath, versionNumber);
-
-//         // Directly mutate the agent object with the transformed image URL
-//         return {
-//           ...agent.toObject(), // Spread the existing agent data
-//           imageUrl: transformedImageUrl, // Add the transformed image URL
-//         };
-//       }
-
-//       return agent; // If no version found, return the agent as is
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       data: transformedAgents,  // Return the agents with transformed image URLs
-//       total: transformedAgents.length,
-//     });
-//   } catch (err) {
-//     return res.status(500).json({ success: false, error: err.message });
-//   }
-// };
-
-// const deleteAgent = async (req, res) => {
-//   try {
-//     const agent = await Agent.findOneAndDelete({ agentId: req.query.agentId });
-//     if (!agent) {
-//       return res.status(404).json({ success: false, error: "Agent not found" });
-//     }
-
-//     return res
-//       .status(200)
-//       .json({ success: true, msg: "Agent Removed Successfully" });
-//   } catch (err) {
-//     return res.status(500).json({ success: false, error: err.message });
-//   }
-// };
 
 const deleteAgent = async (req, res) => {
   const session = await mongoose.startSession();
@@ -1736,7 +1836,6 @@ const deleteAgent = async (req, res) => {
   }
 };
 
-
 // Get the Distict Languages
 
 const getAgentLanguages = async (req, res) => {
@@ -1744,197 +1843,47 @@ const getAgentLanguages = async (req, res) => {
     const languages = await Agent.aggregate([
       {
         $match: {
-          agentLanguage: { $exists: true, $ne: "" }
-        }
+          agentLanguage: { $exists: true, $ne: "" },
+        },
       },
       {
         $project: {
-          languages: { $split: ["$agentLanguage", ","] }
-        }
+          languages: { $split: ["$agentLanguage", ","] },
+        },
       },
       { $unwind: "$languages" },
       {
         $project: {
-          language: { $trim: { input: "$languages" } }
-        }
+          language: { $trim: { input: "$languages" } },
+        },
       },
       {
         $group: {
-          _id: "$language"
-        }
+          _id: "$language",
+        },
       },
       {
         $project: {
           _id: 0,
-          language: "$_id"
-        }
+          language: "$_id",
+        },
       },
-      { $sort: { language: 1 } }
+      { $sort: { language: 1 } },
     ]);
 
     res.status(200).json({
       success: true,
       count: languages.length,
-      data: languages.map(l => l.language)
+      data: languages.map((l) => l.language),
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch agent languages",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-// const getCollectionStats = async () => {
-//   const db = Agent.db.db; 
-//   return await db.command({ collStats: Agent.collection.collectionName });
-// };
-
-// const backfillAgentCompressImages = async (req, res) => {
-//   try {
-//     // ── Collection stats BEFORE ──────────────────────────────────────────────
-//    const statsBefore = await getCollectionStats();
-
-//     // ── Find up to 10 agents missing compressed image ───────────────────────
-//     const agents = await Agent.find(
-//       {
-//         imageUrl: { $exists: true, $nin: [null, ""] },
-//         activeOnLeaderboard: true,
-//         $or: [
-//           { agentCompressImage: { $exists: false } },
-//           { agentCompressImage: null },
-//           { "agentCompressImage.thumbnail": { $exists: false } },
-//         ],
-//       },
-//       { agentId: 1, agentName: 1, imageUrl: 1 }
-//     ).limit(30);
-
-//     if (agents.length === 0) {
-//       return res.status(200).json({
-//         success: true,
-//         message: "All agents already have compressed images",
-//         summary: { agentsFound: 0, agentsSucceeded: 0, agentsFailed: 0, totalRemainingWithoutCompression: 0 },
-//       });
-//     }
-
-//     const results = [];
-//     let totalOriginalUrlBytes = 0;
-//     let totalCompressedBytes = 0;
-
-//     // ── Process each agent sequentially ─────────────────────────────────────
-//     for (const agent of agents) {
-//       const entry = {
-//         agentId: agent.agentId,
-//         agentName: agent.agentName,
-//         status: "failed",
-//         originalUrlBytes: 0,
-//         originalUrlKB: "0",
-//         compressedBytes: 0,
-//         compressedKB: "0",
-//       };
-
-//       try {
-//         entry.originalUrlBytes = Buffer.byteLength(agent.imageUrl, "utf8");
-//         entry.originalUrlKB = (entry.originalUrlBytes / 1024).toFixed(3);
-//         totalOriginalUrlBytes += entry.originalUrlBytes;
-
-//         // Build optimized Cloudinary URL before compressing
-//         const versionMatch = agent.imageUrl.match(/\/v(\d+)\//);
-//         const imageUrlToCompress = versionMatch
-//           ? generateTransformedImageUrl(
-//               agent.imageUrl.split("/").slice(-1)[0],
-//               versionMatch[1]
-//             )
-//           : agent.imageUrl;
-
-//         entry.optimizedUrl = imageUrlToCompress;
-
-//         const compressed = await compressImageFromUrl(imageUrlToCompress);
-
-//         if (compressed) {
-//           entry.compressedBytes = Buffer.byteLength(compressed.thumbnail, "utf8");
-//           entry.compressedKB = (entry.compressedBytes / 1024).toFixed(3);
-//           totalCompressedBytes += entry.compressedBytes;
-
-//           await Agent.findOneAndUpdate(
-//             { agentId: agent.agentId },
-//             { $set: { agentCompressImage: compressed } }
-//           );
-
-//           entry.status = "success";
-//           console.log(`Backfilled compression for agent: ${agent.agentId}`);
-//         } else {
-//           entry.status = "no_output";
-//           console.warn(`Compression returned null for agent: ${agent.agentId}`);
-//         }
-//       } catch (agentErr) {
-//         entry.status = "error";
-//         entry.error = agentErr.message;
-//         console.error(`Error compressing agent ${agent.agentId}:`, agentErr.message);
-//       }
-
-//       results.push(entry);
-//     }
-
-//     // ── Collection stats AFTER ───────────────────────────────────────────────
-//    const statsAfter = await getCollectionStats();
-
-//     const totalRemaining = await Agent.countDocuments({
-//       imageUrl: { $exists: true, $nin: [null, ""] },
-//       $or: [
-//         { agentCompressImage: { $exists: false } },
-//         { agentCompressImage: null },
-//         { "agentCompressImage.thumbnail": { $exists: false } },
-//       ],
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       summary: {
-//         agentsFound: agents.length,
-//         agentsSucceeded: results.filter((r) => r.status === "success").length,
-//         agentsFailed: results.filter((r) => r.status !== "success").length,
-//         totalRemainingWithoutCompression: totalRemaining,
-//         imageSizes: {
-//           totalOriginalUrlBytes,
-//           totalOriginalUrlKB: (totalOriginalUrlBytes / 1024).toFixed(3),
-//           totalCompressedBytes,
-//           totalCompressedKB: (totalCompressedBytes / 1024).toFixed(3),
-//         },
-//       },
-//       collectionStats: {
-//         before: {
-//           storageSizeBytes: statsBefore.storageSize,
-//           storageSizeKB: (statsBefore.storageSize / 1024).toFixed(2),
-//           dataSizeBytes: statsBefore.size,
-//           dataSizeKB: (statsBefore.size / 1024).toFixed(2),
-//           totalIndexSizeBytes: statsBefore.totalIndexSize,
-//           totalIndexSizeKB: (statsBefore.totalIndexSize / 1024).toFixed(2),
-//         },
-//         after: {
-//           storageSizeBytes: statsAfter.storageSize,
-//           storageSizeKB: (statsAfter.storageSize / 1024).toFixed(2),
-//           dataSizeBytes: statsAfter.size,
-//           dataSizeKB: (statsAfter.size / 1024).toFixed(2),
-//           totalIndexSizeBytes: statsAfter.totalIndexSize,
-//           totalIndexSizeKB: (statsAfter.totalIndexSize / 1024).toFixed(2),
-//         },
-//         diff: {
-//           storageSizeDiffBytes: statsAfter.storageSize - statsBefore.storageSize,
-//           storageSizeDiffKB: ((statsAfter.storageSize - statsBefore.storageSize) / 1024).toFixed(2),
-//           dataSizeDiffBytes: statsAfter.size - statsBefore.size,
-//           dataSizeDiffKB: ((statsAfter.size - statsBefore.size) / 1024).toFixed(2),
-//         },
-//       },
-//       agents: results,
-//     });
-//   } catch (err) {
-//     console.error("Backfill error:", err);
-//     return res.status(500).json({ success: false, error: err.message });
-//   }
-// };
 
 module.exports = {
   createAgent,

@@ -10,34 +10,43 @@ const designationCategorySchema = new mongoose.Schema(
         `CAT_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
       required: true,
     },
+
     categoryName: {
       type: String,
       required: [true, "Category name is required"],
       unique: true,
       trim: true,
     },
+
+    // ✅ UPDATED: designations now store objects with showRera flag
     designations: [
       {
-        type: String,
-        trim: true,
-        lowercase: true, // Store in lowercase for easier matching
+        name: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          required: true,
+        },
+        showRera: {
+          type: Boolean,
+          default: true,
+        },
       },
     ],
+
     displayOrder: {
       type: Number,
       default: 0,
     },
+
     isActive: {
       type: Boolean,
       default: true,
     },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
-// Index for faster queries
 designationCategorySchema.index({ categoryName: 1 });
 designationCategorySchema.index({ isActive: 1 });
 
