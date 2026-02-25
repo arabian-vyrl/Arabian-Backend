@@ -1356,9 +1356,12 @@ const getAgentById = async (req, res) => {
 
     return res.status(200).json({ success: true, data: agent });
   } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
-};
+}
 
 const getAgentByEmail = async (req, res) => {
   try {
