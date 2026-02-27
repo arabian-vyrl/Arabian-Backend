@@ -1637,9 +1637,18 @@ const updateAgent = async (req, res) => {
         "activeOnLeaderboard",
       ];
 
+      const clearableFields = [
+        "phone",
+        "whatsapp",
+        "instagram",
+        "linkedin",
+        "reraNumber",
+      ];
+
       for (const field of allowedFields) {
         const value = fields[field];
-        if (value === undefined || value === "") continue;
+        if (value === undefined) continue;
+        if (value === "" && !clearableFields.includes(field)) continue;
 
         if (field === "email") {
           if (value !== currentAgent.email) updateObj[field] = value;
