@@ -1226,6 +1226,14 @@ const createAgent = async (req, res) => {
       req.body.superAgent = isTruthy(req.body.superAgent);
     }
 
+    // Email unique required so it will give me an unique email error, that if the email is null or empty delete the email fields
+    if (!req.body.email || req.body.email.trim() === "") {
+      delete req.body.email;
+    } else {
+      req.body.email = req.body.email.trim().toLowerCase();
+    }
+
+
     if (req.body.activeOnLeaderboard !== undefined) {
       req.body.activeOnLeaderboard = isTruthy(req.body.activeOnLeaderboard);
     } else {
@@ -1258,9 +1266,9 @@ const createAgent = async (req, res) => {
       const versionMatch = agent.imageUrl.match(/\/v(\d+)\//);
       const imageUrlToCompress = versionMatch
         ? generateTransformedImageUrl(
-            agent.imageUrl.split("/").slice(-1)[0],
-            versionMatch[1],
-          )
+          agent.imageUrl.split("/").slice(-1)[0],
+          versionMatch[1],
+        )
         : agent.imageUrl;
 
       compressImageFromUrl(imageUrlToCompress)
@@ -1456,21 +1464,74 @@ const getAgents = async (req, res) => {
 //   }
 // };
 
+// const getAgentById = async (req, res) => {
+//   try {
+//     const { agentId } = req.query;
+//     if (!agentId) {
+//       return res
+//         .status(400)
+//         .json({ success: false, error: "agentId is required" });
+//     }
+
+//     const pipeline = [{ $match: { agentId } }];
+
+//     // ✅ Adds ShowRera + designationCategoryName without selecting fields
+//     addDesignationMetaStages(pipeline, { defaultShowRera: true });
+
+//     // optional safety
+//     pipeline.push({ $limit: 1 });
+
+//     const result = await Agent.aggregate(pipeline);
+//     const agent = result?.[0];
+
+//     if (!agent) {
+//       return res.status(404).json({ success: false, error: "Agent not found" });
+//     }
+
+//     // ✅ Transform imageUrl
+//     if (agent.imageUrl) {
+//       const match = agent.imageUrl.match(/\/v(\d+)\//);
+//       if (match?.[1]) {
+//         const versionNumber = match[1];
+//         const imagePath = agent.imageUrl.split("/").slice(-1)[0];
+//         agent.imageUrl = generateTransformedImageUrl(imagePath, versionNumber);
+//       }
+//     }
+
+//     return res.status(200).json({ success: true, data: agent });
+//   } catch (err) {
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
 const getAgentById = async (req, res) => {
   try {
-    const { agentId } = req.query;
-    if (!agentId) {
+    const { agentId, slug } = req.query;
+
+    if (!agentId && !slug) {
       return res
         .status(400)
-        .json({ success: false, error: "agentId is required" });
+        .json({ success: false, error: "Either agentId or slug is required" });
     }
 
-    const pipeline = [{ $match: { agentId } }];
+    let matchCriteria;
+    if (agentId) {
+      matchCriteria = { agentId };
+    } else {
+      // Normalize slug: replace hyphens with spaces, case-insensitive
+      const normalizedSlug = slug.replace(/-/g, " ").toLowerCase();
+      matchCriteria = {
+        agentName: { 
+          $regex: `^${normalizedSlug}$`, 
+          $options: "i" 
+        }
+      };
+    }
 
-    // ✅ Adds ShowRera + designationCategoryName without selecting fields
+    const pipeline = [{ $match: matchCriteria }];
+
     addDesignationMetaStages(pipeline, { defaultShowRera: true });
 
-    // optional safety
     pipeline.push({ $limit: 1 });
 
     const result = await Agent.aggregate(pipeline);
@@ -1480,7 +1541,7 @@ const getAgentById = async (req, res) => {
       return res.status(404).json({ success: false, error: "Agent not found" });
     }
 
-    // ✅ Transform imageUrl
+    // Transform imageUrl if exists
     if (agent.imageUrl) {
       const match = agent.imageUrl.match(/\/v(\d+)\//);
       if (match?.[1]) {
@@ -1573,9 +1634,8 @@ const getAgentByEmail = async (req, res) => {
   }
 };
 const updateAgent = async (req, res) => {
-  // console.log("updating agent",req.body);
+  console.log("updating agent", req.body);
   const session = await mongoose.startSession();
-
   try {
     session.startTransaction();
 
@@ -1643,14 +1703,16 @@ const updateAgent = async (req, res) => {
         "instagram",
         "linkedin",
         "reraNumber",
+        "email",
       ];
 
+     
       for (const field of allowedFields) {
         const value = fields[field];
         if (value === undefined) continue;
-        if (value === "" && !clearableFields.includes(field)) continue;
 
         if (field === "email") {
+          if (value === "" || value === null || value === undefined) continue; // ← skip empty email
           if (value !== currentAgent.email) updateObj[field] = value;
           continue;
         }
@@ -1696,6 +1758,12 @@ const updateAgent = async (req, res) => {
       existingAgent,
     );
 
+     let unsetFields = {};
+      if (requestFields.email === "" && existingAgent.email) {
+        delete updateFields.email;
+        unsetFields.email = "";
+      }
+
     // No changes?
     const effectiveKeys = Object.keys(updateFields).filter(
       (k) => k !== "lastUpdated",
@@ -1740,7 +1808,10 @@ const updateAgent = async (req, res) => {
 
     const updatedAgent = await Agent.findOneAndUpdate(
       { agentId },
-      { $set: updateFields },
+      {
+        $set: updateFields,
+        ...(Object.keys(unsetFields).length > 0 && { $unset: unsetFields })
+      },
       { new: true, runValidators: true, session },
     );
 
@@ -1751,9 +1822,9 @@ const updateAgent = async (req, res) => {
       const versionMatch = updatedAgent.imageUrl.match(/\/v(\d+)\//);
       const imageUrlToCompress = versionMatch
         ? generateTransformedImageUrl(
-            updatedAgent.imageUrl.split("/").slice(-1)[0],
-            versionMatch[1],
-          )
+          updatedAgent.imageUrl.split("/").slice(-1)[0],
+          versionMatch[1],
+        )
         : updatedAgent.imageUrl;
 
       compressImageFromUrl(imageUrlToCompress)

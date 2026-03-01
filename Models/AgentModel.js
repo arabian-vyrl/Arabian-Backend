@@ -1086,13 +1086,15 @@ const agentSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      // required: [true, "Email is required"],
       unique: true,
       lowercase: true,
+      sparse: true,
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Please enter a valid email",
       ],
+      
     },
     phone: {
       type: String,
@@ -1387,6 +1389,10 @@ agentSchema.index({ agentId: 1 }); // Index for sequence number
 // agentSchema.index({ "leaderboard.totalCommission": -1 }); // Index for leaderboard sorting
 
 // ——— Virtual fields for property counts ———
+
+
+// agentSchema.createIndex({ email: 1 }, { unique: true, sparse: true });
+
 agentSchema.virtual("totalProperties").get(function () {
   return this.properties ? this.properties.length : 0;
 });

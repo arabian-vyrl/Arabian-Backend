@@ -147,6 +147,7 @@ const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cookieParser = require("cookie-parser");
 const axios=require('axios')
+const mongoose = require("mongoose");
 
 // Set up middlewares
 app.set("trust proxy", 1);
@@ -220,6 +221,7 @@ const upload = multer({
 setupCronJobs();
 schedulePropertySync();
 scheduleNewOffPlanSync();
+
 
 // Then mount your API routes
 app.use("/", router);
