@@ -100,18 +100,36 @@ const upload = multer({
   fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }, // 2MB limit
 });
-// Hero Content
+
+
+
+
+
+// New Routes For Hero Controller
+const heroUpload = HeroController.upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "video", maxCount: 1 },
+]);
+
 router.get("/get-hero", HeroController.getHero);
-router.post(
-  "/add-replace",
-  HeroController.upload.single("media"),
-  HeroController.addOrReplaceHero,
-);
-router.put(
-  "/update",
-  HeroController.upload.single("media"),
-  HeroController.updateHero,
-);
+router.post("/hero/upload", heroUpload, HeroController.uploadHero);
+router.put("/hero/update", heroUpload, HeroController.updateHero);
+router.delete("/hero/image", HeroController.deleteHeroImage);
+router.delete("/hero/video", HeroController.deleteHeroVideo);  
+
+
+// Hero Content
+// router.get("/get-hero", HeroController.getHero);
+// router.post(
+//   "/add-replace",
+//   HeroController.upload.single("media"),
+//   HeroController.addOrReplaceHero,
+// );
+// router.put(
+//   "/update",
+//   HeroController.upload.single("media"),
+//   HeroController.updateHero,
+// );
 
 // Contact us
 router.post("/Contact", ContactUs.createContact);
@@ -320,9 +338,10 @@ router.post(
 
 // Adeel EndPionts
 router.post("/track-referrer", ReferProperties.trackRefer);
+
 router.get(
   "/verify-referral-token",
-  middleWare,
+  middleWare, 
   ReferProperties.verifyReferrerToken,
 );
 

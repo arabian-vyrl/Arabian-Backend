@@ -2704,6 +2704,77 @@ const OffSearchProperty = (req, res) => {
 };
 
 // ─── Get all new off-plan properties with pagination ─────────────────────────
+// const getNewOffPlanProperties = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page || "1", 10);
+//     const limit = parseInt(req.query.limit || "12", 10);
+//     const skip = (page - 1) * limit;
+
+//     const filterQuery = {};
+
+//     if (req.query.area) filterQuery.area = new RegExp(req.query.area, "i");
+//     if (req.query.developer)
+//       filterQuery.developer = new RegExp(req.query.developer, "i");
+//     if (req.query.status) filterQuery.status = req.query.status;
+//     if (req.query.saleStatus) filterQuery.saleStatus = req.query.saleStatus;
+
+//     if (typeof req.query.isPartnerProject !== "undefined") {
+//       filterQuery.isPartnerProject = req.query.isPartnerProject === "true";
+//     }
+
+//     if (req.query.minPrice || req.query.maxPrice) {
+//       filterQuery.minPriceAed = {};
+//       if (req.query.minPrice)
+//         filterQuery.minPriceAed.$gte = parseFloat(req.query.minPrice);
+//       if (req.query.maxPrice)
+//         filterQuery.minPriceAed.$lte = parseFloat(req.query.maxPrice);
+//     }
+
+//     if (req.query.search) {
+//       const re = new RegExp(req.query.search, "i");
+//       filterQuery.$or = [{ name: re }, { area: re }, { developer: re }];
+//     }
+
+//     if (req.query.active !== "false") {
+//       filterQuery.active = true;
+//     }
+
+//     const totalCount = await OffPlanProperty.countDocuments(filterQuery);
+//     const totalPages = Math.ceil(totalCount / limit) || 1;
+
+//     const offPlanProperties = await OffPlanProperty.find(filterQuery)
+//       .skip(skip)
+//       .limit(limit)
+//       .sort({ createdAt: -1 });
+
+//     return res.status(offPlanProperties.length ? 200 : 404).json({
+//       success: !!offPlanProperties.length,
+//       message: offPlanProperties.length
+//         ? "Off-plan properties fetched successfully"
+//         : "No off-plan properties found",
+//       pagination: {
+//         currentPage: page,
+//         totalPages,
+//         totalCount,
+//         totalMatchingProperties: totalCount,
+//         perPage: limit,
+//         hasNextPage: page < totalPages,
+//         hasPrevPage: page > 1,
+//       },
+//       count: offPlanProperties.length,
+//       data: offPlanProperties,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching new off-plan properties:", error.message);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch off-plan properties",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 const getNewOffPlanProperties = async (req, res) => {
   try {
     const page = parseInt(req.query.page || "1", 10);
@@ -2712,11 +2783,17 @@ const getNewOffPlanProperties = async (req, res) => {
 
     const filterQuery = {};
 
-    if (req.query.area) filterQuery.area = new RegExp(req.query.area, "i");
+    if (req.query.area)
+      filterQuery.area = new RegExp(req.query.area, "i");
+
     if (req.query.developer)
       filterQuery.developer = new RegExp(req.query.developer, "i");
-    if (req.query.status) filterQuery.status = req.query.status;
-    if (req.query.saleStatus) filterQuery.saleStatus = req.query.saleStatus;
+
+    if (req.query.status)
+      filterQuery.status = req.query.status;
+
+    if (req.query.saleStatus)
+      filterQuery.saleStatus = req.query.saleStatus;
 
     if (typeof req.query.isPartnerProject !== "undefined") {
       filterQuery.isPartnerProject = req.query.isPartnerProject === "true";
@@ -2739,17 +2816,28 @@ const getNewOffPlanProperties = async (req, res) => {
       filterQuery.active = true;
     }
 
-    const totalCount = await OffPlanProperty.countDocuments(filterQuery);
+    // ✅ Only the fields OffplanCard.jsx actually renders
+    const SELECT_FIELDS =
+      "_id id apiId name area developer handoverQuarter saleStatus status " +
+      "minPrice minPriceAed maxPrice " +
+      "mainImageUrl coverImage.url coverImage.meta";
+
+    const [totalCount, offPlanProperties] = await Promise.all([
+      OffPlanProperty.countDocuments(filterQuery),
+      OffPlanProperty.find(filterQuery)
+        .select(SELECT_FIELDS)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .lean(), // plain JS objects — faster serialization, no Mongoose overhead
+    ]);
+
     const totalPages = Math.ceil(totalCount / limit) || 1;
+    const found = offPlanProperties.length > 0;
 
-    const offPlanProperties = await OffPlanProperty.find(filterQuery)
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
-
-    return res.status(offPlanProperties.length ? 200 : 404).json({
-      success: !!offPlanProperties.length,
-      message: offPlanProperties.length
+    return res.status(found ? 200 : 404).json({
+      success: found,
+      message: found
         ? "Off-plan properties fetched successfully"
         : "No off-plan properties found",
       pagination: {
