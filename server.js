@@ -150,7 +150,7 @@ const axios=require('axios')
 const mongoose = require("mongoose");
 
 // Set up middlewares
-app.set("trust proxy", 1);
+app.set("trust proxy", true);
 app.use(
   cors({
     origin: [
@@ -219,6 +219,7 @@ const upload = multer({
 });
 
 // Agents with salesforce sync cron job (CRON JOBS)
+
 setupCronJobs();
 schedulePropertySync();
 scheduleNewOffPlanSync();

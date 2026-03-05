@@ -3295,22 +3295,93 @@ const createPropertyDataForAgent = (propertyData) => {
  * Link a single property to its listing agent.
  * ✅ FIX: update filter matches both string + number (for legacy agent docs)
  */
-const TARGET_AGENT_EMAIL = "ricky@arabianestates.ae";
+// const TARGET_AGENT_EMAIL = "ricky@arabianestates.ae";
 
-const benTracker = {
-  seen: 0,
-  linked: 0,
-  added: 0,
-  updated: 0,
-  ids: new Set(),
-  failed: 0,
-};
+// const benTracker = {
+//   seen: 0,
+//   linked: 0,
+//   added: 0,
+//   updated: 0,
+//   ids: new Set(),
+//   failed: 0,
+// };
+
+// const linkPropertyToAgent = async (propertyData) => {
+//   try {
+//     const listingAgent = propertyData?.listing_agent;
+
+//     if (!listingAgent?.listing_agent_email) {
+//       return {
+//         success: false,
+//         operation: "skipped",
+//         reason: "No agent email found in property data",
+//       };
+//     }
+
+//     const agentEmail = listingAgent.listing_agent_email.toLowerCase().trim();
+
+   
+
+//     const existingAgent = await Agent.findByEmail(agentEmail);
+
+//     if (!existingAgent) {
+     
+
+//       return {
+//         success: false,
+//         operation: "agent_not_found",
+//         reason: `No active agent found with email: ${agentEmail}`,
+//       };
+//     }
+
+//     const payload = createPropertyDataForAgent(propertyData);
+
+//     // ✅ match both legacy number + string stored ids
+//     const pidStr = normalizeId(propertyData.id);
+//     const pidNum = Number.isFinite(Number(pidStr)) ? Number(pidStr) : null;
+
+//     const upd = await Agent.updateOne(
+//       {
+//         _id: existingAgent._id,
+//         $or: [
+//           { "properties.propertyId": pidStr },
+//           ...(pidNum !== null ? [{ "properties.propertyId": pidNum }] : []),
+//         ],
+//       },
+//       { $set: { "properties.$": payload } },
+//     );
+
+    
+
+//     await Agent.updateOne(
+//       { _id: existingAgent._id },
+//       { $push: { properties: payload } },
+//     );
+
+
+//     return {
+//       success: true,
+//       operation: "property_added",
+//       agentEmail,
+//       agentName: existingAgent.agentName,
+//     };
+//   } catch (error) {
+//     const email = propertyData?.listing_agent?.listing_agent_email
+//       ?.toLowerCase()
+//       .trim();
+
+   
+
+//     return { success: false, operation: "failed", error: error.message };
+//   }
+// };
 
 const linkPropertyToAgent = async (propertyData) => {
   try {
     const listingAgent = propertyData?.listing_agent;
 
-    if (!listingAgent?.listing_agent_email) {
+    const agentEmail = normalizeEmail(listingAgent?.listing_agent_email);
+    if (!agentEmail) {
       return {
         success: false,
         operation: "skipped",
@@ -3318,26 +3389,8 @@ const linkPropertyToAgent = async (propertyData) => {
       };
     }
 
-    const agentEmail = listingAgent.listing_agent_email.toLowerCase().trim();
-
-    const isBen = agentEmail === TARGET_AGENT_EMAIL;
-    if (isBen) {
-      benTracker.seen++;
-      console.log(
-        `[BEN] Processing #${benTracker.seen} | propertyId: ${propertyData.id}`,
-      );
-    }
-
     const existingAgent = await Agent.findByEmail(agentEmail);
-
     if (!existingAgent) {
-      if (isBen) {
-        benTracker.failed++;
-        console.log(
-          `[BEN] Agent not found | propertyId: ${propertyData.id} | email: ${agentEmail}`,
-        );
-      }
-
       return {
         success: false,
         operation: "agent_not_found",
@@ -3347,15 +3400,16 @@ const linkPropertyToAgent = async (propertyData) => {
 
     const payload = createPropertyDataForAgent(propertyData);
 
-    // ✅ match both legacy number + string stored ids
-    const pidStr = normalizeId(propertyData.id);
-    const pidNum = Number.isFinite(Number(pidStr)) ? Number(pidStr) : null;
+    // ✅ normalize ids (string + legacy numeric)
+    const pid = normalizeId(propertyData.id);
+    const pidNum = Number.isFinite(Number(pid)) ? Number(pid) : null;
 
+    // 1) Try update existing element
     const upd = await Agent.updateOne(
       {
         _id: existingAgent._id,
         $or: [
-          { "properties.propertyId": pidStr },
+          { "properties.propertyId": pid },
           ...(pidNum !== null ? [{ "properties.propertyId": pidNum }] : []),
         ],
       },
@@ -3363,12 +3417,6 @@ const linkPropertyToAgent = async (propertyData) => {
     );
 
     if (upd.matchedCount > 0) {
-      if (isBen) {
-        benTracker.linked++;
-        benTracker.updated++;
-        benTracker.ids.add(pidStr);
-      }
-
       return {
         success: true,
         operation: "property_updated",
@@ -3377,35 +3425,21 @@ const linkPropertyToAgent = async (propertyData) => {
       };
     }
 
-    await Agent.updateOne(
-      { _id: existingAgent._id },
+    // 2) Only push if it does NOT already exist (extra safety)
+    const nin = pidNum !== null ? [pid, pidNum] : [pid];
+
+    const pushRes = await Agent.updateOne(
+      { _id: existingAgent._id, "properties.propertyId": { $nin: nin } },
       { $push: { properties: payload } },
     );
 
-    if (isBen) {
-      benTracker.linked++;
-      benTracker.added++;
-      benTracker.ids.add(pidStr);
-    }
-
     return {
       success: true,
-      operation: "property_added",
+      operation: pushRes.modifiedCount ? "property_added" : "already_exists",
       agentEmail,
       agentName: existingAgent.agentName,
     };
   } catch (error) {
-    const email = propertyData?.listing_agent?.listing_agent_email
-      ?.toLowerCase()
-      .trim();
-
-    if (email === TARGET_AGENT_EMAIL) {
-      benTracker.failed++;
-      console.log(
-        `[BEN] FAILED | propertyId: ${propertyData?.id} | ${error.message}`,
-      );
-    }
-
     return { success: false, operation: "failed", error: error.message };
   }
 };
@@ -4028,20 +4062,7 @@ const parseXmlFromUrl = async (req, res, next) => {
     /* ----------------------- Newly Property IDs Pass Into the Redin Matching ----------------------- */
     GetPropertyID(newlyCreatedPropertyIds);
 
-    console.log("\n================ BEN LINKING SUMMARY ================");
-    console.log(`Ben email: ${TARGET_AGENT_EMAIL}`);
-    console.log(
-      `Total live properties seen for Ben (attempted): ${benTracker.seen}`,
-    );
-    console.log(`Successfully linked (added+updated): ${benTracker.linked}`);
-    console.log(`  Added: ${benTracker.added}`);
-    console.log(`  Updated: ${benTracker.updated}`);
-    console.log(`Failed: ${benTracker.failed}`);
-    console.log(`Total unique propertyIds linked: ${benTracker.ids.size}`);
-
-    console.log("Property IDs linked to Ben:");
-    console.log(Array.from(benTracker.ids).join(", "));
-    console.log("=====================================================\n");
+   
 
     console.log("=== DATABASE PROCESSING COMPLETED ===");
     console.log(
@@ -4674,22 +4695,188 @@ async function fetchLiveXmlIdToAgentEmailMap() {
   return map;
 }
 
+const dedupeAgentProperties = (props = []) => {
+  const seen = new Set();
+  const out = [];
+
+  for (const pr of props) {
+    const pid = normalizeId(pr?.propertyId);
+    if (!pid) continue;
+
+    const key = pid.toLowerCase(); // normalize key
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    out.push({ ...pr, propertyId: pid }); // force string
+  }
+
+  return out;
+};
+// const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
+//   try {
+//     if (!isMongoConnected(Agent)) {
+//       return res.status(503).json({ success: false, message: "DB not ready (Agent)." });
+//     }
+
+//     const dryRun = String(req.query?.dryRun ?? "0") === "1";
+//     const progressEvery = Number(req.query?.progressEvery ?? 500);
+//     const sampleCap = Number(req.query?.sampleCap ?? 25);
+
+//     console.log("🧹🧭 Enforcing agent properties = LIVE XML only + correct ownership...");
+
+//     // LIVE: pid -> correctOwnerEmail
+//     const xmlOwnerMap = await fetchLiveXmlIdToAgentEmailMap();
+//     const liveXmlIds = new Set(xmlOwnerMap.keys());
+
+//     const cursor = Agent.find(
+//       {},
+//       { _id: 1, email: 1, agentEmail: 1, agentName: 1, properties: 1 }
+//     )
+//       .lean()
+//       .cursor({ batchSize: 300 });
+
+//     let agentsScanned = 0;
+//     let removedNotInXml = 0;
+//     let movedWrongOwner = 0;
+
+//     const sample = {
+//       removedNotInXml: [],
+//       movedWrongOwner: [],
+//     };
+
+//     for await (const agent of cursor) {
+//       agentsScanned++;
+
+//       const currentEmail = normalizeEmail(agent?.email || agent?.agentEmail);
+//       const props = Array.isArray(agent?.properties) ? agent.properties : [];
+//       if (!props.length) continue;
+
+//       for (const pr of props) {
+//         const pid = normalizeId(pr?.propertyId);
+//         if (!pid) continue;
+
+//         // 1) ✅ If property is NOT in LIVE XML => remove everywhere
+//         const correctOwner = xmlOwnerMap.get(pid);
+//         if (!correctOwner) {
+//           removedNotInXml++;
+
+//           if (sample.removedNotInXml.length < 10) {
+//             sample.removedNotInXml.push({ propertyId: pid, removedFrom: currentEmail });
+//           }
+
+//           if (!dryRun) {
+//             const pidNum = Number.isFinite(Number(pid)) ? Number(pid) : null;
+
+//             await Agent.updateMany(
+//               {},
+//               {
+//                 $pull: {
+//                   properties: {
+//                     propertyId: {
+//                       $in: pidNum !== null ? [pid, pidNum] : [pid],
+//                     },
+//                   },
+//                 },
+//               }
+//             );
+//           }
+
+//           continue;
+//         }
+
+//         // 2) ✅ If in LIVE XML but wrong owner => move
+//         if (correctOwner !== currentEmail) {
+//           movedWrongOwner++;
+
+//           if (sample.movedWrongOwner.length < 10) {
+//             sample.movedWrongOwner.push({ propertyId: pid, from: currentEmail, to: correctOwner });
+//           }
+
+//           if (!dryRun) {
+//             const pidNum = Number.isFinite(Number(pid)) ? Number(pid) : null;
+
+//             // remove everywhere first (string + legacy numeric)
+//             await Agent.updateMany(
+//               {},
+//               {
+//                 $pull: {
+//                   properties: {
+//                     propertyId: {
+//                       $in: pidNum !== null ? [pid, pidNum] : [pid],
+//                     },
+//                   },
+//                 },
+//               }
+//             );
+
+//             // add to correct owner only
+//             const correctAgent = await Agent.findByEmail(correctOwner);
+//             if (!correctAgent) continue;
+
+//             // upsert within that agent (match string + legacy numeric)
+//             const upd = await Agent.updateOne(
+//               {
+//                 _id: correctAgent._id,
+//                 $or: [
+//                   { "properties.propertyId": pid },
+//                   ...(pidNum !== null ? [{ "properties.propertyId": pidNum }] : []),
+//                 ],
+//               },
+//               { $set: { "properties.$": { ...pr, propertyId: pid } } }
+//             );
+
+//             if (upd.matchedCount === 0) {
+//               await Agent.updateOne(
+//                 { _id: correctAgent._id },
+//                 { $push: { properties: { ...pr, propertyId: pid } } }
+//               );
+//             }
+//           }
+//         }
+//       }
+
+//       if (agentsScanned % progressEvery === 0) {
+//         console.log(
+//           `...agents=${agentsScanned} removedNotInXml=${removedNotInXml} movedWrongOwner=${movedWrongOwner} liveXmlIds=${liveXmlIds.size}`
+//         );
+//       }
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       dryRun,
+//       message: dryRun
+//         ? "Dry-run: would remove agent properties not in LIVE XML + move wrong-owned LIVE properties."
+//         : "✅ Done: removed properties not in LIVE XML + moved wrong-owned LIVE properties.",
+//       counts: {
+//         liveXmlCount: liveXmlIds.size,
+//         agentsScanned,
+//         removedNotInXml,
+//         movedWrongOwner,
+//       },
+//       sample,
+//     });
+//   } catch (err) {
+//     console.error("❌ moveAgentPropertiesAccordingToXmlOwnership:", err.message);
+//     return res.status(500).json({ success: false, message: "Enforce+Move failed", error: err.message });
+//   }
+// };
 
 const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
   try {
     if (!isMongoConnected(Agent)) {
-      return res.status(503).json({ success: false, message: "DB not ready (Agent)." });
+      return res
+        .status(503)
+        .json({ success: false, message: "DB not ready (Agent)." });
     }
 
     const dryRun = String(req.query?.dryRun ?? "0") === "1";
     const progressEvery = Number(req.query?.progressEvery ?? 500);
     const sampleCap = Number(req.query?.sampleCap ?? 25);
 
-    console.log("🧹🧭 Enforcing agent properties = LIVE XML only + correct ownership...");
+    console.log("🧹🧭 Enforcing agent properties = LIVE XML only + correct ownership + DEDUPE...");
 
-    // LIVE: pid -> correctOwnerEmail
-    const xmlOwnerMap = await fetchLiveXmlIdToAgentEmailMap();
-    const liveXmlIds = new Set(xmlOwnerMap.keys());
+    const xmlOwnerMap = await fetchLiveXmlIdToAgentEmailMap(); // pid -> correctOwnerEmail
 
     const cursor = Agent.find(
       {},
@@ -4701,107 +4888,107 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
     let agentsScanned = 0;
     let removedNotInXml = 0;
     let movedWrongOwner = 0;
+    let removedDuplicates = 0;
 
-    const sample = {
-      removedNotInXml: [],
-      movedWrongOwner: [],
-    };
+    const toAddByOwner = new Map(); // ownerEmail -> Map(pid -> propertyPayload)
+    const sample = { removedNotInXml: [], movedWrongOwner: [], removedDuplicates: [] };
 
     for await (const agent of cursor) {
       agentsScanned++;
 
       const currentEmail = normalizeEmail(agent?.email || agent?.agentEmail);
-      const props = Array.isArray(agent?.properties) ? agent.properties : [];
-      if (!props.length) continue;
+      const originalProps = Array.isArray(agent?.properties) ? agent.properties : [];
 
-      for (const pr of props) {
+      // ✅ 0) DEDUPE first
+      const deduped = dedupeAgentProperties(originalProps);
+      const dupCount = originalProps.length - deduped.length;
+      if (dupCount > 0) {
+        removedDuplicates += dupCount;
+        if (sample.removedDuplicates.length < 10) {
+          sample.removedDuplicates.push({ agent: currentEmail, removed: dupCount });
+        }
+      }
+
+      if (!deduped.length) continue;
+
+      const cleanedProps = [];
+
+      for (const pr of deduped) {
         const pid = normalizeId(pr?.propertyId);
         if (!pid) continue;
 
-        // 1) ✅ If property is NOT in LIVE XML => remove everywhere
         const correctOwner = xmlOwnerMap.get(pid);
+
+        // 1) Not in LIVE XML => remove from this agent
         if (!correctOwner) {
           removedNotInXml++;
-
           if (sample.removedNotInXml.length < 10) {
             sample.removedNotInXml.push({ propertyId: pid, removedFrom: currentEmail });
           }
-
-          if (!dryRun) {
-            const pidNum = Number.isFinite(Number(pid)) ? Number(pid) : null;
-
-            await Agent.updateMany(
-              {},
-              {
-                $pull: {
-                  properties: {
-                    propertyId: {
-                      $in: pidNum !== null ? [pid, pidNum] : [pid],
-                    },
-                  },
-                },
-              }
-            );
-          }
-
           continue;
         }
 
-        // 2) ✅ If in LIVE XML but wrong owner => move
+        // 2) In LIVE XML but wrong owner => remove here, queue for correct owner
         if (correctOwner !== currentEmail) {
           movedWrongOwner++;
-
           if (sample.movedWrongOwner.length < 10) {
             sample.movedWrongOwner.push({ propertyId: pid, from: currentEmail, to: correctOwner });
           }
 
-          if (!dryRun) {
-            const pidNum = Number.isFinite(Number(pid)) ? Number(pid) : null;
-
-            // remove everywhere first (string + legacy numeric)
-            await Agent.updateMany(
-              {},
-              {
-                $pull: {
-                  properties: {
-                    propertyId: {
-                      $in: pidNum !== null ? [pid, pidNum] : [pid],
-                    },
-                  },
-                },
-              }
-            );
-
-            // add to correct owner only
-            const correctAgent = await Agent.findByEmail(correctOwner);
-            if (!correctAgent) continue;
-
-            // upsert within that agent (match string + legacy numeric)
-            const upd = await Agent.updateOne(
-              {
-                _id: correctAgent._id,
-                $or: [
-                  { "properties.propertyId": pid },
-                  ...(pidNum !== null ? [{ "properties.propertyId": pidNum }] : []),
-                ],
-              },
-              { $set: { "properties.$": { ...pr, propertyId: pid } } }
-            );
-
-            if (upd.matchedCount === 0) {
-              await Agent.updateOne(
-                { _id: correctAgent._id },
-                { $push: { properties: { ...pr, propertyId: pid } } }
-              );
-            }
-          }
+          if (!toAddByOwner.has(correctOwner)) toAddByOwner.set(correctOwner, new Map());
+          toAddByOwner.get(correctOwner).set(pid, { ...pr, propertyId: pid }); // overwrite duplicates safely
+          continue;
         }
+
+        // 3) Correct owner => keep
+        cleanedProps.push({ ...pr, propertyId: pid });
+      }
+
+      // ✅ write back cleaned (removes duplicates + removes wrong/not-in-xml)
+      if (!dryRun) {
+        await Agent.updateOne(
+          { _id: agent._id },
+          { $set: { properties: cleanedProps } }
+        );
       }
 
       if (agentsScanned % progressEvery === 0) {
         console.log(
-          `...agents=${agentsScanned} removedNotInXml=${removedNotInXml} movedWrongOwner=${movedWrongOwner} liveXmlIds=${liveXmlIds.size}`
+          `...agents=${agentsScanned} removedNotInXml=${removedNotInXml} movedWrongOwner=${movedWrongOwner} removedDuplicates=${removedDuplicates}`
         );
+      }
+    }
+
+    // ✅ Add queued properties to correct owners (no duplicates)
+    if (!dryRun && toAddByOwner.size > 0) {
+      for (const [ownerEmail, pidMap] of toAddByOwner.entries()) {
+        const owner = await Agent.findByEmail(ownerEmail);
+        if (!owner) continue;
+
+        for (const [pid, pr] of pidMap.entries()) {
+          const pidNum = Number.isFinite(Number(pid)) ? Number(pid) : null;
+
+          // update if exists
+          const upd = await Agent.updateOne(
+            {
+              _id: owner._id,
+              $or: [
+                { "properties.propertyId": pid },
+                ...(pidNum !== null ? [{ "properties.propertyId": pidNum }] : []),
+              ],
+            },
+            { $set: { "properties.$": { ...pr, propertyId: pid } } }
+          );
+
+          if (upd.matchedCount > 0) continue;
+
+          // push only if missing
+          const nin = pidNum !== null ? [pid, pidNum] : [pid];
+          await Agent.updateOne(
+            { _id: owner._id, "properties.propertyId": { $nin: nin } },
+            { $push: { properties: { ...pr, propertyId: pid } } }
+          );
+        }
       }
     }
 
@@ -4809,19 +4996,26 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
       success: true,
       dryRun,
       message: dryRun
-        ? "Dry-run: would remove agent properties not in LIVE XML + move wrong-owned LIVE properties."
-        : "✅ Done: removed properties not in LIVE XML + moved wrong-owned LIVE properties.",
+        ? "Dry-run: would dedupe agent properties, remove not-in-LIVE-XML, and move wrong-owned LIVE properties."
+        : "✅ Done: deduped agent properties, removed not-in-LIVE-XML, and moved wrong-owned LIVE properties.",
       counts: {
-        liveXmlCount: liveXmlIds.size,
         agentsScanned,
         removedNotInXml,
         movedWrongOwner,
+        removedDuplicates,
+        movesQueued: Array.from(toAddByOwner.values()).reduce((a, m) => a + m.size, 0),
       },
-      sample,
+      sample: {
+        removedNotInXml: sample.removedNotInXml.slice(0, sampleCap),
+        movedWrongOwner: sample.movedWrongOwner.slice(0, sampleCap),
+        removedDuplicates: sample.removedDuplicates.slice(0, sampleCap),
+      },
     });
   } catch (err) {
     console.error("❌ moveAgentPropertiesAccordingToXmlOwnership:", err.message);
-    return res.status(500).json({ success: false, message: "Enforce+Move failed", error: err.message });
+    return res
+      .status(500)
+      .json({ success: false, message: "Enforce+Move failed", error: err.message });
   }
 };
 

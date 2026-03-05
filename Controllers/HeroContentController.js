@@ -717,33 +717,48 @@ const getOrCreateHero = async () => {
 const getHero = async (_req, res) => {
   try {
     const hero = await HeroContent.findOne();
+
     if (!hero) {
       return res.status(200).json({
         success: true,
         data: { image: null, video: null },
       });
     }
-    // Transform URLs
 
-    const { publicId, version } = extractCloudinaryInfo(hero.image.url);
+    let transformedImage = null;
+    let transformedVideo = null;
 
+    if (hero.image?.url) {
+      const { publicId, version } = extractCloudinaryInfo(hero.image.url);
+
+      transformedImage = {
+        ...hero.image._doc,
+        url: generateTransformedImageUrl(publicId, version),
+      };
+    }
+    if (hero.video?.publicId) {
+      transformedVideo = {
+        ...hero.video._doc,
+        url: generateTransformedVideoUrl(hero.video.publicId),
+      };
+    }
     const transformedHero = {
       ...hero._doc,
-      image: hero.image ? generateTransformedImageUrl(publicId, version) : null,
-      video: hero.video
-        ? generateTransformedVideoUrl(hero.video.publicId)
-        : null,
+      image: transformedImage,
+      video: transformedVideo,
     };
-
-    // console.log(transformedHero);
 
     res.status(200).json({
       success: true,
       data: transformedHero,
     });
+
   } catch (error) {
     console.error("❌ getHero:", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
