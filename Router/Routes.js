@@ -586,5 +586,6 @@ router.post("/list-property", ListProperty);
 // Will Run Cors, main parser route
 router.get("/parse-xml", ParseXml.parseXmlFromUrl);
 router.get("/delete-properties", ParseXml.cleanupMissingProperties);
+router.get("/delete-agent-properties", ParseXml.moveAgentPropertiesAccordingToXmlOwnership);
 
 module.exports = router;
