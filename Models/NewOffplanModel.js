@@ -256,6 +256,7 @@
 
 
 // models/NewOffplanModel.js - FIXED VERSION
+
 const mongoose = require('mongoose');
 
 const offPlanPropertySchema = new mongoose.Schema({
@@ -323,10 +324,15 @@ const offPlanPropertySchema = new mongoose.Schema({
     default: null
   },
 
-   handoverQuarter: {
-    type: String,
-    enum: ["Q1", "Q2", "Q3", "Q4"],
-    },
+  //  handoverQuarter: {
+  //   type: String,
+  //   enum: ["Q1", "Q2", "Q3", "Q4"],
+  //   },
+
+  handoverQuarter: {
+  type: String,
+  match: /^Q[1-4](\s\d{4})?$/
+},
     
   priceCurrency: {
     type: String,
