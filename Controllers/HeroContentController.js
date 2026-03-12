@@ -20,12 +20,12 @@ const extractCloudinaryInfo = (url) => {
   return { publicId, version, extension };
 };
 
-const generateTransformedVideoUrl = (videoPath, version) => {
-  return `https://res.cloudinary.com/dviizglsy/video/upload/f_auto,q_auto,h_1080/${videoPath}`;
+const generateTransformedVideoUrl = (videoPath) => {
+  return `https://res.cloudinary.com/dviizglsy/video/upload/f_auto,q_auto,h_1080/${videoPath}.mp4`;
 };
 
 const generateTransformedImageUrl = (imagePath, version, extension = "jpg") => {
-  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1000,h_1000,c_limit,q_auto,f_auto/v${version}/${imagePath}.${extension}`;
+  return `https://res.cloudinary.com/dviizglsy/image/upload/w_1920,h_1080,c_limit,q_auto,f_auto/v${version}/${imagePath}.${extension}`;
 };
 
 // ---------- Cloudinary Multer Storage (handles both image & video) ----------
@@ -136,11 +136,11 @@ const getHero = async (_req, res) => {
     let transformedVideo = null;
 
     if (hero.image?.url) {
-      const { publicId, version } = extractCloudinaryInfo(hero.image.url);
+      const { publicId, version, extension } = extractCloudinaryInfo(hero.image.url);
 
       transformedImage = {
         ...hero.image._doc,
-        url: generateTransformedImageUrl(publicId, version),
+        url: generateTransformedImageUrl(publicId, version, extension || "jpg"),
       };
     }
     if (hero.video?.publicId) {

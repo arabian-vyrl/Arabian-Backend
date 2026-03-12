@@ -6,7 +6,7 @@ const scheduleNewOffPlanSync = () => {
   const TZ = process.env.CRON_TZ || "Etc/UTC";
 
   cron.schedule(
-   "*/10 * * * *", 
+   "0 2 * * *", 
     async () => {
       console.log(`🔄 [${new Date().toISOString()}] OffPlan sync started`);
       const fakeReq = {
@@ -44,7 +44,7 @@ const scheduleNewOffPlanSync = () => {
   );
 
   console.log(
-    `NewOffPlan scheduler initialized - Running daily at 01:00 (${TZ})`,
+    `NewOffPlan scheduler initialized - Running daily at 02:00 (${TZ})`,
   );
 };
 
