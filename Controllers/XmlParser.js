@@ -2923,8 +2923,6 @@
 //   }
 // };
 
-
-
 // const cleanupAgentPropertiesNotInXml = async (req, res) => {
 //   try {
 //     if (!isMongoConnected(Agent)) {
@@ -3060,7 +3058,6 @@
 //   cleanupMissingProperties,
 // };
 
-
 const axios = require("axios");
 const xml2js = require("xml2js");
 const Property = require("../Models/PropertyModel");
@@ -3102,9 +3099,7 @@ const normalizeId = (v) => {
  */
 const buildDualIdLists = (ids) => {
   const strIds = (ids || []).map((x) => normalizeId(x)).filter(Boolean);
-  const numIds = strIds
-    .map((s) => Number(s))
-    .filter((n) => Number.isFinite(n));
+  const numIds = strIds.map((s) => Number(s)).filter((n) => Number.isFinite(n));
   return { strIds, numIds };
 };
 
@@ -3176,69 +3171,100 @@ const isPropertyLive = (propertyData) => {
 /**
  * Classify the listing based on custom_fields.
  */
+// const determinePropertyType = (customFields) => {
+//   const offeringType = customFields?.offering_type;
+//   const completionStatus = customFields?.completion_status;
+
+//   if (
+//     completionStatus === "off_plan" ||
+//     completionStatus === "off_plan_primary" ||
+//     completionStatus === "off_plan_secondary"
+//   ) {
+//     if (offeringType === "CS") {
+//       return {
+//         type: "Sale",
+//         listingType: "Commercial",
+//         reason: `Listing type is Commercial Sale`,
+//       };
+//     } else if (offeringType === "CR") {
+//       return {
+//         type: "Rent",
+//         listingType: "Commercial",
+//         reason: `Listing type is Commercial Rent`,
+//       };
+//     } else if (offeringType === "RS") {
+//       return {
+//         type: "Sale",
+//         listingType: "OffPlan",
+//         reason: `Listing type is Off Plan Sale`,
+//       };
+//     } else {
+//       return {
+//         type: "Rent",
+//         listingType: "OffPlan",
+//         reason: `Listing Type is offPlan Rent`,
+//       };
+//     }
+//   }
+
+//   if (offeringType === "RR" && completionStatus === "completed") {
+//     return {
+//       type: "Rent",
+//       listingType: "Rent",
+//       reason: `offering_type is ${offeringType}`,
+//     };
+//   } else if (offeringType === "RS" && completionStatus === "completed") {
+//     return {
+//       type: "Sale",
+//       listingType: "Sale",
+//       reason: `offering_type is ${offeringType}`,
+//     };
+//   } else if (offeringType === "CS" || offeringType === "CR") {
+//     return {
+//       type: "Commercial",
+//       listingType: "Commercial",
+//       reason: `offering_type is ${offeringType}`,
+//     };
+//   }
+
+//   return {
+//     type: "Sale",
+//     listingType: "Sale",
+//     reason: "Fallback - no clear classification found",
+//   };
+// };
+
 const determinePropertyType = (customFields) => {
   const offeringType = customFields?.offering_type;
   const completionStatus = customFields?.completion_status;
 
-  if (
+  // Only explicitly off-plan statuses trigger OffPlan classification
+  const isOffPlan =
     completionStatus === "off_plan" ||
     completionStatus === "off_plan_primary" ||
-    completionStatus === "off_plan_secondary"
-  ) {
-    if (offeringType === "CS") {
-      return {
-        type: "Sale",
-        listingType: "Commercial",
-        reason: `Listing type is Commercial Sale`,
-      };
-    } else if (offeringType === "CR") {
-      return {
-        type: "Rent",
-        listingType: "Commercial",
-        reason: `Listing type is Commercial Rent`,
-      };
-    } else if (offeringType === "RS") {
-      return {
-        type: "Sale",
-        listingType: "OffPlan",
-        reason: `Listing type is Off Plan Sale`,
-      };
-    } else {
-      return {
-        type: "Rent",
-        listingType: "OffPlan",
-        reason: `Listing Type is offPlan Rent`,
-      };
-    }
+    completionStatus === "off_plan_secondary";
+
+  if (isOffPlan) {
+    if (offeringType === "CS") return { type: "Sale", listingType: "Commercial", reason: `Commercial Sale` };
+    if (offeringType === "CR") return { type: "Rent", listingType: "Commercial", reason: `Commercial Rent` };
+    if (offeringType === "RS") return { type: "Sale", listingType: "OffPlan", reason: `Off Plan Sale` };
+    // RR or anything else off-plan
+    return { type: "Rent", listingType: "OffPlan", reason: `Off Plan Rent` };
   }
 
-  if (offeringType === "RR" && completionStatus === "completed") {
-    return {
-      type: "Rent",
-      listingType: "Rent",
-      reason: `offering_type is ${offeringType}`,
-    };
-  } else if (offeringType === "RS" && completionStatus === "completed") {
-    return {
-      type: "Sale",
-      listingType: "Sale",
-      reason: `offering_type is ${offeringType}`,
-    };
-  } else if (offeringType === "CS" || offeringType === "CR") {
-    return {
-      type: "Commercial",
-      listingType: "Commercial",
-      reason: `offering_type is ${offeringType}`,
-    };
+  // All completed_* variants (completed, completed_primary, completed_secondary) go here
+  if (offeringType === "CS" || offeringType === "CR") {
+    return { type: "Commercial", listingType: "Commercial", reason: `offering_type is ${offeringType}` };
+  }
+  if (offeringType === "RR") {
+    return { type: "Rent", listingType: "Rent", reason: `offering_type is RR` };
+  }
+  if (offeringType === "RS") {
+    return { type: "Sale", listingType: "Sale", reason: `offering_type is RS` };
   }
 
-  return {
-    type: "Sale",
-    listingType: "Sale",
-    reason: "Fallback - no clear classification found",
-  };
+  return { type: "Sale", listingType: "Sale", reason: "Fallback - no clear classification found" };
 };
-
 /**
  * Create an "agent-friendly" property entry to be stored inside Agent.properties[].
  * ✅ FIX: propertyId is ALWAYS stored as a STRING (prevents cleanup mismatch)
@@ -3320,12 +3346,9 @@ const createPropertyDataForAgent = (propertyData) => {
 
 //     const agentEmail = listingAgent.listing_agent_email.toLowerCase().trim();
 
-   
-
 //     const existingAgent = await Agent.findByEmail(agentEmail);
 
 //     if (!existingAgent) {
-     
 
 //       return {
 //         success: false,
@@ -3351,13 +3374,10 @@ const createPropertyDataForAgent = (propertyData) => {
 //       { $set: { "properties.$": payload } },
 //     );
 
-    
-
 //     await Agent.updateOne(
 //       { _id: existingAgent._id },
 //       { $push: { properties: payload } },
 //     );
-
 
 //     return {
 //       success: true,
@@ -3369,8 +3389,6 @@ const createPropertyDataForAgent = (propertyData) => {
 //     const email = propertyData?.listing_agent?.listing_agent_email
 //       ?.toLowerCase()
 //       .trim();
-
-   
 
 //     return { success: false, operation: "failed", error: error.message };
 //   }
@@ -3469,6 +3487,179 @@ const runWithConcurrency = async (items, limit, worker) => {
 /*                                  Controller                                */
 /* -------------------------------------------------------------------------- */
 
+const transformPropertyData = (property) => {
+  const classification = determinePropertyType(property.custom_fields);
+
+  const transformedProperty = {
+    id: property.Id || property.id,
+    mode: "CREATE",
+    created_at: getPublishedAtFromXml(property),
+    timestamp: property.timestamp,
+
+    offering_type: property.custom_fields?.offering_type || "RS",
+    property_type:
+      property.general_listing_information?.property_type || "apartment",
+    listing_type: classification.listingType,
+
+    address_information: property.address_information || {},
+
+    general_listing_information: {
+      listing_title: property.general_listing_information?.listing_title || "",
+      updated: property.general_listing_information?.updated || "No",
+      listingprice: property.general_listing_information?.listingprice || "0",
+      listingtype: classification.listingType,
+      currency_iso_code:
+        property.general_listing_information?.currency_iso_code || "AED",
+      property_type:
+        property.general_listing_information?.property_type || "apartment",
+      status: property.general_listing_information?.status || "Live",
+      totalarea: property.general_listing_information?.totalarea || "0",
+      description: property.general_listing_information?.description || "",
+      bedrooms: property.general_listing_information?.bedrooms || "0",
+      fullbathrooms: property.general_listing_information?.fullbathrooms || "0",
+      propertytype:
+        property.general_listing_information?.property_type || "apartment",
+      property:
+        property.general_listing_information?.property_type || "apartment",
+    },
+
+    listing_agent: {
+      listing_agent_email: property.listing_agent?.listing_agent_email || "",
+      listing_agent_firstname:
+        property.listing_agent?.listing_agent_firstname || "",
+      listing_agent_lastname:
+        property.listing_agent?.listing_agent_lastname || "",
+      listing_agent_mobil_phone:
+        property.listing_agent?.listing_agent_mobil_phone || "",
+      listing_agent_phone:
+        property.listing_agent?.listing_agent_phone ||
+        property.listing_agent?.listing_agent_mobil_phone ||
+        "",
+    },
+
+    custom_fields: {
+      property_record_id: property.custom_fields?.property_record_id || "",
+      permit_number: property.custom_fields?.permit_number || "",
+      offering_type: property.custom_fields?.offering_type || "",
+      price_on_application:
+        property.custom_fields?.price_on_application || "No",
+      payment_method: property.custom_fields?.payment_method || "",
+      city: property.custom_fields?.city || "",
+      community: property.custom_fields?.community || "",
+      sub_community: property.custom_fields?.sub_community || "",
+      property_name: property.custom_fields?.property_name || "",
+      propertyfinder_region:
+        property.custom_fields?.propertyfinder_region || "",
+      autonumber: property.custom_fields?.autonumber || "",
+      unitnumber: property.custom_fields?.unitnumber || "",
+      private_amenities: property.custom_fields?.private_amenities || "",
+      plot_size: property.custom_fields?.plot_size || "0",
+      developer: property.custom_fields?.developer || "",
+      completion_status:
+        property.custom_fields?.completion_status || "completed",
+      parking: property.custom_fields?.parking || "0",
+      furnished: property.custom_fields?.furnished || "No",
+      project_name: property.custom_fields?.project_name || "",
+      title_deed: property.custom_fields?.title_deed || "",
+      availability_date: property.custom_fields?.availability_date || "",
+      qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
+
+      community_name: property.custom_fields?.community || "",
+      tower_text: property.custom_fields?.property_name || "",
+      pba__addresstext_pb: property.custom_fields?.propertyfinder_region || "",
+
+      pba_uaefields__completion_status:
+        property.custom_fields?.completion_status === "off_plan_primary" ||
+        property.custom_fields?.completion_status === "off_plan_secondary"
+          ? "Off Plan"
+          : "Completed",
+
+      sub_community_name: property.custom_fields?.sub_community || "",
+      building_name: property.custom_fields?.property_name || "",
+      rera_permit_number: property.custom_fields?.permit_number || "",
+      plot_area: property.custom_fields?.plot_size || "0",
+      completion_date: property.custom_fields?.availability_date || "",
+
+      ...Object.keys(property.custom_fields || {}).reduce((acc, key) => {
+        if (
+          !acc[key] &&
+          key !== "qr_code" &&
+          property.custom_fields[key] !== undefined
+        ) {
+          acc[key] = property.custom_fields[key];
+        }
+        return acc;
+      }, {}),
+    },
+
+    listing_media: {
+      images: {
+        image: (() => {
+          const images = property.listing_media?.images?.image;
+          if (!images) return [];
+
+          if (Array.isArray(images)) {
+            return images
+              .map((img) => {
+                if (typeof img === "string") {
+                  return { title: "", url: img };
+                }
+
+                if (img.url) {
+                  if (typeof img.url === "string") {
+                    return { title: img.title || "", url: img.url };
+                  }
+
+                  if (Array.isArray(img.url)) {
+                    return img.url.map((urlItem) => ({
+                      title: urlItem.title || "",
+                      url: urlItem._ || urlItem.$t || urlItem,
+                    }));
+                  }
+
+                  if (img.url._ || img.url.$t) {
+                    return {
+                      title: img.url.title || "",
+                      url: img.url._ || img.url.$t,
+                    };
+                  }
+                }
+
+                return img;
+              })
+              .flat();
+          }
+
+          if (images.url) {
+            if (Array.isArray(images.url)) {
+              return images.url.map((urlItem) => ({
+                title: urlItem.title || "",
+                url: urlItem._ || urlItem.$t || urlItem,
+              }));
+            } else if (typeof images.url === "string") {
+              return [{ title: images.title || "", url: images.url }];
+            } else if (images.url._ || images.url.$t) {
+              return [
+                {
+                  title: images.url.title || "",
+                  url: images.url._ || images.url.$t,
+                },
+              ];
+            }
+          }
+
+          return [];
+        })(),
+      },
+    },
+
+    qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
+
+    _classification: classification,
+  };
+
+  return transformedProperty;
+};
 const parseXmlFromUrl = async (req, res, next) => {
   try {
     if (!isMongoConnected(Property)) {
@@ -3530,184 +3721,184 @@ const parseXmlFromUrl = async (req, res, next) => {
 
     console.log(`Found ${allProperties.length} properties in XML`);
 
-    const transformPropertyData = (property) => {
-      const classification = determinePropertyType(property.custom_fields);
+    // const transformPropertyData = (property) => {
+    //   const classification = determinePropertyType(property.custom_fields);
 
-      const transformedProperty = {
-        id: property.Id || property.id,
-        mode: "CREATE",
-        created_at: getPublishedAtFromXml(property),
-        timestamp: property.timestamp,
+    //   const transformedProperty = {
+    //     id: property.Id || property.id,
+    //     mode: "CREATE",
+    //     created_at: getPublishedAtFromXml(property),
+    //     timestamp: property.timestamp,
 
-        offering_type: property.custom_fields?.offering_type || "RS",
-        property_type:
-          property.general_listing_information?.property_type || "apartment",
-        listing_type: classification.listingType,
+    //     offering_type: property.custom_fields?.offering_type || "RS",
+    //     property_type:
+    //       property.general_listing_information?.property_type || "apartment",
+    //     listing_type: classification.listingType,
 
-        address_information: property.address_information || {},
+    //     address_information: property.address_information || {},
 
-        general_listing_information: {
-          listing_title:
-            property.general_listing_information?.listing_title || "",
-          updated: property.general_listing_information?.updated || "No",
-          listingprice:
-            property.general_listing_information?.listingprice || "0",
-          listingtype: classification.listingType,
-          currency_iso_code:
-            property.general_listing_information?.currency_iso_code || "AED",
-          property_type:
-            property.general_listing_information?.property_type || "apartment",
-          status: property.general_listing_information?.status || "Live",
-          totalarea: property.general_listing_information?.totalarea || "0",
-          description: property.general_listing_information?.description || "",
-          bedrooms: property.general_listing_information?.bedrooms || "0",
-          fullbathrooms:
-            property.general_listing_information?.fullbathrooms || "0",
-          propertytype:
-            property.general_listing_information?.property_type || "apartment",
-          property:
-            property.general_listing_information?.property_type || "apartment",
-        },
+    //     general_listing_information: {
+    //       listing_title:
+    //         property.general_listing_information?.listing_title || "",
+    //       updated: property.general_listing_information?.updated || "No",
+    //       listingprice:
+    //         property.general_listing_information?.listingprice || "0",
+    //       listingtype: classification.listingType,
+    //       currency_iso_code:
+    //         property.general_listing_information?.currency_iso_code || "AED",
+    //       property_type:
+    //         property.general_listing_information?.property_type || "apartment",
+    //       status: property.general_listing_information?.status || "Live",
+    //       totalarea: property.general_listing_information?.totalarea || "0",
+    //       description: property.general_listing_information?.description || "",
+    //       bedrooms: property.general_listing_information?.bedrooms || "0",
+    //       fullbathrooms:
+    //         property.general_listing_information?.fullbathrooms || "0",
+    //       propertytype:
+    //         property.general_listing_information?.property_type || "apartment",
+    //       property:
+    //         property.general_listing_information?.property_type || "apartment",
+    //     },
 
-        listing_agent: {
-          listing_agent_email:
-            property.listing_agent?.listing_agent_email || "",
-          listing_agent_firstname:
-            property.listing_agent?.listing_agent_firstname || "",
-          listing_agent_lastname:
-            property.listing_agent?.listing_agent_lastname || "",
-          listing_agent_mobil_phone:
-            property.listing_agent?.listing_agent_mobil_phone || "",
-          listing_agent_phone:
-            property.listing_agent?.listing_agent_phone ||
-            property.listing_agent?.listing_agent_mobil_phone ||
-            "",
-        },
+    //     listing_agent: {
+    //       listing_agent_email:
+    //         property.listing_agent?.listing_agent_email || "",
+    //       listing_agent_firstname:
+    //         property.listing_agent?.listing_agent_firstname || "",
+    //       listing_agent_lastname:
+    //         property.listing_agent?.listing_agent_lastname || "",
+    //       listing_agent_mobil_phone:
+    //         property.listing_agent?.listing_agent_mobil_phone || "",
+    //       listing_agent_phone:
+    //         property.listing_agent?.listing_agent_phone ||
+    //         property.listing_agent?.listing_agent_mobil_phone ||
+    //         "",
+    //     },
 
-        custom_fields: {
-          property_record_id: property.custom_fields?.property_record_id || "",
-          permit_number: property.custom_fields?.permit_number || "",
-          offering_type: property.custom_fields?.offering_type || "",
-          price_on_application:
-            property.custom_fields?.price_on_application || "No",
-          payment_method: property.custom_fields?.payment_method || "",
-          city: property.custom_fields?.city || "",
-          community: property.custom_fields?.community || "",
-          sub_community: property.custom_fields?.sub_community || "",
-          property_name: property.custom_fields?.property_name || "",
-          propertyfinder_region:
-            property.custom_fields?.propertyfinder_region || "",
-          autonumber: property.custom_fields?.autonumber || "",
-          unitnumber: property.custom_fields?.unitnumber || "",
-          private_amenities: property.custom_fields?.private_amenities || "",
-          plot_size: property.custom_fields?.plot_size || "0",
-          developer: property.custom_fields?.developer || "",
-          completion_status:
-            property.custom_fields?.completion_status || "completed",
-          parking: property.custom_fields?.parking || "0",
-          furnished: property.custom_fields?.furnished || "No",
-          project_name: property.custom_fields?.project_name || "",
-          title_deed: property.custom_fields?.title_deed || "",
-          availability_date: property.custom_fields?.availability_date || "",
-          qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
+    //     custom_fields: {
+    //       property_record_id: property.custom_fields?.property_record_id || "",
+    //       permit_number: property.custom_fields?.permit_number || "",
+    //       offering_type: property.custom_fields?.offering_type || "",
+    //       price_on_application:
+    //         property.custom_fields?.price_on_application || "No",
+    //       payment_method: property.custom_fields?.payment_method || "",
+    //       city: property.custom_fields?.city || "",
+    //       community: property.custom_fields?.community || "",
+    //       sub_community: property.custom_fields?.sub_community || "",
+    //       property_name: property.custom_fields?.property_name || "",
+    //       propertyfinder_region:
+    //         property.custom_fields?.propertyfinder_region || "",
+    //       autonumber: property.custom_fields?.autonumber || "",
+    //       unitnumber: property.custom_fields?.unitnumber || "",
+    //       private_amenities: property.custom_fields?.private_amenities || "",
+    //       plot_size: property.custom_fields?.plot_size || "0",
+    //       developer: property.custom_fields?.developer || "",
+    //       completion_status:
+    //         property.custom_fields?.completion_status || "completed",
+    //       parking: property.custom_fields?.parking || "0",
+    //       furnished: property.custom_fields?.furnished || "No",
+    //       project_name: property.custom_fields?.project_name || "",
+    //       title_deed: property.custom_fields?.title_deed || "",
+    //       availability_date: property.custom_fields?.availability_date || "",
+    //       qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
 
-          community_name: property.custom_fields?.community || "",
-          tower_text: property.custom_fields?.property_name || "",
-          pba__addresstext_pb:
-            property.custom_fields?.propertyfinder_region || "",
+    //       community_name: property.custom_fields?.community || "",
+    //       tower_text: property.custom_fields?.property_name || "",
+    //       pba__addresstext_pb:
+    //         property.custom_fields?.propertyfinder_region || "",
 
-          pba_uaefields__completion_status:
-            property.custom_fields?.completion_status === "off_plan_primary" ||
-            property.custom_fields?.completion_status === "off_plan_secondary"
-              ? "Off Plan"
-              : "Completed",
+    //       pba_uaefields__completion_status:
+    //         property.custom_fields?.completion_status === "off_plan_primary" ||
+    //         property.custom_fields?.completion_status === "off_plan_secondary"
+    //           ? "Off Plan"
+    //           : "Completed",
 
-          sub_community_name: property.custom_fields?.sub_community || "",
-          building_name: property.custom_fields?.property_name || "",
-          rera_permit_number: property.custom_fields?.permit_number || "",
-          plot_area: property.custom_fields?.plot_size || "0",
-          completion_date: property.custom_fields?.availability_date || "",
+    //       sub_community_name: property.custom_fields?.sub_community || "",
+    //       building_name: property.custom_fields?.property_name || "",
+    //       rera_permit_number: property.custom_fields?.permit_number || "",
+    //       plot_area: property.custom_fields?.plot_size || "0",
+    //       completion_date: property.custom_fields?.availability_date || "",
 
-          ...Object.keys(property.custom_fields || {}).reduce((acc, key) => {
-            if (
-              !acc[key] &&
-              key !== "qr_code" &&
-              property.custom_fields[key] !== undefined
-            ) {
-              acc[key] = property.custom_fields[key];
-            }
-            return acc;
-          }, {}),
-        },
+    //       ...Object.keys(property.custom_fields || {}).reduce((acc, key) => {
+    //         if (
+    //           !acc[key] &&
+    //           key !== "qr_code" &&
+    //           property.custom_fields[key] !== undefined
+    //         ) {
+    //           acc[key] = property.custom_fields[key];
+    //         }
+    //         return acc;
+    //       }, {}),
+    //     },
 
-        listing_media: {
-          images: {
-            image: (() => {
-              const images = property.listing_media?.images?.image;
-              if (!images) return [];
+    //     listing_media: {
+    //       images: {
+    //         image: (() => {
+    //           const images = property.listing_media?.images?.image;
+    //           if (!images) return [];
 
-              if (Array.isArray(images)) {
-                return images
-                  .map((img) => {
-                    if (typeof img === "string") {
-                      return { title: "", url: img };
-                    }
+    //           if (Array.isArray(images)) {
+    //             return images
+    //               .map((img) => {
+    //                 if (typeof img === "string") {
+    //                   return { title: "", url: img };
+    //                 }
 
-                    if (img.url) {
-                      if (typeof img.url === "string") {
-                        return { title: img.title || "", url: img.url };
-                      }
+    //                 if (img.url) {
+    //                   if (typeof img.url === "string") {
+    //                     return { title: img.title || "", url: img.url };
+    //                   }
 
-                      if (Array.isArray(img.url)) {
-                        return img.url.map((urlItem) => ({
-                          title: urlItem.title || "",
-                          url: urlItem._ || urlItem.$t || urlItem,
-                        }));
-                      }
+    //                   if (Array.isArray(img.url)) {
+    //                     return img.url.map((urlItem) => ({
+    //                       title: urlItem.title || "",
+    //                       url: urlItem._ || urlItem.$t || urlItem,
+    //                     }));
+    //                   }
 
-                      if (img.url._ || img.url.$t) {
-                        return {
-                          title: img.url.title || "",
-                          url: img.url._ || img.url.$t,
-                        };
-                      }
-                    }
+    //                   if (img.url._ || img.url.$t) {
+    //                     return {
+    //                       title: img.url.title || "",
+    //                       url: img.url._ || img.url.$t,
+    //                     };
+    //                   }
+    //                 }
 
-                    return img;
-                  })
-                  .flat();
-              }
+    //                 return img;
+    //               })
+    //               .flat();
+    //           }
 
-              if (images.url) {
-                if (Array.isArray(images.url)) {
-                  return images.url.map((urlItem) => ({
-                    title: urlItem.title || "",
-                    url: urlItem._ || urlItem.$t || urlItem,
-                  }));
-                } else if (typeof images.url === "string") {
-                  return [{ title: images.title || "", url: images.url }];
-                } else if (images.url._ || images.url.$t) {
-                  return [
-                    {
-                      title: images.url.title || "",
-                      url: images.url._ || images.url.$t,
-                    },
-                  ];
-                }
-              }
+    //           if (images.url) {
+    //             if (Array.isArray(images.url)) {
+    //               return images.url.map((urlItem) => ({
+    //                 title: urlItem.title || "",
+    //                 url: urlItem._ || urlItem.$t || urlItem,
+    //               }));
+    //             } else if (typeof images.url === "string") {
+    //               return [{ title: images.title || "", url: images.url }];
+    //             } else if (images.url._ || images.url.$t) {
+    //               return [
+    //                 {
+    //                   title: images.url.title || "",
+    //                   url: images.url._ || images.url.$t,
+    //                 },
+    //               ];
+    //             }
+    //           }
 
-              return [];
-            })(),
-          },
-        },
+    //           return [];
+    //         })(),
+    //       },
+    //     },
 
-        qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
+    //     qr_code: extractQRCodeUrl(property.custom_fields?.qr_code),
 
-        _classification: classification,
-      };
+    //     _classification: classification,
+    //   };
 
-      return transformedProperty;
-    };
+    //   return transformedProperty;
+    // };
 
     const transformedProperties = allProperties.map(transformPropertyData);
 
@@ -3824,6 +4015,55 @@ const parseXmlFromUrl = async (req, res, next) => {
       const existed = !!existing;
       const updateFlag = propertyData.general_listing_information?.updated;
 
+      // if (existed && updateFlag === "No") {
+      //   const updates = {};
+      //   let shouldUpdate = false;
+
+      //   if (
+      //     propertyData.created_at &&
+      //     propertyData.created_at !== existing.created_at
+      //   ) {
+      //     updates.created_at = propertyData.created_at;
+      //     shouldUpdate = true;
+      //     console.log(
+      //       `[${id}] 📝 Updating created_at:`,
+      //       propertyData.created_at,
+      //     );
+      //   }
+
+      //   if (
+      //     propertyData.address_information &&
+      //     Object.keys(propertyData.address_information).length > 0
+      //   ) {
+      //     updates.address_information = propertyData.address_information;
+      //     shouldUpdate = true;
+      //     console.log(
+      //       `[${id}] 📍 Adding/Updating address_information:`,
+      //       propertyData.address_information,
+      //     );
+      //   }
+
+      //   if (shouldUpdate) {
+      //     propertyOps.push({
+      //       updateOne: {
+      //         filter: { id },
+      //         update: { $set: updates },
+      //         upsert: false,
+      //       },
+      //     });
+
+      //     const updateFields = Object.keys(updates).join(" & ");
+      //     mainOpById.set(id, "updated_partial");
+
+      //     console.log(`[${id}] ✏️  Queueing partial update: ${updateFields}`);
+      //   } else {
+      //     mainOpById.set(id, "skipped_no_update");
+      //     console.log(`[${id}] ⏭️  Skipped - no changes needed`);
+      //   }
+
+      //   continue;
+      // }
+
       if (existed && updateFlag === "No") {
         const updates = {};
         let shouldUpdate = false;
@@ -3860,11 +4100,8 @@ const parseXmlFromUrl = async (req, res, next) => {
               upsert: false,
             },
           });
-
-          const updateFields = Object.keys(updates).join(" & ");
           mainOpById.set(id, "updated_partial");
-
-          console.log(`[${id}] ✏️  Queueing partial update: ${updateFields}`);
+          console.log(`[${id}] ✏️  Queueing partial update`);
         } else {
           mainOpById.set(id, "skipped_no_update");
           console.log(`[${id}] ⏭️  Skipped - no changes needed`);
@@ -3872,7 +4109,6 @@ const parseXmlFromUrl = async (req, res, next) => {
 
         continue;
       }
-
       const $set = {
         created_at: propertyData.created_at,
         timestamp: propertyData.timestamp,
@@ -4061,8 +4297,6 @@ const parseXmlFromUrl = async (req, res, next) => {
 
     /* ----------------------- Newly Property IDs Pass Into the Redin Matching ----------------------- */
     GetPropertyID(newlyCreatedPropertyIds);
-
-   
 
     console.log("=== DATABASE PROCESSING COMPLETED ===");
     console.log(
@@ -4334,7 +4568,9 @@ const schedulePropertySync = () => {
         };
 
         await cleanupMissingProperties(cleanupReq, cleanupRes);
-        console.log(`✅ [${new Date().toISOString()}] cleanupMissingProperties completed.`);
+        console.log(
+          `✅ [${new Date().toISOString()}] cleanupMissingProperties completed.`,
+        );
 
         // ✅ 3) Enforce: ONLY properties present in LIVE XML can be linked
         //    + Move wrong-owned properties to correct agent (global pull then add to owner)
@@ -4373,7 +4609,9 @@ const schedulePropertySync = () => {
 
         // 4) Geo matching (your existing step)
         const matchResults = await MatchGeoPointOptimized();
-        console.log(`🗺️ [${new Date().toISOString()}] MatchGeoPointOptimized completed:`);
+        console.log(
+          `🗺️ [${new Date().toISOString()}] MatchGeoPointOptimized completed:`,
+        );
         console.log({
           executionTime: matchResults.executionTime,
           totalMatched: matchResults.summary.totalMatched,
@@ -4382,7 +4620,8 @@ const schedulePropertySync = () => {
           unmatchedCategories: {
             nameMatchedButSubtypeNotMatch:
               matchResults.unmatched.nameMatchedButSubtypeNotMatch.length,
-            nameNotMatchedAtAll: matchResults.unmatched.nameNotMatchedAtAll.length,
+            nameNotMatchedAtAll:
+              matchResults.unmatched.nameNotMatchedAtAll.length,
           },
         });
       } catch (error) {
@@ -4632,19 +4871,12 @@ const cleanupMissingProperties = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 // Agent properties cleanup funciton  and ownership changing(linking agent to correct agent only)
 
 const normalizeEmail = (v) => {
   if (!v) return "";
   return String(v).toLowerCase().trim();
 };
-
 
 async function fetchLiveXmlIdToAgentEmailMap() {
   console.log("🔎 Loading LIVE XML id -> agentEmail map...");
@@ -4671,7 +4903,9 @@ async function fetchLiveXmlIdToAgentEmailMap() {
 
   const xmlProps = Array.isArray(result?.list?.property)
     ? result.list.property
-    : (result?.list?.property ? [result.list.property] : []);
+    : result?.list?.property
+      ? [result.list.property]
+      : [];
 
   const map = new Map(); // pid -> agentEmail
 
@@ -4874,13 +5108,15 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
     const progressEvery = Number(req.query?.progressEvery ?? 500);
     const sampleCap = Number(req.query?.sampleCap ?? 25);
 
-    console.log("🧹🧭 Enforcing agent properties = LIVE XML only + correct ownership + DEDUPE...");
+    console.log(
+      "🧹🧭 Enforcing agent properties = LIVE XML only + correct ownership + DEDUPE...",
+    );
 
     const xmlOwnerMap = await fetchLiveXmlIdToAgentEmailMap(); // pid -> correctOwnerEmail
 
     const cursor = Agent.find(
       {},
-      { _id: 1, email: 1, agentEmail: 1, agentName: 1, properties: 1 }
+      { _id: 1, email: 1, agentEmail: 1, agentName: 1, properties: 1 },
     )
       .lean()
       .cursor({ batchSize: 300 });
@@ -4891,13 +5127,19 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
     let removedDuplicates = 0;
 
     const toAddByOwner = new Map(); // ownerEmail -> Map(pid -> propertyPayload)
-    const sample = { removedNotInXml: [], movedWrongOwner: [], removedDuplicates: [] };
+    const sample = {
+      removedNotInXml: [],
+      movedWrongOwner: [],
+      removedDuplicates: [],
+    };
 
     for await (const agent of cursor) {
       agentsScanned++;
 
       const currentEmail = normalizeEmail(agent?.email || agent?.agentEmail);
-      const originalProps = Array.isArray(agent?.properties) ? agent.properties : [];
+      const originalProps = Array.isArray(agent?.properties)
+        ? agent.properties
+        : [];
 
       // ✅ 0) DEDUPE first
       const deduped = dedupeAgentProperties(originalProps);
@@ -4905,7 +5147,10 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
       if (dupCount > 0) {
         removedDuplicates += dupCount;
         if (sample.removedDuplicates.length < 10) {
-          sample.removedDuplicates.push({ agent: currentEmail, removed: dupCount });
+          sample.removedDuplicates.push({
+            agent: currentEmail,
+            removed: dupCount,
+          });
         }
       }
 
@@ -4923,7 +5168,10 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
         if (!correctOwner) {
           removedNotInXml++;
           if (sample.removedNotInXml.length < 10) {
-            sample.removedNotInXml.push({ propertyId: pid, removedFrom: currentEmail });
+            sample.removedNotInXml.push({
+              propertyId: pid,
+              removedFrom: currentEmail,
+            });
           }
           continue;
         }
@@ -4932,10 +5180,15 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
         if (correctOwner !== currentEmail) {
           movedWrongOwner++;
           if (sample.movedWrongOwner.length < 10) {
-            sample.movedWrongOwner.push({ propertyId: pid, from: currentEmail, to: correctOwner });
+            sample.movedWrongOwner.push({
+              propertyId: pid,
+              from: currentEmail,
+              to: correctOwner,
+            });
           }
 
-          if (!toAddByOwner.has(correctOwner)) toAddByOwner.set(correctOwner, new Map());
+          if (!toAddByOwner.has(correctOwner))
+            toAddByOwner.set(correctOwner, new Map());
           toAddByOwner.get(correctOwner).set(pid, { ...pr, propertyId: pid }); // overwrite duplicates safely
           continue;
         }
@@ -4948,13 +5201,13 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
       if (!dryRun) {
         await Agent.updateOne(
           { _id: agent._id },
-          { $set: { properties: cleanedProps } }
+          { $set: { properties: cleanedProps } },
         );
       }
 
       if (agentsScanned % progressEvery === 0) {
         console.log(
-          `...agents=${agentsScanned} removedNotInXml=${removedNotInXml} movedWrongOwner=${movedWrongOwner} removedDuplicates=${removedDuplicates}`
+          `...agents=${agentsScanned} removedNotInXml=${removedNotInXml} movedWrongOwner=${movedWrongOwner} removedDuplicates=${removedDuplicates}`,
         );
       }
     }
@@ -4974,10 +5227,12 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
               _id: owner._id,
               $or: [
                 { "properties.propertyId": pid },
-                ...(pidNum !== null ? [{ "properties.propertyId": pidNum }] : []),
+                ...(pidNum !== null
+                  ? [{ "properties.propertyId": pidNum }]
+                  : []),
               ],
             },
-            { $set: { "properties.$": { ...pr, propertyId: pid } } }
+            { $set: { "properties.$": { ...pr, propertyId: pid } } },
           );
 
           if (upd.matchedCount > 0) continue;
@@ -4986,7 +5241,7 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
           const nin = pidNum !== null ? [pid, pidNum] : [pid];
           await Agent.updateOne(
             { _id: owner._id, "properties.propertyId": { $nin: nin } },
-            { $push: { properties: { ...pr, propertyId: pid } } }
+            { $push: { properties: { ...pr, propertyId: pid } } },
           );
         }
       }
@@ -5003,7 +5258,10 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
         removedNotInXml,
         movedWrongOwner,
         removedDuplicates,
-        movesQueued: Array.from(toAddByOwner.values()).reduce((a, m) => a + m.size, 0),
+        movesQueued: Array.from(toAddByOwner.values()).reduce(
+          (a, m) => a + m.size,
+          0,
+        ),
       },
       sample: {
         removedNotInXml: sample.removedNotInXml.slice(0, sampleCap),
@@ -5012,10 +5270,136 @@ const moveAgentPropertiesAccordingToXmlOwnership = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("❌ moveAgentPropertiesAccordingToXmlOwnership:", err.message);
-    return res
-      .status(500)
-      .json({ success: false, message: "Enforce+Move failed", error: err.message });
+    console.error(
+      "❌ moveAgentPropertiesAccordingToXmlOwnership:",
+      err.message,
+    );
+    return res.status(500).json({
+      success: false,
+      message: "Enforce+Move failed",
+      error: err.message,
+    });
+  }
+};
+
+// Property force full sync
+const forceFullResync = async (req, res) => {
+  try {
+    if (!isMongoConnected(Property)) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection is not ready yet.",
+      });
+    }
+
+    const xmlUrl = process.env.XML_URL;
+    console.log(`🔄 Force full resync - Fetching XML from: ${xmlUrl}`);
+
+    const response = await axios.get(xmlUrl, {
+      headers: { Accept: "application/xml" },
+    });
+
+    const parser = new xml2js.Parser({
+      explicitArray: false,
+      mergeAttrs: true,
+      normalize: true,
+      normalizeTags: false,
+      trim: true,
+    });
+
+    const result = await parser.parseStringPromise(response.data);
+
+    let allProperties = [];
+    if (result?.list?.property) {
+      allProperties = Array.isArray(result.list.property)
+        ? result.list.property
+        : [result.list.property];
+    }
+
+    console.log(`Found ${allProperties.length} properties in XML`);
+
+    // Transform all properties (reuse your existing transform logic)
+    const transformedProperties = allProperties.map(transformPropertyData);
+
+    // Separate live/non-live
+    const allPropertiesToProcess = transformedProperties.map((property) => {
+      if (!isPropertyLive(property)) {
+        property._classification = {
+          type: "NonActive",
+          listingType: "NonActive",
+          reason: `Status is not Live: ${property.general_listing_information?.status}`,
+        };
+        property.listing_type = "NonActive";
+        property.general_listing_information.listingtype = "NonActive";
+      }
+      return property;
+    });
+
+    const propertyOps = [];
+
+    for (const propertyData of allPropertiesToProcess) {
+      const id = propertyData.id;
+
+      // ✅ FORCE full $set on every property — ignore updated flag completely
+      const $set = {
+        created_at: propertyData.created_at,
+        timestamp: propertyData.timestamp,
+        address_information: propertyData.address_information,
+        general_listing_information: propertyData.general_listing_information,
+        listing_agent: propertyData.listing_agent,
+        listing_media: propertyData.listing_media,
+        custom_fields: propertyData.custom_fields,
+        qr_code: propertyData.qr_code,
+        offering_type: propertyData.offering_type,
+        property_type: propertyData.property_type,
+        listing_type: propertyData.listing_type,
+        _classification: propertyData._classification,
+      };
+
+      propertyOps.push({
+        updateOne: {
+          filter: { id },
+          update: { $set, $setOnInsert: { id } },
+          upsert: true,
+        },
+      });
+    }
+
+    // Execute in chunks of 500 to avoid memory issues
+    const chunkSize = 500;
+    let totalUpserted = 0;
+    let totalModified = 0;
+
+    for (let i = 0; i < propertyOps.length; i += chunkSize) {
+      const chunk = propertyOps.slice(i, i + chunkSize);
+      const bulkResult = await Property.bulkWrite(chunk, { ordered: false });
+      totalUpserted += bulkResult.upsertedCount || 0;
+      totalModified += bulkResult.modifiedCount || 0;
+      console.log(
+        `✅ Chunk ${Math.floor(i / chunkSize) + 1}/${Math.ceil(propertyOps.length / chunkSize)} done — modified: ${bulkResult.modifiedCount}, upserted: ${bulkResult.upsertedCount}`,
+      );
+    }
+
+    console.log("=== FORCE RESYNC COMPLETED ===");
+    console.log(`Total properties in XML: ${allProperties.length}`);
+    console.log(`Total modified: ${totalModified}`);
+    console.log(`Total upserted (new): ${totalUpserted}`);
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "✅ Force full resync completed — all properties updated from XML regardless of updated flag",
+      totalPropertiesInXml: allProperties.length,
+      totalModified,
+      totalUpserted,
+    });
+  } catch (error) {
+    console.error("❌ Force resync error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Force resync failed",
+      error: error.message,
+    });
   }
 };
 
@@ -5029,5 +5413,6 @@ module.exports = {
   parseXmlFromUrl,
   schedulePropertySync,
   cleanupMissingProperties,
-  moveAgentPropertiesAccordingToXmlOwnership
+  moveAgentPropertiesAccordingToXmlOwnership,
+  forceFullResync,
 };
