@@ -4496,7 +4496,7 @@ const schedulePropertySync = () => {
   const TZ = process.env.CRON_TZ || "Etc/UTC";
 
   cron.schedule(
-    "0 0,12,15 * * *",
+    "0 10-18/1 * * *",
     async () => {
       const startedAt = new Date().toISOString();
       console.log(`🔄 [${startedAt}] Starting scheduled property sync...`);
