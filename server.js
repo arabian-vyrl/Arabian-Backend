@@ -127,9 +127,10 @@
 
 // module.exports.cloudinary = cloudinary;
 
-// Near the top with other requires
-require("./Config/redis.js"); // Initialize Redis connection
 require("dotenv").config();
+// Near the top with other requires
+require("./Utils/Logger"); // Capture console logs in file
+require("./Config/redis.js"); // Initialize Redis connection
 const { setupCronJobs } = require("./Controllers/LeaderboardController.js");
 const { schedulePropertySync } = require("./Controllers/XmlParser.js");
 const {
@@ -226,6 +227,11 @@ scheduleNewOffPlanSync();
 
 
 // Then mount your API routes
+
+app.get("/test", (req, res) => {
+  console.log("Testing Logsss  22")
+  return res.json({msg:"Testing Logsss 33"})
+});
 app.use("/", router);
 
 // Google Reviews 
