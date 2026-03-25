@@ -131,6 +131,23 @@ router.delete("/hero/video", HeroController.deleteHeroVideo);
 //   HeroController.updateHero,
 // );
 
+// S3 Image Proxy — fetches S3 images server-side to avoid browser CORS issues
+router.get("/image-proxy", async (req, res) => {
+  const { key } = req.query;
+  if (!key) return res.status(400).send("Missing key");
+  const s3Url = `https://arabianestatesproperties.s3.us-east-1.amazonaws.com/${key}`;
+  try {
+    const response = await axios.get(s3Url, { responseType: "arraybuffer" });
+    const contentType = response.headers["content-type"] || "image/jpeg";
+    res.set("Content-Type", contentType);
+    res.set("Cache-Control", "public, max-age=86400");
+    res.send(response.data);
+  } catch (err) {
+    console.error("image-proxy error:", err.message);
+    res.status(502).send("Failed to fetch image");
+  }
+});
+
 // Contact us
 router.post("/Contact", ContactUs.createContact);
 router.get("/GetContact", ContactUs.getContacts);
