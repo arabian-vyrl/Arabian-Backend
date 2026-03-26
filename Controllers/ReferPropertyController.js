@@ -3,7 +3,7 @@ const { response } = require("express");
 const nodemailer = require("nodemailer");
 const jwtToken = require("jsonwebtoken");
 const salesforceService = require("../services/SalesforceService");
-const Agent=require('../Models/AgentModel')
+const Agent = require("../Models/AgentModel");
 require("dotenv").config();
 
 // Email configuration
@@ -40,7 +40,7 @@ const agentUpdate = async (req, res) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (!updatedDocument) {
       return res.status(404).json({
@@ -100,8 +100,6 @@ const verifyReferrerToken = async (req, res) => {
   }
 };
 
-
-
 const Referrerlogout = async (req, res) => {
   try {
     const isProduction = process.env.NODE_ENV === "production";
@@ -109,7 +107,7 @@ const Referrerlogout = async (req, res) => {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
-      path: "/", 
+      path: "/",
     });
 
     res.status(200).json({
@@ -328,12 +326,14 @@ const GetAllReferal = async (req, res) => {
 const ReferProperty = async (req, res) => {
   try {
     const {
-      Reffrer_FullName,
+      Reffrer_FirstName,
+      Reffrer_LastName,
       Reffrer_PhoneNumber,
       Reffrer_EmailAdress,
       Relation_to_Reffrer,
       PropertyArea,
-      Refree_FullName,
+      Refree_Firstname,
+      Refree_Lastname,
       Refree_EmailAdress,
       Refree_PhoneNumber,
       Refree_Preffered_Contact_Form,
@@ -341,6 +341,8 @@ const ReferProperty = async (req, res) => {
       Urgency_Level,
       Special_Requirements,
     } = req.body;
+
+    console.log(req.body)
 
     // Step 1: Validation
     // const validationErrors = validateReferralData(req.body);
@@ -356,7 +358,8 @@ const ReferProperty = async (req, res) => {
     let ReffrerPassword;
     const existingReferrer = await ReferralProperty.findOne({
       "referrer.email": Reffrer_EmailAdress,
-      "referrer.full_name": Reffrer_FullName,
+      "referrer.first_name": Reffrer_FirstName,
+      "referrer.last_name": Reffrer_LastName,
     });
 
     if (existingReferrer) {
@@ -368,14 +371,16 @@ const ReferProperty = async (req, res) => {
     // Step 3: Save referral to DB
     const referralData = new ReferralProperty({
       referrer: {
-        full_name: Reffrer_FullName,
+        first_name: Reffrer_FirstName,
+        last_name: Reffrer_LastName,
         email: Reffrer_EmailAdress,
         phone: Reffrer_PhoneNumber,
         password: ReffrerPassword,
       },
       property: { area: PropertyArea || null },
       referee: {
-        full_name: Refree_FullName,
+        first_name: Refree_Firstname,
+        last_name: Refree_Lastname,
         email: Refree_EmailAdress,
         phone: Refree_PhoneNumber,
         relationship: Relation_to_Reffrer,
@@ -388,6 +393,8 @@ const ReferProperty = async (req, res) => {
       },
     });
 
+    console.log("referralData is",referralData)
+
     const savedReferral = await referralData.save();
     res.status(201).json({
       success: true,
@@ -395,8 +402,8 @@ const ReferProperty = async (req, res) => {
       data: {
         tracking_code: savedReferral.tracking_code,
         referral_id: savedReferral._id,
-        referrer_name: Reffrer_FullName,
-        referee_name: Refree_FullName,
+        referrer_name: `${Reffrer_FirstName} ${Reffrer_LastName}`,
+        referee_name: `${Refree_Firstname} ${Refree_Lastname}`,
       },
     });
     const previousReferrals = await ReferralProperty.find({
@@ -407,7 +414,7 @@ const ReferProperty = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-         user: process.env.NODE_MAILER_EMAIL,
+        user: process.env.NODE_MAILER_EMAIL,
         pass: process.env.NODE_MAILER_PASSWORD,
       },
     });
@@ -432,7 +439,7 @@ const ReferProperty = async (req, res) => {
       "Your Property Referral – Login & Tracking Details",
       `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2>Hello ${Reffrer_FullName},</h2>
+        <h2>Hello ${Reffrer_FirstName} ${Reffrer_LastName},</h2>
         <p>Thank you for submitting a new property referral. We have successfully received your details.</p>
         <h3>Your Login Details</h3>
         <p><strong>Email:</strong> ${Reffrer_EmailAdress}<br/><strong>Password:</strong> ${ReffrerPassword}</p>
@@ -447,30 +454,33 @@ const ReferProperty = async (req, res) => {
         <p>Thank you for helping us connect with new clients.</p>
         <p><strong>Best Regards,</strong><br/>Arabian Estates</p>
       </div>
-      `
+      `,
     );
 
     // Send to the data
 
     const salesforceData = {
-      last_name: Reffrer_FullName,
+      first_name: Reffrer_FirstName,
+      last_name: Reffrer_LastName,
+      // last_name: Reffrer_FullName,
       email: Reffrer_EmailAdress,
       tele_phone: Reffrer_PhoneNumber,
       Property_Area: PropertyArea || null,
-      Referee_Full_Name: Refree_FullName,
+      Referee_First_Name: Refree_FirstName,
+      Referee_Last_Name: Refree_LastName,
       Referee_Email: Refree_EmailAdress,
       Referee_Phone: Refree_PhoneNumber,
       Relationship_To_Referrer: Relation_to_Reffrer,
       Preferred_Contact_Method: Refree_Preffered_Contact_Form,
       Best_Time_To_Contact: Best_Time_To_Contect,
       Urgency_Level: Urgency_Level,
-      Special_Requirements: Special_Requirements,  
+      Special_Requirements: Special_Requirements,
     };
 
     salesforceService.syncWithRetry(
       ReferralProperty,
       savedReferral._id,
-      salesforceData
+      salesforceData,
     );
   } catch (error) {
     console.error("Error in ReferProperty:", error);
@@ -657,7 +667,7 @@ const trackQUery = async (req, res) => {
 const updateQueryProgress = async (req, res) => {
   try {
     const { trackingCode, newStatus, agentEmail } = req.query;
-    console.log("email",req.query.agentEmail)
+    console.log("email", req.query.agentEmail);
     if (!trackingCode) {
       return res.status(400).json({
         success: false,
@@ -703,7 +713,7 @@ const updateQueryProgress = async (req, res) => {
      */
     if (agentEmail) {
       const agentDoc = await Agent.findOne({
-        email:agentEmail.trim().toLowerCase(),
+        email: agentEmail.trim().toLowerCase(),
         isActive: true,
       }).select("agentName agentId email");
 
@@ -723,7 +733,7 @@ const updateQueryProgress = async (req, res) => {
     const updatedDocument = await ReferralProperty.findOneAndUpdate(
       { tracking_code: trackingCode },
       { $set: updateData },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!updatedDocument) {
@@ -753,8 +763,6 @@ const updateQueryProgress = async (req, res) => {
     });
   }
 };
-
-
 
 const deleteQuery = async (req, res) => {
   try {
@@ -970,7 +978,7 @@ const completeDeal = async (referralId, dealValue, commissionPercentage) => {
           "commission.status": "Approved",
         },
       },
-      { new: true }
+      { new: true },
     );
 
     // Send commission notification email
@@ -1027,5 +1035,5 @@ module.exports = {
   trackRefer,
   verifyReferrerToken,
   agentUpdate,
-  Referrerlogout
+  Referrerlogout,
 };

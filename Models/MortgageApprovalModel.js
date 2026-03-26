@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const MortgageApprovalSchema = new mongoose.Schema(
   {
-    fullName: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     email: { type: String, required: true },
     phone: { type: String, required: true },
     propertyPrice: { type: Number, required: true },

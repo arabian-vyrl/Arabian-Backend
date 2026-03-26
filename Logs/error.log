@@ -138,3 +138,696 @@
 2026-03-25 17:01:36 [ERROR]: (node:8248) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
 2026-03-25 17:01:36 [ERROR]: (node:8248) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
 2026-03-25 17:01:36 [ERROR]: (node:8248) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:17:33 [ERROR]: (node:2512) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 12:17:33 [ERROR]: (node:2512) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:17:33 [ERROR]: (node:2512) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:17:33 [ERROR]: (node:2512) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:17:33 [ERROR]: (node:2512) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:17:33 [ERROR]: (node:2512) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:05 [ERROR]: (node:15060) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 12:21:05 [ERROR]: (node:15060) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:05 [ERROR]: (node:15060) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:05 [ERROR]: (node:15060) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:05 [ERROR]: (node:15060) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:05 [ERROR]: (node:15060) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:31 [ERROR]: (node:7204) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 12:21:31 [ERROR]: (node:7204) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:31 [ERROR]: (node:7204) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:31 [ERROR]: (node:7204) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:31 [ERROR]: (node:7204) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:21:31 [ERROR]: (node:7204) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:24:51 [ERROR]: (node:15164) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 12:24:51 [ERROR]: (node:15164) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:24:51 [ERROR]: (node:15164) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:24:51 [ERROR]: (node:15164) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:24:51 [ERROR]: (node:15164) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 12:24:51 [ERROR]: (node:15164) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:53 [ERROR]: (node:19504) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:21:53 [ERROR]: (node:19504) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:53 [ERROR]: (node:19504) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:53 [ERROR]: (node:19504) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:53 [ERROR]: (node:19504) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:53 [ERROR]: (node:19504) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:58 [ERROR]: (node:9396) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:21:58 [ERROR]: (node:9396) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:58 [ERROR]: (node:9396) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:58 [ERROR]: (node:9396) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:58 [ERROR]: (node:9396) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:21:58 [ERROR]: (node:9396) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:02 [ERROR]: (node:7912) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:22:02 [ERROR]: (node:7912) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:02 [ERROR]: (node:7912) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:02 [ERROR]: (node:7912) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:02 [ERROR]: (node:7912) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:02 [ERROR]: (node:7912) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:06 [ERROR]: (node:20264) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:22:07 [ERROR]: (node:20264) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:07 [ERROR]: (node:20264) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:07 [ERROR]: (node:20264) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:07 [ERROR]: (node:20264) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:07 [ERROR]: (node:20264) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:16 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:22:16 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:16 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:16 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:16 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:16 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:20 [ERROR]: (node:4132) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:22:20 [ERROR]: (node:4132) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:20 [ERROR]: (node:4132) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:20 [ERROR]: (node:4132) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:20 [ERROR]: (node:4132) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:20 [ERROR]: (node:4132) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:22 [ERROR]: (node:8284) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:22:22 [ERROR]: (node:8284) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:22 [ERROR]: (node:8284) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:22 [ERROR]: (node:8284) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:22 [ERROR]: (node:8284) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:22 [ERROR]: (node:8284) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:55 [ERROR]: (node:3900) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:22:55 [ERROR]: (node:3900) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:55 [ERROR]: (node:3900) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:55 [ERROR]: (node:3900) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:55 [ERROR]: (node:3900) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:22:55 [ERROR]: (node:3900) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:02 [ERROR]: (node:20028) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:23:02 [ERROR]: (node:20028) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:02 [ERROR]: (node:20028) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:02 [ERROR]: (node:20028) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:02 [ERROR]: (node:20028) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:02 [ERROR]: (node:20028) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:35 [ERROR]: (node:16976) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:23:35 [ERROR]: (node:16976) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:35 [ERROR]: (node:16976) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:35 [ERROR]: (node:16976) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:35 [ERROR]: (node:16976) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:35 [ERROR]: (node:16976) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:41 [ERROR]: (node:15056) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:23:41 [ERROR]: (node:15056) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:41 [ERROR]: (node:15056) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:41 [ERROR]: (node:15056) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:41 [ERROR]: (node:15056) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:41 [ERROR]: (node:15056) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:43 [ERROR]: (node:3996) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:23:43 [ERROR]: (node:3996) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:43 [ERROR]: (node:3996) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:43 [ERROR]: (node:3996) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:43 [ERROR]: (node:3996) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:43 [ERROR]: (node:3996) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:48 [ERROR]: (node:18176) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:23:48 [ERROR]: (node:18176) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:48 [ERROR]: (node:18176) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:48 [ERROR]: (node:18176) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:48 [ERROR]: (node:18176) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:23:48 [ERROR]: (node:18176) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:25:39 [ERROR]: Error in ReferProperty: {}
+2026-03-26 14:26:17 [ERROR]: (node:15632) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:26:17 [ERROR]: (node:15632) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:17 [ERROR]: (node:15632) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:17 [ERROR]: (node:15632) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:17 [ERROR]: (node:15632) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:17 [ERROR]: (node:15632) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:22 [ERROR]: (node:11924) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:26:22 [ERROR]: (node:11924) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:22 [ERROR]: (node:11924) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:22 [ERROR]: (node:11924) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:22 [ERROR]: (node:11924) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:22 [ERROR]: (node:11924) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:25 [ERROR]: (node:9936) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:26:25 [ERROR]: (node:9936) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:25 [ERROR]: (node:9936) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:25 [ERROR]: (node:9936) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:25 [ERROR]: (node:9936) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:25 [ERROR]: (node:9936) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:32 [ERROR]: (node:19172) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:26:32 [ERROR]: (node:19172) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:32 [ERROR]: (node:19172) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:32 [ERROR]: (node:19172) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:32 [ERROR]: (node:19172) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:32 [ERROR]: (node:19172) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:26:43 [ERROR]: Error in ReferProperty: {}
+2026-03-26 14:27:07 [ERROR]: (node:5224) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:27:07 [ERROR]: (node:5224) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:07 [ERROR]: (node:5224) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:07 [ERROR]: (node:5224) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:07 [ERROR]: (node:5224) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:07 [ERROR]: (node:5224) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:35 [ERROR]: (node:11940) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:27:35 [ERROR]: (node:11940) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:35 [ERROR]: (node:11940) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:35 [ERROR]: (node:11940) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:35 [ERROR]: (node:11940) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:35 [ERROR]: (node:11940) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:37 [ERROR]: (node:13488) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:27:37 [ERROR]: (node:13488) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:37 [ERROR]: (node:13488) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:37 [ERROR]: (node:13488) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:37 [ERROR]: (node:13488) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:37 [ERROR]: (node:13488) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:41 [ERROR]: (node:12676) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:27:41 [ERROR]: (node:12676) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:41 [ERROR]: (node:12676) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:41 [ERROR]: (node:12676) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:41 [ERROR]: (node:12676) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:41 [ERROR]: (node:12676) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:44 [ERROR]: Error in ReferProperty: {}
+2026-03-26 14:27:59 [ERROR]: (node:13940) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:27:59 [ERROR]: (node:13940) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:59 [ERROR]: (node:13940) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:59 [ERROR]: (node:13940) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:59 [ERROR]: (node:13940) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:27:59 [ERROR]: (node:13940) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:29:08 [ERROR]: Error in ReferProperty: {
+  "errors": {
+    "referee.last_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.last_name` is required.",
+      "properties": {
+        "message": "Path `referee.last_name` is required.",
+        "type": "required",
+        "path": "referee.last_name"
+      },
+      "kind": "required",
+      "path": "referee.last_name"
+    },
+    "referee.first_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.first_name` is required.",
+      "properties": {
+        "message": "Path `referee.first_name` is required.",
+        "type": "required",
+        "path": "referee.first_name"
+      },
+      "kind": "required",
+      "path": "referee.first_name"
+    }
+  },
+  "_message": "ReferralProperty validation failed",
+  "name": "ValidationError",
+  "message": "ReferralProperty validation failed: referee.last_name: Path `referee.last_name` is required., referee.first_name: Path `referee.first_name` is required."
+}
+2026-03-26 14:29:12 [ERROR]: Error in ReferProperty: {
+  "errors": {
+    "referee.last_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.last_name` is required.",
+      "properties": {
+        "message": "Path `referee.last_name` is required.",
+        "type": "required",
+        "path": "referee.last_name"
+      },
+      "kind": "required",
+      "path": "referee.last_name"
+    },
+    "referee.first_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.first_name` is required.",
+      "properties": {
+        "message": "Path `referee.first_name` is required.",
+        "type": "required",
+        "path": "referee.first_name"
+      },
+      "kind": "required",
+      "path": "referee.first_name"
+    }
+  },
+  "_message": "ReferralProperty validation failed",
+  "name": "ValidationError",
+  "message": "ReferralProperty validation failed: referee.last_name: Path `referee.last_name` is required., referee.first_name: Path `referee.first_name` is required."
+}
+2026-03-26 14:29:40 [ERROR]: (node:14980) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:29:40 [ERROR]: (node:14980) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:29:40 [ERROR]: (node:14980) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:29:40 [ERROR]: (node:14980) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:29:40 [ERROR]: (node:14980) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:29:40 [ERROR]: (node:14980) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:29:46 [ERROR]: Error in ReferProperty: {
+  "errors": {
+    "referee.last_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.last_name` is required.",
+      "properties": {
+        "message": "Path `referee.last_name` is required.",
+        "type": "required",
+        "path": "referee.last_name"
+      },
+      "kind": "required",
+      "path": "referee.last_name"
+    },
+    "referee.first_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.first_name` is required.",
+      "properties": {
+        "message": "Path `referee.first_name` is required.",
+        "type": "required",
+        "path": "referee.first_name"
+      },
+      "kind": "required",
+      "path": "referee.first_name"
+    }
+  },
+  "_message": "ReferralProperty validation failed",
+  "name": "ValidationError",
+  "message": "ReferralProperty validation failed: referee.last_name: Path `referee.last_name` is required., referee.first_name: Path `referee.first_name` is required."
+}
+2026-03-26 14:33:38 [ERROR]: (node:3440) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:33:38 [ERROR]: (node:3440) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:38 [ERROR]: (node:3440) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:38 [ERROR]: (node:3440) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:38 [ERROR]: (node:3440) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:38 [ERROR]: (node:3440) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:43 [ERROR]: (node:15000) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:33:43 [ERROR]: (node:15000) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:43 [ERROR]: (node:15000) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:43 [ERROR]: (node:15000) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:43 [ERROR]: (node:15000) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:43 [ERROR]: (node:15000) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:50 [ERROR]: (node:10472) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:33:50 [ERROR]: (node:10472) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:50 [ERROR]: (node:10472) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:50 [ERROR]: (node:10472) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:50 [ERROR]: (node:10472) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:50 [ERROR]: (node:10472) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:53 [ERROR]: (node:18360) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:33:53 [ERROR]: (node:18360) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:53 [ERROR]: (node:18360) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:53 [ERROR]: (node:18360) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:53 [ERROR]: (node:18360) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:53 [ERROR]: (node:18360) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:33:57 [ERROR]: Error in ReferProperty: {
+  "errors": {
+    "referee.last_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.last_name` is required.",
+      "properties": {
+        "message": "Path `referee.last_name` is required.",
+        "type": "required",
+        "path": "referee.last_name"
+      },
+      "kind": "required",
+      "path": "referee.last_name"
+    },
+    "referee.first_name": {
+      "name": "ValidatorError",
+      "message": "Path `referee.first_name` is required.",
+      "properties": {
+        "message": "Path `referee.first_name` is required.",
+        "type": "required",
+        "path": "referee.first_name"
+      },
+      "kind": "required",
+      "path": "referee.first_name"
+    }
+  },
+  "_message": "ReferralProperty validation failed",
+  "name": "ValidationError",
+  "message": "ReferralProperty validation failed: referee.last_name: Path `referee.last_name` is required., referee.first_name: Path `referee.first_name` is required."
+}
+2026-03-26 14:34:50 [ERROR]: (node:768) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:34:50 [ERROR]: (node:768) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:34:50 [ERROR]: (node:768) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:34:50 [ERROR]: (node:768) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:34:50 [ERROR]: (node:768) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:34:50 [ERROR]: (node:768) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:34:58 [ERROR]: Error in ReferProperty: {}
+2026-03-26 14:35:22 [ERROR]: (node:16580) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:35:22 [ERROR]: (node:16580) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:35:22 [ERROR]: (node:16580) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:35:22 [ERROR]: (node:16580) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:35:22 [ERROR]: (node:16580) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:35:22 [ERROR]: (node:16580) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:35:27 [ERROR]: Error in ReferProperty: {}
+2026-03-26 14:36:00 [ERROR]: (node:11048) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 14:36:00 [ERROR]: (node:11048) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:36:00 [ERROR]: (node:11048) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:36:00 [ERROR]: (node:11048) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:36:00 [ERROR]: (node:11048) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:36:00 [ERROR]: (node:11048) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 14:36:10 [ERROR]: Error in ReferProperty: {}
+2026-03-26 14:36:10 [ERROR]: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:699:11)
+    at ServerResponse.header (D:\Arabian Estate Backend 2\node_modules\express\lib\response.js:684:10)
+    at ServerResponse.send (D:\Arabian Estate Backend 2\node_modules\express\lib\response.js:161:12)
+    at ServerResponse.json (D:\Arabian Estate Backend 2\node_modules\express\lib\response.js:250:15)
+    at ReferProperty (D:\Arabian Estate Backend 2\Controllers\ReferPropertyController.js:487:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-03-26 15:36:49 [ERROR]: (node:9604) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:36:49 [ERROR]: (node:9604) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:49 [ERROR]: (node:9604) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:49 [ERROR]: (node:9604) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:49 [ERROR]: (node:9604) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:49 [ERROR]: (node:9604) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:57 [ERROR]: (node:15712) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:36:57 [ERROR]: (node:15712) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:57 [ERROR]: (node:15712) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:57 [ERROR]: (node:15712) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:57 [ERROR]: (node:15712) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:36:57 [ERROR]: (node:15712) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:06 [ERROR]: (node:18772) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:06 [ERROR]: (node:18772) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:06 [ERROR]: (node:18772) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:06 [ERROR]: (node:18772) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:06 [ERROR]: (node:18772) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:06 [ERROR]: (node:18772) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:12 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:12 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:12 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:12 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:12 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:12 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:15 [ERROR]: (node:19060) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:15 [ERROR]: (node:19060) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:15 [ERROR]: (node:19060) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:15 [ERROR]: (node:19060) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:15 [ERROR]: (node:19060) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:15 [ERROR]: (node:19060) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:17 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:17 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:17 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:17 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:17 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:17 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:23 [ERROR]: (node:15440) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:23 [ERROR]: (node:15440) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:23 [ERROR]: (node:15440) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:23 [ERROR]: (node:15440) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:23 [ERROR]: (node:15440) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:23 [ERROR]: (node:15440) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:26 [ERROR]: (node:2488) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:26 [ERROR]: (node:2488) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:26 [ERROR]: (node:2488) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:26 [ERROR]: (node:2488) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:26 [ERROR]: (node:2488) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:26 [ERROR]: (node:2488) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:53 [ERROR]: (node:8072) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:53 [ERROR]: (node:8072) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:53 [ERROR]: (node:8072) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:53 [ERROR]: (node:8072) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:53 [ERROR]: (node:8072) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:53 [ERROR]: (node:8072) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:55 [ERROR]: (node:16344) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:37:55 [ERROR]: (node:16344) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:55 [ERROR]: (node:16344) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:55 [ERROR]: (node:16344) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:55 [ERROR]: (node:16344) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:37:55 [ERROR]: (node:16344) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:40:06 [ERROR]: (node:10696) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:40:06 [ERROR]: (node:10696) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:40:06 [ERROR]: (node:10696) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:40:06 [ERROR]: (node:10696) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:40:06 [ERROR]: (node:10696) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:40:06 [ERROR]: (node:10696) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:43:34 [ERROR]: (node:8264) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:43:34 [ERROR]: (node:8264) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:43:34 [ERROR]: (node:8264) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:43:34 [ERROR]: (node:8264) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:43:34 [ERROR]: (node:8264) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:43:34 [ERROR]: (node:8264) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:17 [ERROR]: (node:5632) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:47:17 [ERROR]: (node:5632) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:17 [ERROR]: (node:5632) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:17 [ERROR]: (node:5632) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:17 [ERROR]: (node:5632) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:17 [ERROR]: (node:5632) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:24 [ERROR]: (node:7584) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:47:24 [ERROR]: (node:7584) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:24 [ERROR]: (node:7584) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:24 [ERROR]: (node:7584) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:24 [ERROR]: (node:7584) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:24 [ERROR]: (node:7584) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:30 [ERROR]: (node:16892) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:47:30 [ERROR]: (node:16892) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:30 [ERROR]: (node:16892) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:30 [ERROR]: (node:16892) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:30 [ERROR]: (node:16892) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:30 [ERROR]: (node:16892) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:52 [ERROR]: (node:14208) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:47:52 [ERROR]: (node:14208) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:52 [ERROR]: (node:14208) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:52 [ERROR]: (node:14208) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:52 [ERROR]: (node:14208) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:47:52 [ERROR]: (node:14208) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:48:09 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:48:09 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:48:09 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:48:09 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:48:09 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:48:09 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:52:17 [ERROR]: (node:2772) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:52:17 [ERROR]: (node:2772) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:52:17 [ERROR]: (node:2772) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:52:17 [ERROR]: (node:2772) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:52:17 [ERROR]: (node:2772) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:52:17 [ERROR]: (node:2772) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:52:19 [ERROR]: FINAL ERROR: {
+  "errors": {
+    "LargestContentfulPaintName": {
+      "name": "ValidatorError",
+      "message": "Path `LargestContentfulPaintName` is required.",
+      "properties": {
+        "message": "Path `LargestContentfulPaintName` is required.",
+        "type": "required",
+        "path": "LargestContentfulPaintName"
+      },
+      "kind": "required",
+      "path": "LargestContentfulPaintName"
+    }
+  },
+  "_message": "OffPlanContact validation failed",
+  "name": "ValidationError",
+  "message": "OffPlanContact validation failed: LargestContentfulPaintName: Path `LargestContentfulPaintName` is required."
+}
+2026-03-26 15:54:22 [ERROR]: (node:1448) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:54:22 [ERROR]: (node:1448) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:22 [ERROR]: (node:1448) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:22 [ERROR]: (node:1448) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:22 [ERROR]: (node:1448) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:22 [ERROR]: (node:1448) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:25 [ERROR]: (node:10972) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 15:54:25 [ERROR]: (node:10972) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:25 [ERROR]: (node:10972) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:25 [ERROR]: (node:10972) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:25 [ERROR]: (node:10972) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 15:54:25 [ERROR]: (node:10972) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:32 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:32 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:32 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:32 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:32 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:32 [ERROR]: (node:1096) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:36 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:36 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:36 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:36 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:36 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:36 [ERROR]: (node:7100) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:39 [ERROR]: (node:19992) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:39 [ERROR]: (node:19992) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:39 [ERROR]: (node:19992) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:39 [ERROR]: (node:19992) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:39 [ERROR]: (node:19992) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:39 [ERROR]: (node:19992) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:45 [ERROR]: (node:5768) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:45 [ERROR]: (node:5768) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:45 [ERROR]: (node:5768) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:45 [ERROR]: (node:5768) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:45 [ERROR]: (node:5768) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:45 [ERROR]: (node:5768) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:49 [ERROR]: (node:15608) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:49 [ERROR]: (node:15608) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:49 [ERROR]: (node:15608) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:49 [ERROR]: (node:15608) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:49 [ERROR]: (node:15608) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:49 [ERROR]: (node:15608) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:53 [ERROR]: (node:11876) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:53 [ERROR]: (node:11876) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:53 [ERROR]: (node:11876) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:53 [ERROR]: (node:11876) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:53 [ERROR]: (node:11876) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:53 [ERROR]: (node:11876) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:58 [ERROR]: (node:14544) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:00:58 [ERROR]: (node:14544) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:58 [ERROR]: (node:14544) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:58 [ERROR]: (node:14544) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:58 [ERROR]: (node:14544) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:00:58 [ERROR]: (node:14544) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:31 [ERROR]: (node:1620) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:21:31 [ERROR]: (node:1620) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:31 [ERROR]: (node:1620) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:31 [ERROR]: (node:1620) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:31 [ERROR]: (node:1620) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:31 [ERROR]: (node:1620) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:34 [ERROR]: (node:13048) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:21:34 [ERROR]: (node:13048) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:34 [ERROR]: (node:13048) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:34 [ERROR]: (node:13048) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:34 [ERROR]: (node:13048) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:34 [ERROR]: (node:13048) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:51 [ERROR]: (node:19512) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:21:51 [ERROR]: (node:19512) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:51 [ERROR]: (node:19512) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:51 [ERROR]: (node:19512) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:51 [ERROR]: (node:19512) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:51 [ERROR]: (node:19512) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:56 [ERROR]: (node:13756) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:21:56 [ERROR]: (node:13756) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:56 [ERROR]: (node:13756) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:56 [ERROR]: (node:13756) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:56 [ERROR]: (node:13756) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:56 [ERROR]: (node:13756) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:58 [ERROR]: (node:8840) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:21:58 [ERROR]: (node:8840) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:58 [ERROR]: (node:8840) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:58 [ERROR]: (node:8840) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:58 [ERROR]: (node:8840) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:21:58 [ERROR]: (node:8840) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:05 [ERROR]: (node:2108) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:22:05 [ERROR]: (node:2108) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:05 [ERROR]: (node:2108) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:05 [ERROR]: (node:2108) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:05 [ERROR]: (node:2108) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:05 [ERROR]: (node:2108) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:14 [ERROR]: (node:6668) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:22:14 [ERROR]: (node:6668) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:14 [ERROR]: (node:6668) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:14 [ERROR]: (node:6668) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:14 [ERROR]: (node:6668) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:22:14 [ERROR]: (node:6668) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:12 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:12 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:12 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:12 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:12 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:12 [ERROR]: (node:12892) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:15 [ERROR]: (node:17072) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:16 [ERROR]: (node:17072) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:16 [ERROR]: (node:17072) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:16 [ERROR]: (node:17072) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:16 [ERROR]: (node:17072) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:16 [ERROR]: (node:17072) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:28 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:28 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:28 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:29 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:29 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:29 [ERROR]: (node:4508) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:31 [ERROR]: (node:5192) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:31 [ERROR]: (node:5192) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:31 [ERROR]: (node:5192) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:31 [ERROR]: (node:5192) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:31 [ERROR]: (node:5192) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:31 [ERROR]: (node:5192) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:46 [ERROR]: (node:10888) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:46 [ERROR]: (node:10888) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:46 [ERROR]: (node:10888) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:46 [ERROR]: (node:10888) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:46 [ERROR]: (node:10888) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:46 [ERROR]: (node:10888) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:48 [ERROR]: (node:13740) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:48 [ERROR]: (node:13740) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:48 [ERROR]: (node:13740) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:48 [ERROR]: (node:13740) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:48 [ERROR]: (node:13740) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:48 [ERROR]: (node:13740) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:51 [ERROR]: (node:7860) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:51 [ERROR]: (node:7860) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:51 [ERROR]: (node:7860) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:51 [ERROR]: (node:7860) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:51 [ERROR]: (node:7860) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:51 [ERROR]: (node:7860) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:55 [ERROR]: (node:17524) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:55 [ERROR]: (node:17524) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:55 [ERROR]: (node:17524) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:55 [ERROR]: (node:17524) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:55 [ERROR]: (node:17524) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:55 [ERROR]: (node:17524) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:57 [ERROR]: (node:10644) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 16:59:57 [ERROR]: (node:10644) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:57 [ERROR]: (node:10644) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:57 [ERROR]: (node:10644) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:57 [ERROR]: (node:10644) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 16:59:57 [ERROR]: (node:10644) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 17:00:02 [ERROR]: (node:11772) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-26 17:00:02 [ERROR]: (node:11772) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 17:00:02 [ERROR]: (node:11772) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 17:00:02 [ERROR]: (node:11772) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 17:00:02 [ERROR]: (node:11772) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-26 17:00:02 [ERROR]: (node:11772) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.

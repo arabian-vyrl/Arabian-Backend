@@ -1,23 +1,87 @@
 const OffPlanContact = require("../Models/OffPlanContact");
 const salesforceService = require("../services/SalesforceService");
 // CREATE a new off-plan contact message
+// const createOffPlanContact = async (req, res) => {
+//   try {
+//     const { firstName,lastName, email, mobile, projectName, budgetRange, source } =
+//       req.body;
+
+//       console.log(firstName,lastName, email, mobile, projectName, budgetRange, source);
+
+//     // Basic validation
+//     if (!firstName || !email || !mobile || !projectName) {
+//       return res
+//         .status(400)
+//         .json({
+//           success: false,
+//           message: "Full Name, Email, Mobile, and Project Name are required.",
+//         });
+//     }
+
+//     const contact = new OffPlanContact({
+//       firstName,
+//       lastName,
+//       email,
+//       mobile,
+//       projectName,
+//       budgetRange,
+//       source,
+//     });
+//     console.log(contact,"CC");
+//     await contact.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Off-plan contact submitted successfully!",
+//       data: contact,
+//     });
+
+
+//     // const salesforceData = {
+//     //   // first_name: contact.firstName,
+//     //   last_name: contact.lastName,
+//     //   email: contact.email,
+//     //   tele_phone: contact.mobile,
+//     //   projectName: contact.projectName,
+//     //   budgetRange: contact.budgetRange,
+//     //   source: contact.source,
+//     // };
+
+//     // salesforceService.syncWithRetry(OffPlanContact, contact._id, salesforceData);
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error.",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 const createOffPlanContact = async (req, res) => {
   try {
-    const { fullName, email, mobile, projectName, budgetRange, source } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      mobile,
+      projectName,
+      budgetRange,
+      source,
+    } = req.body;
 
-    // Basic validation
-    if (!fullName || !email || !mobile || !projectName) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Full Name, Email, Mobile, and Project Name are required.",
-        });
+    console.log("BODY:", req.body);
+
+    if (!firstName || !email || !mobile || !projectName) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing",
+      });
     }
 
     const contact = new OffPlanContact({
-      fullName,
+      firstName,
+      lastName,
       email,
       mobile,
       projectName,
@@ -25,28 +89,44 @@ const createOffPlanContact = async (req, res) => {
       source,
     });
 
+    console.log("CONTACT:", contact);
+
     await contact.save();
 
-    res.status(201).json({
+    // ✅ SAFE SALESFORCE CALL
+    try {
+      const salesforceData = {
+        first_name: contact.firstName,
+        last_name: contact.lastName,
+        email: contact.email,
+        tele_phone: contact.mobile,
+        projectName: contact.projectName,
+        budgetRange: contact.budgetRange,
+        source: contact.source,
+      };
+
+      await salesforceService.syncWithRetry(
+        OffPlanContact,
+        contact._id,
+        salesforceData
+      );
+    } catch (sfError) {
+      console.error("Salesforce error:", sfError.message);
+    }
+
+    // ✅ SEND RESPONSE LAST
+    return res.status(201).json({
       success: true,
-      message: "Off-plan contact submitted successfully!",
+      message: "Saved successfully",
       data: contact,
     });
 
-
-    const salesforceData = {
-      last_name: contact.fullName,
-      email: contact.email,
-      tele_phone: contact.mobile,
-      projectName: contact.projectName,
-      budgetRange: contact.budgetRange,
-      source: contact.source,
-    };
-    salesforceService.syncWithRetry(OffPlanContact, contact._id, salesforceData);
   } catch (error) {
-    res.status(500).json({
+    console.error("FINAL ERROR:", error);
+
+    return res.status(500).json({
       success: false,
-      message: "Server error.",
+      message: "Server error",
       error: error.message,
     });
   }

@@ -4,7 +4,8 @@ const salesforceService = require("../services/SalesforceService");
 const createMortgageApproval = async (req, res) => {
   try {
     const {
-      fullName,
+      firstName,
+      lastName,
       email,
       phone,
       propertyPrice,
@@ -20,7 +21,8 @@ const createMortgageApproval = async (req, res) => {
 
     // Validation
     if (
-      !fullName ||
+      !firstName ||  
+      !lastName ||
       !email ||
       !phone ||
       !propertyPrice ||
@@ -39,7 +41,8 @@ const createMortgageApproval = async (req, res) => {
     }
 
     const approval = new MortgageApproval({
-      fullName,
+      firstName,
+      lastName,
       email,
       phone,
       propertyPrice,
@@ -60,7 +63,8 @@ const createMortgageApproval = async (req, res) => {
     });
 
   const salesforceData = {
-  last_name: approval.fullName,
+  first_name: approval.firstName,
+  last_name: approval.lastName,
   email: approval.email,
   tele_phone: approval.phone,
   propertyPrice: approval.propertyPrice,

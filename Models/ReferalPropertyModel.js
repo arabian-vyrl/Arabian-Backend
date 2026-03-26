@@ -10,7 +10,12 @@ const referralPropertySchema = new mongoose.Schema(
       index: true,
     },
     referrer: {
-      full_name: {
+      first_name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      last_name: {
         type: String,
         required: true,
         trim: true,
@@ -45,7 +50,12 @@ const referralPropertySchema = new mongoose.Schema(
 
     // Referee Information
     referee: {
-      full_name: {
+      first_name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      last_name: {
         type: String,
         required: true,
         trim: true,

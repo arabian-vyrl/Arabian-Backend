@@ -4,7 +4,8 @@ const salesforceService = require("../services/SalesforceService");
 const createMortgageQuote = async (req, res) => {
   try {
     const {
-      fullName,
+      firstName,
+      lastName,
       email,
       phone,
       requestMessage,
@@ -37,7 +38,8 @@ const createMortgageQuote = async (req, res) => {
     // Validate required fields
     const missingFields = [];
 
-    if (!fullName) missingFields.push("fullName");
+    if (!firstName) missingFields.push("firstName");
+    if (!lastName) missingFields.push("lastName");
     if (!email) missingFields.push("email");
     if (!phone) missingFields.push("phone");
     if (!requestMessage) missingFields.push("requestMessage");
@@ -87,7 +89,8 @@ const createMortgageQuote = async (req, res) => {
     }
 
     const quote = new MortgageQuote({
-      fullName,
+      firstName,
+      lastName,
       email,
       phone,
       requestMessage,
@@ -125,7 +128,8 @@ const createMortgageQuote = async (req, res) => {
     });
 
     const salesforceData = {
-      last_name: quote.fullName,
+      first_name: quote.firstName,
+      last_name: quote.lastName,
       email: quote.email,
       tele_phone: quote.phone,
       requestMessage: quote.requestMessage,

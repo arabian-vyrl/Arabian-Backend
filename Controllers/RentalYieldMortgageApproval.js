@@ -5,7 +5,8 @@ const createRentalYieldApproval = async (req, res) => {
   try {
     console.log("Request body:", req.body);
     const {
-      fullName,
+      firstName,
+      lastName,
       email,
       phone,
       propertyPrice,
@@ -20,7 +21,8 @@ const createRentalYieldApproval = async (req, res) => {
     } = req.body;
 
     if (
-      !fullName ||
+      !firstName ||
+      !lastName ||
       !email ||
       !phone ||
       !propertyPrice ||
@@ -39,7 +41,8 @@ const createRentalYieldApproval = async (req, res) => {
     }
 
     const approval = new RentalYieldApproval({
-      fullName,
+      firstName,
+      lastName,
       email,
       phone,
       propertyPrice,
@@ -62,7 +65,8 @@ const createRentalYieldApproval = async (req, res) => {
     });
 
     const salesforceData = {
-      last_name: approval.fullName,
+      first_name: approval.firstName,
+      last_name: approval.lastName,
       email: approval.email,
       tele_phone: approval.phone,
       propertyPrice: approval.propertyPrice,

@@ -1022,10 +1022,10 @@ const parseXmlFromUrl = async (req, res, next) => {
         ) {
           updates.address_information = propertyData.address_information;
           shouldUpdate = true;
-          console.log(
-            `[${id}] 📍 Adding/Updating address_information:`,
-            propertyData.address_information,
-          );
+          // console.log(
+          //   `[${id}] 📍 Adding/Updating address_information:`,
+          //   propertyData.address_information,
+          // );
         }
 
         if (shouldUpdate) {
@@ -1037,10 +1037,8 @@ const parseXmlFromUrl = async (req, res, next) => {
             },
           });
           mainOpById.set(id, "updated_partial");
-          console.log(`[${id}] ✏️  Queueing partial update`);
         } else {
           mainOpById.set(id, "skipped_no_update");
-          console.log(`[${id}] ⏭️  Skipped - no changes needed`);
         }
 
         continue;
@@ -1070,8 +1068,6 @@ const parseXmlFromUrl = async (req, res, next) => {
 
       const opType = existed ? "updated" : "created";
       mainOpById.set(id, opType);
-
-      console.log(`[${id}] ${existed ? "🔄" : "✨"} Queueing full ${opType}`);
     }
 
     if (propertyOps.length) {
@@ -1110,8 +1106,6 @@ const parseXmlFromUrl = async (req, res, next) => {
         if (lt && processResults.byType[lt]) {
           processResults.byType[lt].created++;
         }
-
-        console.log(`✅ [${id}] Created`);
       } else if (op === "updated" || op === "updated_partial") {
         processResults.successful++;
         processResults.operations.updated++;
@@ -1120,13 +1114,9 @@ const parseXmlFromUrl = async (req, res, next) => {
         if (lt && processResults.byType[lt]) {
           processResults.byType[lt].updated++;
         }
-
-        console.log(`✅ [${id}] Updated`);
       } else if (op === "skipped_no_update") {
         processResults.successful++;
         processResults.operations.skipped_no_update++;
-
-        console.log(`⏭️  [${id}] Skipped`);
       }
     }
 
