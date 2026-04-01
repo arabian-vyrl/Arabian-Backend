@@ -1000,7 +1000,7 @@ const parseXmlFromUrl = async (req, res, next) => {
       //   continue;
       // }
 
-      if (existed && updateFlag === "No") {
+      if (existed && updateFlag === "Yes") {
         const updates = {};
         let shouldUpdate = false;
 
@@ -1422,7 +1422,7 @@ const schedulePropertySync = () => {
   const TZ = process.env.CRON_TZ || "Etc/UTC";
 
   cron.schedule(
-    "0 * * * *",
+    "*/10 * * * *",
     async () => {
       const startedAt = new Date().toISOString();
       console.log(`🔄 [${startedAt}] Starting scheduled property sync...`);
