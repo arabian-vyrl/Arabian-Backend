@@ -18824,3 +18824,4806 @@
   ]
 }
 2026-03-26 18:50:09 [INFO]: Found 4 sale properties for page 1 in "Jumeirah Islands" community
+2026-03-31 18:23:37 [ERROR]: (node:14036) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-31 18:23:37 [ERROR]: (node:14036) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:23:37 [ERROR]: (node:14036) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:23:37 [ERROR]: (node:14036) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:23:37 [ERROR]: (node:14036) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:23:37 [ERROR]: (node:14036) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:23:39 [INFO]: Server is running on port 8000
+2026-03-31 18:24:06 [ERROR]: (node:18228) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-31 18:24:06 [ERROR]: (node:18228) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:24:06 [ERROR]: (node:18228) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:24:06 [ERROR]: (node:18228) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:24:06 [ERROR]: (node:18228) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:24:06 [ERROR]: (node:18228) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:24:08 [INFO]: Server is running on port 8000
+2026-03-31 18:25:06 [ERROR]: (node:17224) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-03-31 18:25:06 [ERROR]: (node:17224) [MONGOOSE] Warning: Duplicate schema index on {"id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:25:06 [ERROR]: (node:17224) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:25:06 [ERROR]: (node:17224) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:25:06 [ERROR]: (node:17224) [MONGOOSE] Warning: Duplicate schema index on {"location_id":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:25:06 [ERROR]: (node:17224) [MONGOOSE] Warning: Duplicate schema index on {"categoryName":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-03-31 18:25:07 [INFO]: Server is running on port 8000
+2026-03-31 18:28:17 [INFO]: Fetching XML from: https://arabianestates.my.salesforce-sites.com/ListingsXML/services/apexrest/ListingsForPortal?PortalName=Website
+2026-03-31 18:28:23 [INFO]: Parsing XML data...
+2026-03-31 18:28:24 [INFO]: Found 1635 properties in XML
+2026-03-31 18:28:24 [INFO]: Processing 1635 properties
+2026-03-31 18:28:24 [INFO]: Live properties: 665
+2026-03-31 18:28:24 [INFO]: Non-Live properties: 970
+2026-03-31 18:28:27 [INFO]: [PB-R-37390] 📝 Updating created_at: 2026-03-31 16:13:29
+2026-03-31 18:28:27 [INFO]: [PB-R-36585] 📝 Updating created_at: 2026-03-28 11:26:57
+2026-03-31 18:28:27 [INFO]: [PB-R-37248-1] 📝 Updating created_at: 2026-03-27 13:59:40
+2026-03-31 18:28:27 [INFO]: [PB-S-11194-7] 📝 Updating created_at: 2026-03-31 09:37:22
+2026-03-31 18:28:27 [INFO]: [PB-S-36294] 📝 Updating created_at: 2026-03-31 09:29:08
+2026-03-31 18:28:27 [INFO]: [PB-S-36860] 📝 Updating created_at: 2026-03-30 17:57:04
+2026-03-31 18:28:27 [INFO]: [PB-R-37451] 📝 Updating created_at: 2026-03-27 11:11:52
+2026-03-31 18:28:27 [INFO]: [PB-S-18623-3] 📝 Updating created_at: 2026-03-29 16:26:32
+2026-03-31 18:28:27 [INFO]: [PB-S-37008] 📝 Updating created_at: 2026-03-28 11:19:40
+2026-03-31 18:28:27 [INFO]: [PB-R-36174-1] 📝 Updating created_at: 2026-03-28 11:16:24
+2026-03-31 18:28:27 [INFO]: [PB-R-37075] 📝 Updating created_at: 2026-03-27 12:13:39
+2026-03-31 18:28:27 [INFO]: [PB-S-36061-1] 📝 Updating created_at: 2026-03-27 10:33:44
+2026-03-31 18:28:27 [INFO]: [PB-S-37095-1] 📝 Updating created_at: 2026-03-26 17:18:46
+2026-03-31 18:28:27 [INFO]: [PB-R-37455] 📝 Updating created_at: 2026-03-26 17:00:30
+2026-03-31 18:28:27 [INFO]: 
+🚀 Executing bulk write with 664 operations...
+2026-03-31 18:28:37 [INFO]: ✅ Bulk write completed successfully!
+
+2026-03-31 18:30:28 [INFO]: Received Property IDs: [
+  "PB-R-37538",
+  "PB-R-37541",
+  "PB-S-12714-1",
+  "PB-S-36902-1",
+  "PB-R-37536",
+  "PB-R-37379-1",
+  "PB-R-36721-1",
+  "PB-R-37517",
+  "PB-R-37532",
+  "PB-R-37421",
+  "PB-S-37533",
+  "PB-R-9692-4",
+  "PB-R-10034",
+  "PB-S-37468",
+  "PB-S-36430",
+  "PB-S-37496-1",
+  "PB-R-37527",
+  "PB-R-36903-1",
+  "PB-R-37020-1",
+  "PB-S-37523",
+  "PB-R-37521",
+  "PB-S-37109-1",
+  "PB-S-36405-1",
+  "PB-S-13932-6",
+  "PB-S-37516",
+  "PB-S-12903-6",
+  "PB-S-13460-6",
+  "PB-R-37501",
+  "PB-S-36731-1",
+  "PB-S-31428",
+  "PB-S-36258-1",
+  "PB-S-37508",
+  "PB-R-16179-3",
+  "PB-S-11848-2",
+  "PB-S-36191-1",
+  "PB-S-36595-1",
+  "PB-S-11897-4",
+  "PB-S-13525-6",
+  "PB-S-36451-1",
+  "PB-S-36446-1",
+  "PB-S-14348-6",
+  "PB-S-36282-1",
+  "PB-S-36277-1",
+  "PB-S-13929-2",
+  "PB-S-36084-1",
+  "PB-S-21917-4",
+  "PB-S-9053-5",
+  "PB-S-36434-2",
+  "PB-S-15153-2",
+  "PB-S-11772-1",
+  "PB-S-36165-3",
+  "PB-S-36360-1",
+  "PB-S-36136-3",
+  "PB-S-36138-3",
+  "PB-S-36363-1",
+  "PB-S-36399-2",
+  "PB-S-12247-15",
+  "PB-S-21203-1",
+  "PB-S-37507",
+  "PB-S-16051-3",
+  "PB-S-12548-6",
+  "PB-R-36892-1",
+  "PB-R-37499",
+  "PB-S-37505",
+  "PB-S-36180",
+  "PB-S-37503",
+  "PB-S-18570-3",
+  "PB-S-36381",
+  "PB-S-37158",
+  "PB-R-37500",
+  "PB-S-12773-6",
+  "PB-S-36350-1",
+  "PB-S-37410",
+  "PB-S-12904-1",
+  "PB-S-13559-6",
+  "PB-S-37494",
+  "PB-S-13581-6",
+  "PB-R-35960-1",
+  "PB-S-37297",
+  "PB-S-37477",
+  "PB-R-37492",
+  "PB-R-37478",
+  "PB-R-37480",
+  "PB-S-12667-8",
+  "PB-R-37486",
+  "PB-S-30926",
+  "PB-R-37221",
+  "PB-S-37481",
+  "PB-R-37418",
+  "PB-R-37484",
+  "PB-S-15219-3",
+  "PB-S-12073-8",
+  "PB-S-37431-1",
+  "PB-R-36520-3",
+  "PB-S-37469",
+  "PB-S-36949",
+  "PB-S-5240",
+  "PB-S-22085",
+  "PB-S-37531",
+  "PB-S-37535",
+  "PB-S-37526",
+  "PB-S-37529",
+  "PB-S-37522",
+  "PB-S-37518",
+  "PB-S-37519",
+  "PB-S-37514",
+  "PB-S-37515",
+  "PB-S-37416",
+  "PB-S-9856",
+  "PB-R-37502",
+  "PB-S-11315",
+  "PB-S-4097"
+]
+2026-03-31 18:30:28 [INFO]: Total IDs received: 112
+2026-03-31 18:30:28 [INFO]: === DATABASE PROCESSING COMPLETED ===
+2026-03-31 18:30:28 [INFO]: Successfully processed: 1635 properties
+2026-03-31 18:30:28 [INFO]: Failed: 0 properties
+2026-03-31 18:30:28 [INFO]: Skipped: 0 properties (invalid data)
+2026-03-31 18:30:28 [INFO]: Live properties: 665
+2026-03-31 18:30:28 [INFO]: Non-Live properties: 970
+2026-03-31 18:30:28 [INFO]: Operations: Created 112, Updated 552
+2026-03-31 18:30:28 [INFO]: Agent Operations: Added 108, Updated 506, Not Found 51, Skipped 0
+2026-03-31 18:30:28 [INFO]: By Type: {
+  "Sale": {
+    "created": 39,
+    "updated": 202
+  },
+  "Rent": {
+    "created": 28,
+    "updated": 149
+  },
+  "OffPlan": {
+    "created": 29,
+    "updated": 154
+  },
+  "Commercial": {
+    "created": 0,
+    "updated": 1
+  },
+  "NonActive": {
+    "created": 16,
+    "updated": 46
+  }
+}
+2026-03-31 18:30:28 [INFO]: 
+⚠️  Missing Agents: 3 unique agents not found
+2026-03-31 18:30:28 [INFO]: 
+🔍 Top Missing Agents:
+2026-03-31 18:30:28 [INFO]:    1. caolan@arabianestates.ae
+2026-03-31 18:30:28 [INFO]:       Name: Caolan McConnell
+2026-03-31 18:30:28 [INFO]:       Phone: 0585587541
+2026-03-31 18:30:28 [INFO]:       Properties: 21
+2026-03-31 18:30:28 [INFO]:    2. muneeb@arabianestates.ae
+2026-03-31 18:30:28 [INFO]:       Name: Muneeb Quraishi
+2026-03-31 18:30:28 [INFO]:       Phone: +971564870234
+2026-03-31 18:30:28 [INFO]:       Properties: 17
+2026-03-31 18:30:28 [INFO]:    3. grace@arabianestates.ae
+2026-03-31 18:30:28 [INFO]:       Name: Grace Karuga
+2026-03-31 18:30:28 [INFO]:       Phone: +971525688007
+2026-03-31 18:30:28 [INFO]:       Properties: 13
+2026-03-31 18:30:29 [INFO]: Dubai Live properties found: 95
+2026-03-31 18:30:47 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-R-16179-3 -> The Valley - Orania
+2026-03-31 18:30:47 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-R-35960-1 -> Casa Flores - Green Community Motor City
+2026-03-31 18:30:48 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-R-36903-1 -> Shoreline - Hamri
+2026-03-31 18:30:52 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-S-11848-2 -> European Cluster - Entertainment Foyer
+2026-03-31 18:30:54 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-S-12904-1 -> Oasis Cluster - Entertainment Foyer
+2026-03-31 18:30:55 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-S-13559-6 -> Mediterranean Cluster - Entertainment Foyer
+2026-03-31 18:30:55 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-S-13929-2 -> District One Residences 11
+2026-03-31 18:30:56 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-S-21203-1 -> Shoreline - Hamri
+2026-03-31 18:31:05 [INFO]: ✅ Matched in STEP 1 (combined_region_match): PB-S-37507 -> The Cape at Al Barari
+2026-03-31 18:31:06 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-10034 -> The Springs 9
+2026-03-31 18:31:06 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-36520-3 -> Crest Grande
+2026-03-31 18:31:06 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-36721-1 -> The Springs 11
+2026-03-31 18:31:07 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-36892-1 -> Oceana - Pacific
+2026-03-31 18:31:07 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37020-1 -> Bliss by Zimaya
+2026-03-31 18:31:08 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37221 -> Marina Residences 4
+2026-03-31 18:31:08 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37379-1 -> Silver Springs 3
+2026-03-31 18:31:08 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37418 -> Park Horizon - Tower 2
+2026-03-31 18:31:09 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37421 -> Elan
+2026-03-31 18:31:09 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37478 -> Island Park 1
+2026-03-31 18:31:09 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37480 -> Vida Residences at Creek Beach
+2026-03-31 18:31:10 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37484 -> Beach Vista Tower 2
+2026-03-31 18:31:10 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37486 -> West Village
+2026-03-31 18:31:10 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37492 -> Century
+2026-03-31 18:31:11 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37499 -> Aura Gardens
+2026-03-31 18:31:11 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37500 -> Princess Tower
+2026-03-31 18:31:12 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37501 -> The Springs 7
+2026-03-31 18:31:12 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37517 -> The Springs 15
+2026-03-31 18:31:13 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37532 -> Santorini
+2026-03-31 18:31:14 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-37538 -> Loreto 3
+2026-03-31 18:31:14 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-R-9692-4 -> The Meadows 9
+2026-03-31 18:31:15 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-11897-4 -> Lagoon Views 4
+2026-03-31 18:31:16 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-12247-15 -> Terra Golf Collection
+2026-03-31 18:31:17 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-12667-8 -> Alaya
+2026-03-31 18:31:17 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-12714-1 -> Opalz Tower 1
+2026-03-31 18:31:17 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-12773-6 -> Skyhills Residences - 2
+2026-03-31 18:31:18 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-12903-6 -> Binghatti Skyrise
+2026-03-31 18:31:19 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-13525-6 -> Lamaa
+2026-03-31 18:31:19 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-13581-6 -> Alaya
+2026-03-31 18:31:19 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-13932-6 -> The Pulse Beachfront 3
+2026-03-31 18:31:20 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-14348-6 -> Garden Homes Frond A (Al Fardh)
+2026-03-31 18:31:21 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-15153-2 -> Park Field Tower 2
+2026-03-31 18:31:22 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-18570-3 -> Jumeirah Living Marina Gate (The Residences at Marina Gate 3)
+2026-03-31 18:31:22 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-21917-4 -> Orchid
+2026-03-31 18:31:23 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-30926 -> Oceana - Pacific
+2026-03-31 18:31:23 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-31428 -> Golden Mile 02
+2026-03-31 18:31:24 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36084-1 -> Peninsula Four Tower A
+2026-03-31 18:31:24 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36136-3 -> Terra Golf Collection
+2026-03-31 18:31:25 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36138-3 -> Terra Golf Collection
+2026-03-31 18:31:25 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36165-3 -> Terra Golf Collection
+2026-03-31 18:31:26 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36180 -> Crest Grande
+2026-03-31 18:31:26 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36191-1 -> The Meadows 9
+2026-03-31 18:31:27 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36258-1 -> Violet 2
+2026-03-31 18:31:27 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36277-1 -> Golden Mile 05
+2026-03-31 18:31:28 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36282-1 -> Binghatti Hillviews
+2026-03-31 18:31:28 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36350-1 -> The Corner
+2026-03-31 18:31:29 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36360-1 -> St. Regis Residences Tower 2
+2026-03-31 18:31:30 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36381 -> The Springs 11
+2026-03-31 18:31:30 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36399-2 -> Terra Golf Collection
+2026-03-31 18:31:30 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36405-1 -> South Bay 2
+2026-03-31 18:31:31 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36430 -> The Springs 5
+2026-03-31 18:31:32 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36446-1 -> South Bay 2
+2026-03-31 18:31:33 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36451-1 -> The Pulse Beachfront
+2026-03-31 18:31:33 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36595-1 -> Laurel
+2026-03-31 18:31:33 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36731-1 -> Orchid
+2026-03-31 18:31:34 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-36902-1 -> Creek Rise Tower 2
+2026-03-31 18:31:35 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37109-1 -> The Springs 9
+2026-03-31 18:31:36 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37297 -> Ibiza
+2026-03-31 18:31:36 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37431-1 -> The Cove Building 1
+2026-03-31 18:31:37 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37468 -> The Springs 3
+2026-03-31 18:31:37 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37469 -> District One Villas - Cluster A
+2026-03-31 18:31:37 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37477 -> Act Two
+2026-03-31 18:31:38 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37494 -> Binghatti Hills Tower 1
+2026-03-31 18:31:39 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37496-1 -> Marquis Insignia
+2026-03-31 18:31:39 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37505 -> Crest Grande
+2026-03-31 18:31:40 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37523 -> Marquis Insignia
+2026-03-31 18:31:41 [INFO]: ✅ Matched in STEP 2 (first_region_match): PB-S-37533 -> Crest Grande
+2026-03-31 18:31:41 [INFO]: ✅ Matched in STEP 3 (region_1_or_2_match): PB-R-37527 -> Madinat Jumeriah Living - Al Jazi 2
+2026-03-31 18:31:42 [INFO]: ✅ Matched in STEP 3 (region_1_or_2_match): PB-S-16051-3 -> The Residences at Marina Gate 2
+2026-03-31 18:31:43 [INFO]: ✅ Matched in STEP 3 (region_1_or_2_match): PB-S-37410 -> Palace Residences - North
+2026-03-31 18:31:43 [INFO]: ✅ Matched in STEP 3 (region_1_or_2_match): PB-S-37481 -> Elara 3
+2026-03-31 18:31:44 [INFO]: ✅ Matched in STEP 3 (region_1_or_2_match): PB-S-9053-5 -> Park Point B
+2026-03-31 18:31:45 [INFO]: ✅ Matched in STEP 4 (second_region_match): PB-R-37541 -> Victory Heights Villas
+2026-03-31 18:31:45 [INFO]: ✅ Matched in STEP 4 (second_region_match): PB-S-11772-1 -> Golf Place
+2026-03-31 18:31:46 [INFO]: ✅ Matched in STEP 4 (second_region_match): PB-S-12548-6 -> Mulberry II at Park Heights
+2026-03-31 18:31:48 [INFO]: ✅ Matched in STEP 4 (second_region_match): PB-S-36434-2 -> Dubai Hills Estate
+2026-03-31 18:31:49 [INFO]: ✅ Matched in STEP 4 (second_region_match): PB-S-37158 -> The Cove ll
+2026-03-31 18:31:50 [INFO]: ✅ Matched in STEP 5 (partial_word_match): PB-S-36949 -> Mama Shelter - Luxury Family Residence II
+2026-03-31 18:31:51 [INFO]: ✅ Matched in STEP 6 (starting_2_words_match): PB-R-37536 -> Executive Residences at Park Ridge
+2026-03-31 18:31:52 [INFO]: ✅ Matched in STEP 7 (coordinate_match): PB-S-12073-8 -> Amwaj 1 (Amwaj Suites)
+2026-03-31 18:31:52 [INFO]: ✅ Matched in STEP 7 (coordinate_match): PB-S-13460-6 -> Sandoval Gardens Apartments
+2026-03-31 18:31:52 [INFO]: ✅ Matched in STEP 7 (coordinate_match): PB-S-15219-3 -> Bluewaters Residences
+2026-03-31 18:31:52 [INFO]: ✅ Matched in STEP 7 (coordinate_match): PB-S-36363-1 -> Jumeirah Park Villas
+2026-03-31 18:31:52 [INFO]: ✅ Matched in STEP 7 (coordinate_match): PB-S-37503 -> Amwaj 1 (Amwaj Suites)
+2026-03-31 18:54:01 [INFO]: PROPERTY PRICE undefined
+2026-03-31 18:54:01 [INFO]: Community 
+2026-03-31 18:54:01 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:01 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:01 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 18:54:01 [INFO]: Community search terms: []
+2026-03-31 18:54:01 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:01 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:01 [INFO]: Property ID: PB-S-36277-1
+2026-03-31 18:54:01 [INFO]: Property Type: Sale
+2026-03-31 18:54:01 [INFO]: Searching with query: {
+  "id": "PB-S-36277-1",
+  "listing_type": "Sale"
+}
+2026-03-31 18:54:01 [INFO]: Property found: Yes
+2026-03-31 18:54:01 [INFO]: Property ID: PB-S-36277-1
+2026-03-31 18:54:01 [INFO]: Property Type: Sale
+2026-03-31 18:54:01 [INFO]: Searching with query: {
+  "id": "PB-S-36277-1",
+  "listing_type": "Sale"
+}
+2026-03-31 18:54:01 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 18:54:01 [INFO]: Community Palm Jumeirah
+2026-03-31 18:54:01 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:01 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:02 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 18:54:02 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 18:54:02 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:02 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:03 [INFO]: PROPERTY PRICE undefined
+2026-03-31 18:54:03 [INFO]: Community 
+2026-03-31 18:54:03 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:03 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:03 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 18:54:03 [INFO]: Community search terms: []
+2026-03-31 18:54:03 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:03 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:03 [INFO]: PROPERTY PRICE 
+2026-03-31 18:54:03 [INFO]: Community 
+2026-03-31 18:54:03 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:03 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:03 [INFO]: Community search terms: []
+2026-03-31 18:54:03 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:03 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:03 [INFO]: Property found: Yes
+2026-03-31 18:54:03 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 18:54:03 [INFO]: Community Palm Jumeirah
+2026-03-31 18:54:03 [INFO]: Listing Type Param null
+2026-03-31 18:54:03 [INFO]: LT [
+  "null"
+]
+2026-03-31 18:54:03 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 18:54:03 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 18:54:03 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 18:54:03 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:06 [INFO]: Found 3 null properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 18:54:06 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 18:54:06 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 18:54:06 [INFO]: Community Palm Jumeirah
+2026-03-31 18:54:06 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:06 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:06 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 18:54:06 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 18:54:06 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:06 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:07 [INFO]: Found 12 sale properties for page 1
+2026-03-31 18:54:07 [INFO]: PROPERTY PRICE 
+2026-03-31 18:54:07 [INFO]: Community 
+2026-03-31 18:54:07 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:07 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:07 [INFO]: Community search terms: []
+2026-03-31 18:54:07 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:07 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:08 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 18:54:09 [INFO]: Found 12 sale properties for page 1
+2026-03-31 18:54:09 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 18:54:09 [INFO]: Community Palm Jumeirah
+2026-03-31 18:54:09 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:09 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:09 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 18:54:09 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 18:54:09 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:09 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:11 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 18:54:11 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 18:54:11 [INFO]: Community Palm Jumeirah
+2026-03-31 18:54:11 [INFO]: Listing Type Param Sale
+2026-03-31 18:54:11 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:54:11 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 18:54:11 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 18:54:11 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:54:11 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 18:54:13 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 18:57:37 [INFO]: PROPERTY PRICE undefined
+2026-03-31 18:57:37 [INFO]: Community 
+2026-03-31 18:57:37 [INFO]: Listing Type Param OffPlan
+2026-03-31 18:57:37 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 18:57:37 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 18:57:37 [INFO]: Community search terms: []
+2026-03-31 18:57:37 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 18:57:37 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:37 [INFO]: Property ID: PB-S-12903-6
+2026-03-31 18:57:37 [INFO]: Property Type: OffPlan
+2026-03-31 18:57:37 [INFO]: Searching with query: {
+  "id": "PB-S-12903-6",
+  "listing_type": "OffPlan"
+}
+2026-03-31 18:57:38 [INFO]: PROPERTY PRICE undefined
+2026-03-31 18:57:38 [INFO]: Community 
+2026-03-31 18:57:38 [INFO]: Listing Type Param OffPlan
+2026-03-31 18:57:38 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 18:57:38 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 18:57:38 [INFO]: Community search terms: []
+2026-03-31 18:57:38 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 18:57:38 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:38 [INFO]: PROPERTY PRICE 
+2026-03-31 18:57:38 [INFO]: Community 
+2026-03-31 18:57:38 [INFO]: Listing Type Param OffPlan
+2026-03-31 18:57:38 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 18:57:38 [INFO]: Community search terms: []
+2026-03-31 18:57:38 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 18:57:38 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:38 [INFO]: Property found: Yes
+2026-03-31 18:57:38 [INFO]: Property ID: PB-S-12903-6
+2026-03-31 18:57:38 [INFO]: Property Type: OffPlan
+2026-03-31 18:57:38 [INFO]: Searching with query: {
+  "id": "PB-S-12903-6",
+  "listing_type": "OffPlan"
+}
+2026-03-31 18:57:38 [INFO]: PROPERTY PRICE 2649999
+2026-03-31 18:57:38 [INFO]: Community Business Bay
+2026-03-31 18:57:38 [INFO]: Listing Type Param OffPlan
+2026-03-31 18:57:38 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 18:57:38 [INFO]: Price Range: {
+  "basePrice": 2649999,
+  "minPrice": 1987499.25,
+  "maxPrice": 3312498.75
+}
+2026-03-31 18:57:38 [INFO]: Community search terms: [
+  "Business",
+  "Bay"
+]
+2026-03-31 18:57:38 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 18:57:38 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "1987499.25",
+        "$lte": "3312498.75"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-12903-6"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:39 [INFO]: Property found: Yes
+2026-03-31 18:57:40 [INFO]: Found 5 offplan properties for page 1 in "Business Bay" community within price range
+2026-03-31 18:57:40 [INFO]: PROPERTY PRICE 2649999
+2026-03-31 18:57:40 [INFO]: Community Business Bay
+2026-03-31 18:57:40 [INFO]: Listing Type Param OffPlan
+2026-03-31 18:57:40 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 18:57:40 [INFO]: Price Range: {
+  "basePrice": 2649999,
+  "minPrice": 1987499.25,
+  "maxPrice": 3312498.75
+}
+2026-03-31 18:57:40 [INFO]: Community search terms: [
+  "Business",
+  "Bay"
+]
+2026-03-31 18:57:40 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 18:57:40 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "1987499.25",
+        "$lte": "3312498.75"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-12903-6"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:40 [INFO]: Found 12 offplan properties for page 1
+2026-03-31 18:57:40 [INFO]: PROPERTY PRICE 
+2026-03-31 18:57:40 [INFO]: Community 
+2026-03-31 18:57:40 [INFO]: Listing Type Param OffPlan
+2026-03-31 18:57:40 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 18:57:40 [INFO]: Community search terms: []
+2026-03-31 18:57:40 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 18:57:40 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:41 [INFO]: Found 5 offplan properties for page 1 in "Business Bay" community within price range
+2026-03-31 18:57:42 [INFO]: Found 12 offplan properties for page 1
+2026-03-31 18:57:45 [INFO]: PROPERTY PRICE 2649999
+2026-03-31 18:57:45 [INFO]: Community Business Bay
+2026-03-31 18:57:45 [INFO]: Listing Type Param null
+2026-03-31 18:57:45 [INFO]: LT [
+  "null"
+]
+2026-03-31 18:57:45 [INFO]: Price Range: {
+  "basePrice": 2649999,
+  "minPrice": 1987499.25,
+  "maxPrice": 3312498.75
+}
+2026-03-31 18:57:45 [INFO]: Community search terms: [
+  "Business",
+  "Bay"
+]
+2026-03-31 18:57:45 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 18:57:45 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "1987499.25",
+        "$lte": "3312498.75"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-12903-6"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:45 [INFO]: PROPERTY PRICE 
+2026-03-31 18:57:45 [INFO]: Community Business Bay
+2026-03-31 18:57:45 [INFO]: Listing Type Param null
+2026-03-31 18:57:45 [INFO]: LT [
+  "null"
+]
+2026-03-31 18:57:45 [INFO]: Community search terms: [
+  "Business",
+  "Bay"
+]
+2026-03-31 18:57:45 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 18:57:45 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-12903-6"
+      }
+    }
+  ]
+}
+2026-03-31 18:57:45 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:45 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:46 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:46 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:46 [INFO]: Found 10 null properties for page 1 in "Business Bay" community
+2026-03-31 18:57:51 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:51 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:51 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:51 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:54 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:54 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:54 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:57:54 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:58:01 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:58:01 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:58:02 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:58:02 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 18:58:04 [INFO]: PROPERTY PRICE 2649999
+2026-03-31 18:58:04 [INFO]: Community Business Bay
+2026-03-31 18:58:04 [INFO]: Listing Type Param Sale
+2026-03-31 18:58:04 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:58:04 [INFO]: Price Range: {
+  "basePrice": 2649999,
+  "minPrice": 1987499.25,
+  "maxPrice": 3312498.75
+}
+2026-03-31 18:58:04 [INFO]: Community search terms: [
+  "Business",
+  "Bay"
+]
+2026-03-31 18:58:04 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:58:04 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "1987499.25",
+        "$lte": "3312498.75"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-12903-6"
+      }
+    }
+  ]
+}
+2026-03-31 18:58:05 [INFO]: Found 8 sale properties for page 1 in "Business Bay" community within price range
+2026-03-31 18:58:05 [INFO]: PROPERTY PRICE 2649999
+2026-03-31 18:58:05 [INFO]: Community Business Bay
+2026-03-31 18:58:05 [INFO]: Listing Type Param Sale
+2026-03-31 18:58:05 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 18:58:05 [INFO]: Price Range: {
+  "basePrice": 2649999,
+  "minPrice": 1987499.25,
+  "maxPrice": 3312498.75
+}
+2026-03-31 18:58:05 [INFO]: Community search terms: [
+  "Business",
+  "Bay"
+]
+2026-03-31 18:58:05 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 18:58:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "1987499.25",
+        "$lte": "3312498.75"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-12903-6"
+      }
+    }
+  ]
+}
+2026-03-31 18:58:06 [INFO]: Found 8 sale properties for page 1 in "Business Bay" community within price range
+2026-03-31 19:05:05 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:05:05 [INFO]: Community 
+2026-03-31 19:05:05 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:05 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:05:05 [INFO]: Community search terms: []
+2026-03-31 19:05:05 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:05 [INFO]: Property ID: PB-S-36277-1
+2026-03-31 19:05:05 [INFO]: Property Type: Sale
+2026-03-31 19:05:05 [INFO]: Searching with query: {
+  "id": "PB-S-36277-1",
+  "listing_type": "Sale"
+}
+2026-03-31 19:05:05 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:05:05 [INFO]: Community 
+2026-03-31 19:05:05 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:05 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:05:05 [INFO]: Community search terms: []
+2026-03-31 19:05:05 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:05 [INFO]: PROPERTY PRICE 
+2026-03-31 19:05:05 [INFO]: Community 
+2026-03-31 19:05:05 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:05 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Community search terms: []
+2026-03-31 19:05:05 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:05 [INFO]: Property found: Yes
+2026-03-31 19:05:05 [INFO]: Property ID: PB-S-36277-1
+2026-03-31 19:05:05 [INFO]: Property Type: Sale
+2026-03-31 19:05:05 [INFO]: Searching with query: {
+  "id": "PB-S-36277-1",
+  "listing_type": "Sale"
+}
+2026-03-31 19:05:05 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:05 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:05 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:05 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:05 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:05 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:05 [INFO]: Property found: Yes
+2026-03-31 19:05:07 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:07 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:07 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:07 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:07 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:07 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:07 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:07 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:07 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:07 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:05:07 [INFO]: PROPERTY PRICE 
+2026-03-31 19:05:07 [INFO]: Community 
+2026-03-31 19:05:07 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:07 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:07 [INFO]: Community search terms: []
+2026-03-31 19:05:07 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:07 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:09 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:09 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:05:10 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:10 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:10 [INFO]: Listing Type Param null
+2026-03-31 19:05:10 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:05:10 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:10 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:10 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:05:10 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:11 [INFO]: Found 3 null properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:16 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:16 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:16 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:16 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:16 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:16 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:16 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:16 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:17 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:17 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:17 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:17 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:17 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:17 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:17 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:17 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:17 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:19 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:23 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:23 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:23 [INFO]: Listing Type Param null
+2026-03-31 19:05:23 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:05:23 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:23 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:23 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:05:23 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:23 [INFO]: Found 3 null properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:37 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:05:37 [INFO]: Community 
+2026-03-31 19:05:37 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:37 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:37 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:05:37 [INFO]: Community search terms: []
+2026-03-31 19:05:37 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:37 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:37 [INFO]: Property ID: PB-S-36277-1
+2026-03-31 19:05:37 [INFO]: Property Type: Sale
+2026-03-31 19:05:37 [INFO]: Searching with query: {
+  "id": "PB-S-36277-1",
+  "listing_type": "Sale"
+}
+2026-03-31 19:05:37 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:05:37 [INFO]: Community 
+2026-03-31 19:05:37 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:37 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:37 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:05:37 [INFO]: Community search terms: []
+2026-03-31 19:05:37 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:37 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:37 [INFO]: PROPERTY PRICE 
+2026-03-31 19:05:37 [INFO]: Community 
+2026-03-31 19:05:37 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:37 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:37 [INFO]: Community search terms: []
+2026-03-31 19:05:37 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:37 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:38 [INFO]: Property found: Yes
+2026-03-31 19:05:38 [INFO]: Property ID: PB-S-36277-1
+2026-03-31 19:05:38 [INFO]: Property Type: Sale
+2026-03-31 19:05:38 [INFO]: Searching with query: {
+  "id": "PB-S-36277-1",
+  "listing_type": "Sale"
+}
+2026-03-31 19:05:38 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:38 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:38 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:38 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:38 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:38 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:38 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:38 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:38 [INFO]: Property found: Yes
+2026-03-31 19:05:39 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:05:39 [INFO]: PROPERTY PRICE 
+2026-03-31 19:05:39 [INFO]: Community 
+2026-03-31 19:05:39 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:39 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:39 [INFO]: Community search terms: []
+2026-03-31 19:05:39 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:39 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:40 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:40 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:40 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:40 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:40 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:40 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:40 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:40 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:40 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:41 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:05:41 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:42 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:42 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:42 [INFO]: Listing Type Param null
+2026-03-31 19:05:42 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:05:42 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:42 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:42 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:05:42 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:43 [INFO]: Found 3 null properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:48 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:48 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:48 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:48 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:48 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:48 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:48 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:48 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:49 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:49 [INFO]: PROPERTY PRICE 4500000
+2026-03-31 19:05:49 [INFO]: Community Palm Jumeirah
+2026-03-31 19:05:49 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:49 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:49 [INFO]: Price Range: {
+  "basePrice": 4500000,
+  "minPrice": 3375000,
+  "maxPrice": 5625000
+}
+2026-03-31 19:05:49 [INFO]: Community search terms: [
+  "Palm",
+  "Jumeirah"
+]
+2026-03-31 19:05:49 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:49 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3375000",
+        "$lte": "5625000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36277-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:51 [INFO]: Found 12 sale properties for page 1 in "Palm Jumeirah" community within price range
+2026-03-31 19:05:55 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:05:55 [INFO]: Community 
+2026-03-31 19:05:55 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:55 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:55 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:05:55 [INFO]: Community search terms: []
+2026-03-31 19:05:55 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:55 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:55 [INFO]: Property ID: PB-S-37410
+2026-03-31 19:05:55 [INFO]: Property Type: Sale
+2026-03-31 19:05:55 [INFO]: Searching with query: {
+  "id": "PB-S-37410",
+  "listing_type": "Sale"
+}
+2026-03-31 19:05:56 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:05:56 [INFO]: Community 
+2026-03-31 19:05:56 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:56 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:56 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:05:56 [INFO]: Community search terms: []
+2026-03-31 19:05:56 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:56 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:56 [INFO]: PROPERTY PRICE 
+2026-03-31 19:05:56 [INFO]: Community 
+2026-03-31 19:05:56 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:56 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:56 [INFO]: Community search terms: []
+2026-03-31 19:05:56 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:56 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:56 [INFO]: Property found: Yes
+2026-03-31 19:05:56 [INFO]: Property ID: PB-S-37410
+2026-03-31 19:05:56 [INFO]: Property Type: Sale
+2026-03-31 19:05:56 [INFO]: Searching with query: {
+  "id": "PB-S-37410",
+  "listing_type": "Sale"
+}
+2026-03-31 19:05:56 [INFO]: PROPERTY PRICE 4150000
+2026-03-31 19:05:56 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:05:56 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:56 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:56 [INFO]: Price Range: {
+  "basePrice": 4150000,
+  "minPrice": 3112500,
+  "maxPrice": 5187500
+}
+2026-03-31 19:05:56 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:05:56 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:56 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3112500",
+        "$lte": "5187500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37410"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:56 [INFO]: Property found: Yes
+2026-03-31 19:05:57 [INFO]: Found 12 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:05:57 [INFO]: PROPERTY PRICE 4150000
+2026-03-31 19:05:57 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:05:57 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:57 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:57 [INFO]: Price Range: {
+  "basePrice": 4150000,
+  "minPrice": 3112500,
+  "maxPrice": 5187500
+}
+2026-03-31 19:05:57 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:05:57 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:57 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3112500",
+        "$lte": "5187500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37410"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:58 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:05:58 [INFO]: PROPERTY PRICE 
+2026-03-31 19:05:58 [INFO]: Community 
+2026-03-31 19:05:58 [INFO]: Listing Type Param Sale
+2026-03-31 19:05:58 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:05:58 [INFO]: Community search terms: []
+2026-03-31 19:05:58 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:05:58 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:05:59 [INFO]: Found 12 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:00 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:06:04 [INFO]: PROPERTY PRICE 4150000
+2026-03-31 19:06:04 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:04 [INFO]: Listing Type Param null
+2026-03-31 19:06:04 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:06:04 [INFO]: Price Range: {
+  "basePrice": 4150000,
+  "minPrice": 3112500,
+  "maxPrice": 5187500
+}
+2026-03-31 19:06:04 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:04 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:06:04 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3112500",
+        "$lte": "5187500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37410"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:05 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:05 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:05 [INFO]: Listing Type Param null
+2026-03-31 19:06:05 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:06:05 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:05 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:06:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37410"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:06 [INFO]: Found 12 null properties for page 1 in "Dubai Creek Harbour" community
+2026-03-31 19:06:14 [INFO]: PROPERTY PRICE 4150000
+2026-03-31 19:06:14 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:14 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:14 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:14 [INFO]: Price Range: {
+  "basePrice": 4150000,
+  "minPrice": 3112500,
+  "maxPrice": 5187500
+}
+2026-03-31 19:06:14 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:14 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:14 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3112500",
+        "$lte": "5187500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37410"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:15 [INFO]: Found 12 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:15 [INFO]: PROPERTY PRICE 4150000
+2026-03-31 19:06:15 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:15 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:15 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:15 [INFO]: Price Range: {
+  "basePrice": 4150000,
+  "minPrice": 3112500,
+  "maxPrice": 5187500
+}
+2026-03-31 19:06:15 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:15 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:15 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3112500",
+        "$lte": "5187500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37410"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:17 [INFO]: Found 12 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:22 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:06:22 [INFO]: Community 
+2026-03-31 19:06:22 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:22 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:22 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:06:22 [INFO]: Community search terms: []
+2026-03-31 19:06:22 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:22 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:22 [INFO]: Property ID: PB-S-37126-1
+2026-03-31 19:06:22 [INFO]: Property Type: Sale
+2026-03-31 19:06:22 [INFO]: Searching with query: {
+  "id": "PB-S-37126-1",
+  "listing_type": "Sale"
+}
+2026-03-31 19:06:22 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:22 [INFO]: Community 
+2026-03-31 19:06:22 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:22 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:22 [INFO]: Community search terms: []
+2026-03-31 19:06:22 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:22 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:22 [INFO]: Property found: Yes
+2026-03-31 19:06:22 [INFO]: PROPERTY PRICE 3800000
+2026-03-31 19:06:22 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:22 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:22 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:22 [INFO]: Price Range: {
+  "basePrice": 3800000,
+  "minPrice": 2850000,
+  "maxPrice": 4750000
+}
+2026-03-31 19:06:22 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:22 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:22 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2850000",
+        "$lte": "4750000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37126-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:24 [INFO]: Found 10 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:24 [INFO]: PROPERTY PRICE 3800000
+2026-03-31 19:06:24 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:24 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:24 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:24 [INFO]: Price Range: {
+  "basePrice": 3800000,
+  "minPrice": 2850000,
+  "maxPrice": 4750000
+}
+2026-03-31 19:06:24 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:24 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:24 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2850000",
+        "$lte": "4750000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37126-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:24 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:06:25 [INFO]: Found 10 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:30 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:06:30 [INFO]: Community 
+2026-03-31 19:06:30 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:30 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:30 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:06:30 [INFO]: Community search terms: []
+2026-03-31 19:06:30 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:30 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:30 [INFO]: Property ID: PB-S-37122-1
+2026-03-31 19:06:30 [INFO]: Property Type: Sale
+2026-03-31 19:06:30 [INFO]: Searching with query: {
+  "id": "PB-S-37122-1",
+  "listing_type": "Sale"
+}
+2026-03-31 19:06:30 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:30 [INFO]: Community 
+2026-03-31 19:06:30 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:30 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:30 [INFO]: Community search terms: []
+2026-03-31 19:06:30 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:30 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:30 [INFO]: Property found: Yes
+2026-03-31 19:06:30 [INFO]: PROPERTY PRICE 3400000
+2026-03-31 19:06:30 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:30 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:30 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:30 [INFO]: Price Range: {
+  "basePrice": 3400000,
+  "minPrice": 2550000,
+  "maxPrice": 4250000
+}
+2026-03-31 19:06:30 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:30 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:30 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2550000",
+        "$lte": "4250000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37122-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:32 [INFO]: Found 12 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:32 [INFO]: PROPERTY PRICE 3400000
+2026-03-31 19:06:32 [INFO]: Community Dubai Creek Harbour (The Lagoons)
+2026-03-31 19:06:32 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:32 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:32 [INFO]: Price Range: {
+  "basePrice": 3400000,
+  "minPrice": 2550000,
+  "maxPrice": 4250000
+}
+2026-03-31 19:06:32 [INFO]: Community search terms: [
+  "Dubai",
+  "Creek",
+  "Harbour"
+]
+2026-03-31 19:06:32 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:32 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2550000",
+        "$lte": "4250000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-37122-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:32 [INFO]: Found 12 sale properties for page 1
+2026-03-31 19:06:34 [INFO]: Found 12 sale properties for page 1 in "Dubai Creek Harbour" community within price range
+2026-03-31 19:06:38 [INFO]: Property ID: PB-S-36451-1
+2026-03-31 19:06:38 [INFO]: Property Type: OffPlan
+2026-03-31 19:06:38 [INFO]: Searching with query: {
+  "id": "PB-S-36451-1",
+  "listing_type": "OffPlan"
+}
+2026-03-31 19:06:39 [INFO]: Property found: Yes
+2026-03-31 19:06:40 [INFO]: PROPERTY PRICE 4800000
+2026-03-31 19:06:40 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:40 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:40 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:40 [INFO]: Price Range: {
+  "basePrice": 4800000,
+  "minPrice": 3600000,
+  "maxPrice": 6000000
+}
+2026-03-31 19:06:40 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:40 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:40 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3600000",
+        "$lte": "6000000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:40 [INFO]: PROPERTY PRICE 4800000
+2026-03-31 19:06:40 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:40 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:40 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:40 [INFO]: Price Range: {
+  "basePrice": 4800000,
+  "minPrice": 3600000,
+  "maxPrice": 6000000
+}
+2026-03-31 19:06:40 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:40 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:40 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3600000",
+        "$lte": "6000000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:40 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:40 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:40 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:40 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:40 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:40 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:40 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:41 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:41 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:41 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:41 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:41 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:41 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:41 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:44 [INFO]: PROPERTY PRICE 4800000
+2026-03-31 19:06:44 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:44 [INFO]: Listing Type Param null
+2026-03-31 19:06:44 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:06:44 [INFO]: Price Range: {
+  "basePrice": 4800000,
+  "minPrice": 3600000,
+  "maxPrice": 6000000
+}
+2026-03-31 19:06:44 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:44 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:06:44 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3600000",
+        "$lte": "6000000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:44 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:44 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:44 [INFO]: Listing Type Param null
+2026-03-31 19:06:44 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:06:44 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:44 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:06:44 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:45 [INFO]: Found 3 null properties for page 1 in "Dubai South" community
+2026-03-31 19:06:51 [INFO]: PROPERTY PRICE 4800000
+2026-03-31 19:06:51 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:51 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:51 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:51 [INFO]: Price Range: {
+  "basePrice": 4800000,
+  "minPrice": 3600000,
+  "maxPrice": 6000000
+}
+2026-03-31 19:06:51 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:51 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:51 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3600000",
+        "$lte": "6000000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:53 [INFO]: Found 8 sale properties for page 1 in "Dubai South" community within price range
+2026-03-31 19:06:53 [INFO]: PROPERTY PRICE 4800000
+2026-03-31 19:06:53 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:53 [INFO]: Listing Type Param Sale
+2026-03-31 19:06:53 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:06:53 [INFO]: Price Range: {
+  "basePrice": 4800000,
+  "minPrice": 3600000,
+  "maxPrice": 6000000
+}
+2026-03-31 19:06:53 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:53 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:06:53 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3600000",
+        "$lte": "6000000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36451-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:54 [INFO]: Found 8 sale properties for page 1 in "Dubai South" community within price range
+2026-03-31 19:06:57 [INFO]: Property ID: PB-S-36446-1
+2026-03-31 19:06:57 [INFO]: Property Type: OffPlan
+2026-03-31 19:06:57 [INFO]: Searching with query: {
+  "id": "PB-S-36446-1",
+  "listing_type": "OffPlan"
+}
+2026-03-31 19:06:58 [INFO]: Property found: Yes
+2026-03-31 19:06:59 [INFO]: PROPERTY PRICE 5000000
+2026-03-31 19:06:59 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:59 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:59 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:59 [INFO]: Price Range: {
+  "basePrice": 5000000,
+  "minPrice": 3750000,
+  "maxPrice": 6250000
+}
+2026-03-31 19:06:59 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:59 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:59 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3750000",
+        "$lte": "6250000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36446-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:59 [INFO]: PROPERTY PRICE 5000000
+2026-03-31 19:06:59 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:59 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:59 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:59 [INFO]: Price Range: {
+  "basePrice": 5000000,
+  "minPrice": 3750000,
+  "maxPrice": 6250000
+}
+2026-03-31 19:06:59 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:59 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:59 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3750000",
+        "$lte": "6250000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36446-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:59 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:59 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:59 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:59 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:59 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:59 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:59 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36446-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:06:59 [INFO]: PROPERTY PRICE 
+2026-03-31 19:06:59 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:06:59 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:06:59 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:06:59 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:06:59 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:06:59 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36446-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:03 [INFO]: PROPERTY PRICE 5000000
+2026-03-31 19:07:03 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:07:03 [INFO]: Listing Type Param null
+2026-03-31 19:07:03 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:07:03 [INFO]: Price Range: {
+  "basePrice": 5000000,
+  "minPrice": 3750000,
+  "maxPrice": 6250000
+}
+2026-03-31 19:07:03 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:07:03 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:07:03 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "3750000",
+        "$lte": "6250000"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36446-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:03 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:03 [INFO]: Community Dubai South (Dubai World Central)
+2026-03-31 19:07:03 [INFO]: Listing Type Param null
+2026-03-31 19:07:03 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:07:03 [INFO]: Community search terms: [
+  "Dubai",
+  "South"
+]
+2026-03-31 19:07:03 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:07:03 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36446-1"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:04 [INFO]: Found 3 null properties for page 1 in "Dubai South" community
+2026-03-31 19:07:11 [INFO]: Property ID: PB-S-13460-6
+2026-03-31 19:07:11 [INFO]: Property Type: OffPlan
+2026-03-31 19:07:11 [INFO]: Searching with query: {
+  "id": "PB-S-13460-6",
+  "listing_type": "OffPlan"
+}
+2026-03-31 19:07:11 [INFO]: Property found: Yes
+2026-03-31 19:07:12 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:12 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:12 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:12 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:12 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:12 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:12 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:12 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-13460-6"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:13 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:13 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:13 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:13 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:13 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:13 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:13 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:13 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:13 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-13460-6"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:13 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:13 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:13 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:13 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:13 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:13 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:13 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-13460-6"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:14 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:14 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:14 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:14 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:14 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:14 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:14 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:14 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:14 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-13460-6"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:15 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:18 [INFO]: PROPERTY PRICE undefined
+2026-03-31 19:07:18 [INFO]: Community 
+2026-03-31 19:07:18 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:18 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:18 [INFO]: Price Range: {
+  "basePrice": null,
+  "minPrice": null,
+  "maxPrice": null
+}
+2026-03-31 19:07:18 [INFO]: Community search terms: []
+2026-03-31 19:07:18 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:18 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "NaN",
+        "$lte": "NaN"
+      }
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:18 [INFO]: Property ID: PB-S-36294
+2026-03-31 19:07:18 [INFO]: Property Type: OffPlan
+2026-03-31 19:07:18 [INFO]: Searching with query: {
+  "id": "PB-S-36294",
+  "listing_type": "OffPlan"
+}
+2026-03-31 19:07:18 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:18 [INFO]: Community 
+2026-03-31 19:07:18 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:18 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:18 [INFO]: Community search terms: []
+2026-03-31 19:07:18 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:18 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "id": {
+        "$ne": "undefined"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:18 [INFO]: Property found: Yes
+2026-03-31 19:07:18 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:18 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:18 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:18 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:18 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:18 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:18 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:18 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:19 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:19 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:19 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:19 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:19 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:19 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:19 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:19 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:19 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:19 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:19 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:19 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:19 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:19 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:19 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:19 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:20 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:20 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:20 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:20 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:20 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:20 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:20 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:20 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:20 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:20 [INFO]: Found 12 offplan properties for page 1
+2026-03-31 19:07:20 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:20 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:20 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:20 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:20 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:20 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:20 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:20 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:20 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:20 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:20 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:20 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:20 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:20 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:20 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:20 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:20 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:21 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:21 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:21 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:21 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:21 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:21 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:21 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:21 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:21 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:22 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:22 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:22 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:22 [INFO]: Listing Type Param OffPlan
+2026-03-31 19:07:22 [INFO]: LT [
+  "OffPlan"
+]
+2026-03-31 19:07:22 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:22 [INFO]: Listing types: [
+  "Offplan"
+]
+2026-03-31 19:07:22 [INFO]: Combined query: {
+  "$and": [
+    {
+      "custom_fields.completion_status": {
+        "$in": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:22 [INFO]: Found 2 offplan properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:36 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:36 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:36 [INFO]: Listing Type Param Sale
+2026-03-31 19:07:36 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:07:36 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:36 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:36 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:07:36 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:36 [INFO]: Found 4 sale properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:36 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:36 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:36 [INFO]: Listing Type Param Sale
+2026-03-31 19:07:36 [INFO]: LT [
+  "Sale"
+]
+2026-03-31 19:07:36 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:36 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:36 [INFO]: Listing types: [
+  "Sale"
+]
+2026-03-31 19:07:36 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RS",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:37 [INFO]: Found 4 sale properties for page 1 in "Jumeirah Village Circle" community within price range
+2026-03-31 19:07:38 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:07:38 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:38 [INFO]: Listing Type Param null
+2026-03-31 19:07:38 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:07:38 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:07:38 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:38 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:07:38 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:38 [INFO]: PROPERTY PRICE 
+2026-03-31 19:07:38 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:07:38 [INFO]: Listing Type Param null
+2026-03-31 19:07:38 [INFO]: LT [
+  "null"
+]
+2026-03-31 19:07:38 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:07:38 [INFO]: Listing types: [
+  "Null"
+]
+2026-03-31 19:07:38 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:07:39 [INFO]: Found 4 null properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:07:47 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:47 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:48 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:48 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:52 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:52 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:52 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:52 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:54 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:54 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:54 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:07:54 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:08:01 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:08:01 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:08:01 [INFO]: ChIJpUrAMdptXz4RD08HuVtQQwY AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:08:01 [INFO]: https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJpUrAMdptXz4RD08HuVtQQwY&fields=review&key=AIzaSyBLxucv9EmMu1xstXcsN0XYjQjbnw6FGsg
+2026-03-31 19:08:04 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:08:04 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:08:04 [INFO]: Listing Type Param Rent
+2026-03-31 19:08:04 [INFO]: LT [
+  "Rent"
+]
+2026-03-31 19:08:04 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:08:04 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:08:04 [INFO]: Listing types: [
+  "Rent"
+]
+2026-03-31 19:08:04 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:08:04 [INFO]: PROPERTY PRICE 3250000
+2026-03-31 19:08:04 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:08:04 [INFO]: Listing Type Param Rent
+2026-03-31 19:08:04 [INFO]: LT [
+  "Rent"
+]
+2026-03-31 19:08:04 [INFO]: Price Range: {
+  "basePrice": 3250000,
+  "minPrice": 2437500,
+  "maxPrice": 4062500
+}
+2026-03-31 19:08:04 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:08:04 [INFO]: Listing types: [
+  "Rent"
+]
+2026-03-31 19:08:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "general_listing_information.listingprice": {
+        "$gte": "2437500",
+        "$lte": "4062500"
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:08:05 [INFO]: PROPERTY PRICE 
+2026-03-31 19:08:05 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:08:05 [INFO]: Listing Type Param Rent
+2026-03-31 19:08:05 [INFO]: LT [
+  "Rent"
+]
+2026-03-31 19:08:05 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:08:05 [INFO]: Listing types: [
+  "Rent"
+]
+2026-03-31 19:08:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:08:05 [INFO]: Found 4 rent properties for page 1 in "Jumeirah Village Circle" community
+2026-03-31 19:08:05 [INFO]: PROPERTY PRICE 
+2026-03-31 19:08:05 [INFO]: Community Jumeirah Village Circle
+2026-03-31 19:08:05 [INFO]: Listing Type Param Rent
+2026-03-31 19:08:05 [INFO]: LT [
+  "Rent"
+]
+2026-03-31 19:08:05 [INFO]: Community search terms: [
+  "Jumeirah",
+  "Village",
+  "Circle"
+]
+2026-03-31 19:08:05 [INFO]: Listing types: [
+  "Rent"
+]
+2026-03-31 19:08:05 [INFO]: Combined query: {
+  "$and": [
+    {
+      "offering_type": "RR",
+      "custom_fields.completion_status": {
+        "$nin": [
+          "off_plan_primary",
+          "off_plan_secondary"
+        ]
+      }
+    },
+    {
+      "general_listing_information.status": "Live"
+    },
+    {
+      "custom_fields.community": {
+        "$all": [
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "id": {
+        "$ne": "PB-S-36294"
+      }
+    }
+  ]
+}
+2026-03-31 19:08:06 [INFO]: Found 4 rent properties for page 1 in "Jumeirah Village Circle" community
