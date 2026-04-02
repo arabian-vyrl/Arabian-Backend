@@ -2645,9 +2645,9 @@ const getLeaderboardAgents = async (req, res) => {
 
     // Serve from cache while master sync is in progress
     if (masterSyncRunning && lastLeaderboardCache) {
-      console.log(
-        "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
-      );
+      // console.log(
+      //   "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
+      // );
       
       const allAgents = lastLeaderboardCache.allAgents;
       const total = allAgents.length;
