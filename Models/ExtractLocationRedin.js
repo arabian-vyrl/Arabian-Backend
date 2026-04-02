@@ -125,7 +125,7 @@ const ExtractRedinLocationSchema = new mongoose.Schema(
 );
 
 // ✅ INDEXES MUST BE ON PARENT SCHEMA
-ExtractRedinLocationSchema.index({ location_id: 1 }, { unique: true });
+// location_id index removed — already covered by unique: true on the field
 ExtractRedinLocationSchema.index({ "properties.property.name": 1 });
 ExtractRedinLocationSchema.index({
   "properties.property.name": 1,

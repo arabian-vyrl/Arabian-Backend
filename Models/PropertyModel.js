@@ -870,7 +870,7 @@ const PropertySchema = new mongoose.Schema({
   strict: false
 });
 
-PropertySchema.index({ id: 1 }); 
+// id index removed — already covered by unique: true on the field
 PropertySchema.index({ offering_type: 1, property_type: 1 }); 
 
 

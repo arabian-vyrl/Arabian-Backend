@@ -48,6 +48,6 @@ const LocationRedinSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 LocationRedinSchema.index({ city_name: 1 });
-LocationRedinSchema.index({ location_id: 1 });
+// location_id index removed — already covered by unique: true on the field
 
 module.exports = mongoose.model('LocationRedin', LocationRedinSchema);

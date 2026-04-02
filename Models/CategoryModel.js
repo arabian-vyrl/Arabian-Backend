@@ -47,7 +47,7 @@ const designationCategorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-designationCategorySchema.index({ categoryName: 1 });
+// categoryName index removed — already covered by unique: true on the field
 designationCategorySchema.index({ isActive: 1 });
 
 module.exports = mongoose.model(
