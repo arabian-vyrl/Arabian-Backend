@@ -23,7 +23,7 @@ const compressImageFromUrl = async (imageUrl) => {
       .webp({ quality: 90, smartSubsample: true, })
       .toBuffer();
 
-    console.log(`✅ Compressed sizes — thumbnail: ${thumbnail.length / 1024}KB`);
+    // console.log(`✅ Compressed sizes — thumbnail: ${thumbnail.length / 1024}KB`);
 
     return {
       thumbnail: `data:image/webp;base64,${thumbnail.toString("base64")}`,

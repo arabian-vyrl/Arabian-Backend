@@ -964,11 +964,11 @@ const SortProperties = async (req, res) => {
     const PropertyModel = getPropertyModelByOfferingType(offeringType);
     const collectionName = getCollectionName(offeringType);
 
-    console.log("Raw Offering Type:", rawOfferingType);
-    console.log("Normalized Offering Type:", offeringType);
-    console.log(
-      `Using ${PropertyModel.modelName} collection for sorting`
-    );
+    // console.log("Raw Offering Type:", rawOfferingType);
+    // console.log("Normalized Offering Type:", offeringType);
+    // console.log(
+    //   `Using ${PropertyModel.modelName} collection for sorting`
+    // );
 
     // Sort and pagination parameters
     const sortBy = req.query.sortBy || "most_recent";
@@ -1164,13 +1164,13 @@ const getAddressSuggestions = async (req, res) => {
     const prefix = req.query.prefix;
 
 
-    console.log("Listing Type", listingType)
-    console.log("Prefix", prefix)
+    // console.log("Listing Type", listingType)
+    // console.log("Prefix", prefix)
     const maxSuggestions = parseInt(req.query.limit) || 5;
 
-    console.log(
-      `Getting address suggestions for listing_type: "${listingType}"`
-    );
+    // console.log(
+    //   `Getting address suggestions for listing_type: "${listingType}"`
+    // );
 
     if (!prefix) {
       return res.status(400).json({
@@ -1216,9 +1216,9 @@ const getAddressSuggestions = async (req, res) => {
       return false;
     };
 
-    console.log(
-      `Getting address suggestions for prefix: "${prefix}" from ${listingType} properties`
-    );
+    // console.log(
+    //   `Getting address suggestions for prefix: "${prefix}" from ${listingType} properties`
+    // );
 
     // Check if prefix looks like an abbreviation (all uppercase or very short)
     const isLikelyAbbreviation = prefix.length <= 3 && /^[A-Z]+$/i.test(prefix);
@@ -1227,7 +1227,7 @@ const getAddressSuggestions = async (req, res) => {
 
     if (isLikelyAbbreviation) {
       // For abbreviation search, skip regex and fetch all properties
-      console.log(`Detected likely abbreviation search: "${prefix}"`);
+      // console.log(`Detected likely abbreviation search: "${prefix}"`);
       const generalQuery = {
         listing_type: listingType,
       };
@@ -1252,7 +1252,7 @@ const getAddressSuggestions = async (req, res) => {
 
       // If no results from regex, fallback to fetching all
       if (properties.length === 0) {
-        console.log(`No regex matches found, fetching all for manual matching`);
+        // console.log(`No regex matches found, fetching all for manual matching`);
         const generalQuery = {
           listing_type: listingType,
         };
@@ -1264,9 +1264,9 @@ const getAddressSuggestions = async (req, res) => {
       }
     }
 
-    console.log(
-      `Found ${properties.length} ${listingType} properties in database`
-    );
+    // console.log(
+    //   `Found ${properties.length} ${listingType} properties in database`
+    // );
 
     // Use Set to ensure unique suggestions
     const suggestions = new Set();
@@ -1330,9 +1330,9 @@ const getAddressSuggestions = async (req, res) => {
     // Trim to maxSuggestions
     suggestionsArray = suggestionsArray.slice(0, maxSuggestions);
 
-    console.log(
-      `Returning ${suggestionsArray.length} suggestions for ${listingType} properties`
-    );
+    // console.log(
+    //   `Returning ${suggestionsArray.length} suggestions for ${listingType} properties`
+    // );
 
     res.status(200).json({
       success: true,
@@ -1372,13 +1372,13 @@ const filterByCommunity = async (req, res) => {
 
     const propertyPrice = req.query.propertyPrice;
 
-    console.log("PROPERTY PRICE", propertyPrice)
+    // console.log("PROPERTY PRICE", propertyPrice)
     const community = req.query.community;
     const listingTypeParam = req.query.listingType || req.query.type || "Sale";
 
     // listingTypeParam can be "Sale", "Rent", "Sale,Offplan" etc.
     const listingTypes = listingTypeParam.split(",").map((t) => t.trim());
-    console.log("LT", listingTypes);
+    // console.log("LT", listingTypes);
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -1481,9 +1481,9 @@ const filterByCommunity = async (req, res) => {
       ],
     };
 
-    console.log("Community search terms:", searchWords);
-    console.log("Listing types:", normalizedListingTypes);
-    console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
+    // console.log("Community search terms:", searchWords);
+    // console.log("Listing types:", normalizedListingTypes);
+    // console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
 
     const skip = (page - 1) * limit;
 
@@ -1520,11 +1520,11 @@ const filterByCommunity = async (req, res) => {
       .limit(limit)
       .lean();
 
-    console.log(
-      `Found ${properties.length} ${normalizedListingTypes
-        .join(" and ")
-        .toLowerCase()} properties for page ${page} in "${community}" community`
-    );
+    // console.log(
+    //   `Found ${properties.length} ${normalizedListingTypes
+    //     .join(" and ")
+    //     .toLowerCase()} properties for page ${page} in "${community}" community`
+    // );
 
     res.status(200).json({
       success: true,
@@ -1783,7 +1783,7 @@ const filterByCommunity = async (req, res) => {
 //       `Found ${properties.length} ${normalizedListingTypes
 //         .join(" and ")
 //         .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
-//     );
+//     ); 
 
 //     res.status(200).json({
 //       success: true,
@@ -1832,13 +1832,13 @@ const filterByCommunity = async (req, res) => {
 const NewfilterByCommunity = async (req, res) => {
   try {
     const propertyPrice = req.query.propertyPrice || "";
-    console.log("PROPERTY PRICE", propertyPrice);
+    // console.log("PROPERTY PRICE", propertyPrice);
     let community = req.query.community || "";
     const listingTypeParam = req.query.listingType || req.query.type || "";
     const excludePropertyId = req.query.propertyId || ""; // <-- Added
-    console.log("Community", community)
+    // console.log("Community", community)
 
-    console.log("Listing Type Param", listingTypeParam)
+    // console.log("Listing Type Param", listingTypeParam)
 
     //Normalize the Community Name to remove the (Tecom, (Dubai World Central) ) like this 
     if (community) {
@@ -1846,7 +1846,7 @@ const NewfilterByCommunity = async (req, res) => {
     }
 
     const listingTypes = listingTypeParam.split(",").map((t) => t.trim());
-    console.log("LT", listingTypes);
+    // console.log("LT", listingTypes);
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -1953,11 +1953,11 @@ const NewfilterByCommunity = async (req, res) => {
         }
       };
 
-      console.log("Price Range:", {
-        basePrice,
-        minPrice,
-        maxPrice
-      });
+      // console.log("Price Range:", {
+      //   basePrice,
+      //   minPrice,
+      //   maxPrice
+      // });
     }
 
     // Combined query:
@@ -1992,9 +1992,9 @@ const NewfilterByCommunity = async (req, res) => {
       $and: queryConditions,
     };
 
-    console.log("Community search terms:", searchWords);
-    console.log("Listing types:", normalizedListingTypes);
-    console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
+    // console.log("Community search terms:", searchWords);
+    // console.log("Listing types:", normalizedListingTypes);
+    // console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
 
     const skip = (page - 1) * limit;
 
@@ -2053,11 +2053,11 @@ const NewfilterByCommunity = async (req, res) => {
       communityBreakdown[communityName] = (communityBreakdown[communityName] || 0) + 1;
     });
 
-    console.log(
-      `Found ${properties.length} ${normalizedListingTypes
-        .join(" and ")
-        .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
-    );
+    // console.log(
+    //   `Found ${properties.length} ${normalizedListingTypes
+    //     .join(" and ")
+    //     .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
+    // );
 
     res.status(200).json({
       success: true,

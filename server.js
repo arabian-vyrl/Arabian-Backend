@@ -229,9 +229,10 @@ scheduleNewOffPlanSync();
 // Then mount your API routes
 
 app.get("/test", (req, res) => {
-  console.log("Testing Logsss  22")
+  // console.log("Testing Logsss  22")
   return res.json({msg:"Testing Logsss 33"})
 });
+
 app.use("/", router);
 
 // Google Reviews 
@@ -239,10 +240,10 @@ app.get("/get-google-reviews", async (req, res) => {
   const PLACE_ID=process.env.GOOGLE_PLACE_ID
   const GOOGLE_API_KEY=process.env.GOOGLE_MAP_API
   try {
-    console.log(PLACE_ID, GOOGLE_API_KEY);
+    // console.log(PLACE_ID, GOOGLE_API_KEY);
     const url =
       `https://maps.googleapis.com/maps/api/place/details/json?placeid=${PLACE_ID}&fields=review&key=${GOOGLE_API_KEY}`;
-    console.log(url);
+    // console.log(url);
     const response = await axios.get(url);
     const reviews = response.data.result?.reviews || [];
     res.json(reviews);

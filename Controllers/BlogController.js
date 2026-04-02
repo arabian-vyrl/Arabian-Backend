@@ -308,7 +308,7 @@ const updateBlog = async (req, res) => {
           },
         };
         blog.markModified("author");
-        console.log("Updated blog author to new agent:", newAgentEmail);
+        // console.log("Updated blog author to new agent:", newAgentEmail);
       } else {
         // Same agent - still update social media links in case they changed
         const currentAgent = await Agent.findOne({ email: blog.author.agentEmail });
@@ -322,14 +322,14 @@ const updateBlog = async (req, res) => {
           };
           blog.author.agentName = currentAgent.agentName;
           blog.markModified("author");
-          console.log("Updated author social media links for same agent");
+          // console.log("Updated author social media links for same agent");
         }
       }
     }
 
     // Update basic fields
     if (title) {
-      console.log("UPDATING title from:", blog.title, "to:", title.trim());
+      // console.log("UPDATING title from:", blog.title, "to:", title.trim());
       blog.title = title.trim();
     }
 
@@ -338,14 +338,14 @@ const updateBlog = async (req, res) => {
     }
 
     if (metaTitle) {
-      console.log("UPDATING metaTitle from:", blog.metaInfo?.metaTitle, "to:", metaTitle.trim());
+      // console.log("UPDATING metaTitle from:", blog.metaInfo?.metaTitle, "to:", metaTitle.trim());
       if (!blog.metaInfo) blog.metaInfo = {};
       blog.metaInfo.metaTitle = metaTitle.trim();
       blog.markModified("metaInfo");
     }
 
     if (metaDescription !== undefined) {
-      console.log("UPDATING metaDescription");
+      // console.log("UPDATING metaDescription");
       if (!blog.metaInfo) blog.metaInfo = {};
       blog.metaInfo.metaDescription = metaDescription.trim();
       blog.markModified("metaInfo");
@@ -373,24 +373,24 @@ const updateBlog = async (req, res) => {
 
     // Update content
     if (htmlContent) {
-      console.log("UPDATING htmlContent, length:", htmlContent.length);
+      // console.log("UPDATING htmlContent, length:", htmlContent.length);
       const plainText = stripHtmlTags(htmlContent);
 
       if (!blog.content) blog.content = {};
       blog.content.htmlContent = htmlContent;
       blog.content.plainText = plainText;
       blog.markModified("content");
-      console.log("Content updated");
+      // console.log("Content updated");
     }
 
     // Update cover image if new one is uploaded
     if (req.files?.coverImage?.[0]) {
-      console.log("NEW COVER IMAGE UPLOADED");
+      // console.log("NEW COVER IMAGE UPLOADED");
       // Delete old image from Cloudinary if exists
       if (blog.coverImage?.publicId) {
         try {
           await destroyPublicId(blog.coverImage.publicId);
-          console.log("Old cover image deleted from Cloudinary");
+          // console.log("Old cover image deleted from Cloudinary");
         } catch (err) {
           console.error("Error deleting old cover image:", err);
         }
@@ -402,11 +402,11 @@ const updateBlog = async (req, res) => {
     for (let i = 1; i <= 7; i++) {
       const fieldName = `bodyImage${i}`;
       if (req.files?.[fieldName]?.[0]) {
-        console.log(`NEW BODY IMAGE ${i} UPLOADED`);
+        // console.log(`NEW BODY IMAGE ${i} UPLOADED`);
         if (blog.bodyImages?.[i - 1]?.publicId) {
           try {
             await destroyPublicId(blog.bodyImages[i - 1].publicId);
-            console.log(`Old body image ${i} deleted from Cloudinary`);
+            // console.log(`Old body image ${i} deleted from Cloudinary`);
           } catch (err) {
             console.error(`Error deleting old body image ${i}:`, err);
           }
@@ -428,19 +428,19 @@ const updateBlog = async (req, res) => {
         blog.publishedAt = new Date(publishedAt);
       } else if (blogStatus === "published" && !wasPublished) {
         blog.publishedAt = new Date();
-        console.log("First time publishing - setting publishedAt to now");
+        // console.log("First time publishing - setting publishedAt to now");
       } else if (blogStatus === "draft") {
         blog.publishedAt = null;
-        console.log("Changed to draft - clearing publishedAt");
+        // console.log("Changed to draft - clearing publishedAt");
       }
-      console.log(`Status updated: ${blogStatus}, isPublished: ${blog.isPublished}`);
+      // console.log(`Status updated: ${blogStatus}, isPublished: ${blog.isPublished}`);
     } else if (publishedAt) {
       blog.publishedAt = new Date(publishedAt);
-      console.log("Updated publishedAt without status change:", blog.publishedAt);
+      // console.log("Updated publishedAt without status change:", blog.publishedAt);
     }
 
     const updatedBlog = await blog.save();
-    console.log("BLOG SAVED SUCCESSFULLY");
+    // console.log("BLOG SAVED SUCCESSFULLY");
 
 
     if (agentChanged && oldAgentEmail) {
@@ -449,7 +449,7 @@ const updateBlog = async (req, res) => {
           { email: oldAgentEmail },
           { $pull: { blogs: { blogId: updatedBlog._id } } }
         );
-        console.log("Removed blog from old agent:", oldAgentEmail);
+        // console.log("Removed blog from old agent:", oldAgentEmail);
 
         // Add blog to new agent's blogs array
         if (newAgent) {
@@ -468,7 +468,7 @@ const updateBlog = async (req, res) => {
               },
             },
           });
-          console.log("Added blog to new agent:", newAgent.email);
+          // console.log("Added blog to new agent:", newAgent.email);
         }
       } catch (err) {
         console.error("Error updating agent blogs array:", err);
@@ -490,12 +490,12 @@ const updateBlog = async (req, res) => {
             },
           }
         );
-        console.log("Updated blog info in agent's blogs array");
+        // console.log("Updated blog info in agent's blogs array");
       } catch (err) {
         console.error("Error updating blog in agent's array:", err);
       }
     }
-    console.log("BLOG UPDATED SUCCESSFULLY - New title:", updatedBlog.title);
+    // console.log("BLOG UPDATED SUCCESSFULLY - New title:", updatedBlog.title);
     res.status(200).json({
       success: true,
       message: agentChanged

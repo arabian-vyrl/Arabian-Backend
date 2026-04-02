@@ -4,7 +4,7 @@ const axios = require("axios");
 const Property = require("../Models/PropertyModel");
 
 const getLocationFromRedin = async (req, res) => {
-  console.log(process.env.REDIN_TOKEN);
+  // console.log(process.env.REDIN_TOKEN);
   try {
     const headers = {
       Authorization: process.env.REDIN_TOKEN,
@@ -20,9 +20,9 @@ const getLocationFromRedin = async (req, res) => {
     do {
       pageCount++;
       const params = scrollId ? { scroll_id: scrollId } : {};
-      console.log(
-        `Fetching page ${pageCount}, scroll_id: ${scrollId || "initial"}`
-      );
+      // console.log(
+      //   `Fetching page ${pageCount}, scroll_id: ${scrollId || "initial"}`
+      // );
       const response = await axios.get(url, { headers, params });
       const locations = response.data?.results || [];
 
@@ -38,11 +38,11 @@ const getLocationFromRedin = async (req, res) => {
           : null;
 
       allLocations = allLocations.concat(locations);
-      console.log(
-        `Page ${pageCount}: Fetched ${
-          locations.length
-        } locations, next scroll_id: ${scrollId || "none (end)"}`
-      );
+      // console.log(
+      //   `Page ${pageCount}: Fetched ${
+      //     locations.length
+      //   } locations, next scroll_id: ${scrollId || "none (end)"}`
+      // );
     } while (scrollId);
 
     console.log(`\n=== Pagination Complete ===`);
@@ -482,8 +482,8 @@ const extractLocationFromRedin = async (req, res) => {
       { location_id: 1, _id: 0 }
     );
     const allLocationIDs = allLocationIDsDocs.map((doc) => doc.location_id);
-    console.log("All Location IDs: ", allLocationIDs);
-    console.log("Total Locations to Process: ", allLocationIDs.length);
+    // console.log("All Location IDs: ", allLocationIDs);
+    // console.log("Total Locations to Process: ", allLocationIDs.length);
 
     const headers = {
       Authorization: process.env.REDIN_TOKEN,
