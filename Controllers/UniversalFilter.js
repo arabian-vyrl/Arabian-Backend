@@ -964,12 +964,6 @@ const SortProperties = async (req, res) => {
     const PropertyModel = getPropertyModelByOfferingType(offeringType);
     const collectionName = getCollectionName(offeringType);
 
-    // console.log("Raw Offering Type:", rawOfferingType);
-    // console.log("Normalized Offering Type:", offeringType);
-    // console.log(
-    //   `Using ${PropertyModel.modelName} collection for sorting`
-    // );
-
     // Sort and pagination parameters
     const sortBy = req.query.sortBy || "most_recent";
     const page = parseInt(req.query.page) || 1;
@@ -1156,12 +1150,32 @@ const SortProperties = async (req, res) => {
 
 const getAddressSuggestions = async (req, res) => {
   try {
-    const listingType =
+    const rawListingType =
       req.query.listing_type ||
       req.query.listingType ||
       req.query.type ||
       "Sale";
+
+
+      // console.log("REQ BODY", req.query)
+
+    // Support multiple listing types: comma-separated string or array
+    const listingTypeArray = Array.isArray(rawListingType)
+      ? rawListingType.flatMap((t) => t.split(",").map((s) => s.trim())).filter(Boolean)
+      : rawListingType.split(",").map((s) => s.trim()).filter(Boolean);
+
+    const listingType = listingTypeArray.length === 1 ? listingTypeArray[0] : listingTypeArray;
+
+    // Build the listing_type condition for MongoDB queries
+    const listingTypeCondition =
+      listingTypeArray.length === 1
+        ? { listing_type: listingTypeArray[0] }
+        : { listing_type: { $in: listingTypeArray } };
+
     const prefix = req.query.prefix;
+
+
+    // console.log("REQ BODY", req.query)
 
 
     // console.log("Listing Type", listingType)
@@ -1196,20 +1210,23 @@ const getAddressSuggestions = async (req, res) => {
       return words.map(word => word.charAt(0).toUpperCase()).join("");
     };
 
-    const matchesPrefixOrAbbreviation = (text, searchPrefix) => {
+    const matchesPrefixOrAbbreviation = (text, searchPrefix, abbreviationOnly = false) => {
       if (!text) return false;
 
-      const lowerText = text.toLowerCase();
       const lowerPrefix = searchPrefix.toLowerCase();
-
-      // Check word boundary match
-      if (lowerText.match(new RegExp(`\\b${lowerPrefix}`))) {
-        return true;
-      }
 
       // Check if abbreviation matches prefix
       const abbreviation = generateAbbreviation(text);
       if (abbreviation.toLowerCase().startsWith(lowerPrefix)) {
+        return true;
+      }
+
+      // Skip word boundary match when doing abbreviation-only search
+      if (abbreviationOnly) return false;
+
+      // Check word boundary match
+      const lowerText = text.toLowerCase();
+      if (lowerText.match(new RegExp(`\\b${lowerPrefix}`))) {
         return true;
       }
 
@@ -1226,20 +1243,15 @@ const getAddressSuggestions = async (req, res) => {
     let properties;
 
     if (isLikelyAbbreviation) {
-      // For abbreviation search, skip regex and fetch all properties
-      // console.log(`Detected likely abbreviation search: "${prefix}"`);
-      const generalQuery = {
-        listing_type: listingType,
-      };
 
-      properties = await Property.find(generalQuery)
+      properties = await Property.find(listingTypeCondition)
         .limit(500)
         .select("custom_fields.propertyfinder_region listing_type")
         .lean();
     } else {
       // For regular text search, use regex for efficiency
       const regexQuery = {
-        listing_type: listingType,
+        ...listingTypeCondition,
         "custom_fields.propertyfinder_region": {
           $regex: new RegExp(`\\b${prefix}`, "i"),
         },
@@ -1252,10 +1264,7 @@ const getAddressSuggestions = async (req, res) => {
 
       // If no results from regex, fallback to fetching all
       if (properties.length === 0) {
-        // console.log(`No regex matches found, fetching all for manual matching`);
-        const generalQuery = {
-          listing_type: listingType,
-        };
+        const generalQuery = listingTypeCondition;
 
         properties = await Property.find(generalQuery)
           .limit(500)
@@ -1283,7 +1292,7 @@ const getAddressSuggestions = async (req, res) => {
       for (const part of addressParts) {
         if (part && part.length >= 2) {
           // Check if part matches prefix OR abbreviation
-          if (matchesPrefixOrAbbreviation(part, prefix)) {
+          if (matchesPrefixOrAbbreviation(part, prefix, isLikelyAbbreviation)) {
             suggestions.add(part);
 
             // Stop early if we reached the cap (collect extra for sorting)
@@ -1336,12 +1345,12 @@ const getAddressSuggestions = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Found ${suggestionsArray.length} address suggestions for "${prefix}" from ${listingType} properties`,
+      message: `Found ${suggestionsArray.length} address suggestions for "${prefix}" from ${listingTypeArray.join(", ")} properties`,
       count: suggestionsArray.length,
-      listingType: listingType,
+      listingType: listingTypeArray.length === 1 ? listingTypeArray[0] : listingTypeArray,
       data: suggestionsArray,
       debug: {
-        listingType: listingType,
+        listingType: listingTypeArray,
         prefix: prefix,
         totalPropertiesFound: properties.length,
         abbreviationMatching: true,
