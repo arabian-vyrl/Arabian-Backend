@@ -70,6 +70,9 @@ const verifyReferrerToken = async (req, res) => {
       return res.status(401).json({ valid: false, message: "Unauthorized" });
     }
     const { referrerFullName, refferalEmail } = req.user;
+
+    console.log("Working");
+    console.log(req.user);
     const referrals = await ReferralProperty.find({
       // "referrer.full_name": referrerFullName,
       "referrer.email": refferalEmail,
@@ -82,7 +85,7 @@ const verifyReferrerToken = async (req, res) => {
       });
     }
     const referralData = referrals.map((r) => ({
-      refereeName: r.referee.full_name,
+      refereeName: `${r.referee.first_name} ${r.referee.last_name}`,
       trackingCode: r.tracking_code,
     }));
 
@@ -191,17 +194,25 @@ const trackRefer = async (req, res) => {
     }
 
     const referralData = referrals.map((r) => ({
-      refereeName: r.referee.full_name,
+      refereeName: `${r.referee.first_name} ${r.referee.last_name}`,
       trackingCode: r.tracking_code,
     }));
 
-    const payload = {
-      referrerFullName: referrals[0].referrer.full_name,
-      refferalEmail: referrals[0].referrer.email,
-      isAdmin: false,
-      role: "user",
-    };
+    // const payload = {
+    //   referrerFullName: referrals[0].referrer.full_name,
+    //   refferalEmail: referrals[0].referrer.email,
+    //   isAdmin: false,
+    //   role: "user",
+    // };
 
+
+    const payload = {
+  referrerFullName: referrals[0].referrer.first_name,
+  refferalEmail: referrals[0].referrer.email,
+  details: referralData, // ✅ add this so verify can return it
+  isAdmin: false,
+  role: "user",
+};
     const token = jwtToken.sign(payload, process.env.SECRET_KEY, {
       expiresIn: "2d",
     });
@@ -342,7 +353,7 @@ const ReferProperty = async (req, res) => {
       Special_Requirements,
     } = req.body;
 
-    console.log(req.body)
+    console.log(req.body);
 
     // Step 1: Validation
     // const validationErrors = validateReferralData(req.body);
@@ -393,7 +404,7 @@ const ReferProperty = async (req, res) => {
       },
     });
 
-    console.log("referralData is",referralData)
+    console.log("referralData is", referralData);
 
     const savedReferral = await referralData.save();
     res.status(201).json({
@@ -460,8 +471,8 @@ const ReferProperty = async (req, res) => {
     // Send to the data
 
     const salesforceData = {
-      first_name: Reffrer_FirstName,
-      last_name: Reffrer_LastName,
+      first_name: Reffrer_Firstname,
+      last_name: Reffrer_Lastname,
       // last_name: Reffrer_FullName,
       email: Reffrer_EmailAdress,
       tele_phone: Reffrer_PhoneNumber,
@@ -532,8 +543,8 @@ const trackQUery = async (req, res) => {
       },
 
       referral_details: {
-        referrer_name: referral.referrer.full_name,
-        referee_name: referral.referee.full_name,
+        referee_name: `${referral.referee.first_name} ${referral.referrer.last_name}`,
+      referrer_name: `${referral.referrer.first_name} ${referral.referrer.last_name}`,
         property_area: referral.property.area || "Not specified",
         urgency_level: referral.query_details.urgency_level,
       },
