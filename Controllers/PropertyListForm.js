@@ -40,7 +40,7 @@ const createPropertyListForm = async (req, res) => {
     });
 
     const salesforceData = {
-      firstName: propertyList.firstName,
+      first_name: propertyList.firstName,
       last_name: propertyList.lastName,
       tele_phone: propertyList.telephone,
       email: propertyList.email,

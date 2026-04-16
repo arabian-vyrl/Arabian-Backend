@@ -229,7 +229,7 @@ const createContact = async (req, res) => {
     });
 
     const salesforceData = {
-      firstName: contact.firstName,
+      first_name: contact.firstName,
       last_name: contact.lastName,
       email: contact.email,
       tele_phone: contact.telephone,
