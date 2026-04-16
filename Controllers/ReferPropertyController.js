@@ -470,29 +470,32 @@ const ReferProperty = async (req, res) => {
 
     // Send to the data
 
-    const salesforceData = {
-      first_name: Reffrer_Firstname,
-      last_name: Reffrer_Lastname,
-      // last_name: Reffrer_FullName,
-      email: Reffrer_EmailAdress,
-      tele_phone: Reffrer_PhoneNumber,
-      Property_Area: PropertyArea || null,
-      Referee_First_Name: Refree_FirstName,
-      Referee_Last_Name: Refree_LastName,
-      Referee_Email: Refree_EmailAdress,
-      Referee_Phone: Refree_PhoneNumber,
-      Relationship_To_Referrer: Relation_to_Reffrer,
-      Preferred_Contact_Method: Refree_Preffered_Contact_Form,
-      Best_Time_To_Contact: Best_Time_To_Contect,
-      Urgency_Level: Urgency_Level,
-      Special_Requirements: Special_Requirements,
-    };
+    try {
+      const salesforceData = {
+        first_name: Reffrer_FirstName,
+        last_name: Reffrer_LastName,
+        email: Reffrer_EmailAdress,
+        tele_phone: Reffrer_PhoneNumber,
+        Property_Area: PropertyArea || null,
+        Referee_First_Name: Refree_Firstname,
+        Referee_Last_Name: Refree_Lastname,
+        Referee_Email: Refree_EmailAdress,
+        Referee_Phone: Refree_PhoneNumber,
+        Relationship_To_Referrer: Relation_to_Reffrer,
+        Preferred_Contact_Method: Refree_Preffered_Contact_Form,
+        Best_Time_To_Contact: Best_Time_To_Contect,
+        Urgency_Level: Urgency_Level,
+        Special_Requirements: Special_Requirements,
+      };
 
-    salesforceService.syncWithRetry(
-      ReferralProperty,
-      savedReferral._id,
-      salesforceData,
-    );
+      salesforceService.syncWithRetry(
+        ReferralProperty,
+        savedReferral._id,
+        salesforceData,
+      );
+    } catch (sfError) {
+      console.error("Error syncing with Salesforce:", sfError);
+    }
   } catch (error) {
     console.error("Error in ReferProperty:", error);
     res.status(500).json({
