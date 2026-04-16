@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const jwtToken = require("jsonwebtoken");
 const salesforceService = require("../services/SalesforceService");
 const Agent = require("../Models/AgentModel");
+const path = require("path");
 require("dotenv").config();
 
 // Email configuration
@@ -70,6 +71,9 @@ const verifyReferrerToken = async (req, res) => {
       return res.status(401).json({ valid: false, message: "Unauthorized" });
     }
     const { referrerFullName, refferalEmail } = req.user;
+
+    // console.log("Working");
+    // console.log(req.user);
     const referrals = await ReferralProperty.find({
       // "referrer.full_name": referrerFullName,
       "referrer.email": refferalEmail,
@@ -204,12 +208,12 @@ const trackRefer = async (req, res) => {
 
 
     const payload = {
-  referrerFullName: referrals[0].referrer.first_name,
-  refferalEmail: referrals[0].referrer.email,
-  details: referralData, // ✅ add this so verify can return it
-  isAdmin: false,
-  role: "user",
-};
+      referrerFullName: referrals[0].referrer.first_name,
+      refferalEmail: referrals[0].referrer.email,
+      details: referralData, // ✅ add this so verify can return it
+      isAdmin: false,
+      role: "user",
+    };
     const token = jwtToken.sign(payload, process.env.SECRET_KEY, {
       expiresIn: "2d",
     });
@@ -426,13 +430,14 @@ const ReferProperty = async (req, res) => {
         pass: process.env.NODE_MAILER_PASSWORD,
       },
     });
-    const sendEmail = async (to, subject, html) => {
+    const sendEmail = async (to, subject, html, attachments = []) => {
       try {
         await transporter.sendMail({
           from: process.env.NODE_EMAIL,
           to,
           subject,
           html,
+          attachments,
         });
         console.log("Email sent to:", to);
         await ReferralProperty.findByIdAndUpdate(savedReferral._id, {
@@ -446,50 +451,85 @@ const ReferProperty = async (req, res) => {
       Reffrer_EmailAdress,
       "Your Property Referral – Login & Tracking Details",
       `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2>Hello ${Reffrer_FirstName} ${Reffrer_LastName},</h2>
-        <p>Thank you for submitting a new property referral. We have successfully received your details.</p>
-        <h3>Your Login Details</h3>
-        <p><strong>Email:</strong> ${Reffrer_EmailAdress}<br/><strong>Password:</strong> ${ReffrerPassword}</p>
-        <h3>All Your Referral Tracking Codes</h3>
-        <ul>
-          ${allTrackingCodes
-            .map((code) => `<li><strong>${code}</strong></li>`)
-            .join("")}
-        </ul>
-        <p>You can use these tracking codes to monitor the progress of each referral.</p>
-        <br/>
-        <p>Thank you for helping us connect with new clients.</p>
-        <p><strong>Best Regards,</strong><br/>Arabian Estates</p>
-      </div>
-      `,
-    );
+  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    
+    <h2>Hello ${Reffrer_FirstName} ${Reffrer_LastName},</h2>
 
+    <p>
+      Thank you for submitting a new property referral. We have successfully received your details.
+    </p>
+
+    <h3>Next Steps:</h3>
+    <ul>
+      <li>
+        Review and sign the attached terms and return them to us by replying to this email.
+      </li>
+      <li>
+        Log in to your account using the details below:
+      </li>
+    </ul>
+
+    <p>
+      <strong>Email:</strong> ${Reffrer_EmailAdress}<br/>
+      <strong>Password:</strong> ${ReffrerPassword}
+    </p>
+
+    <h3>All Your Referral Tracking Codes</h3>
+    <ul>
+      ${allTrackingCodes.map(code => `<li><strong>${code}</strong></li>`).join("")}
+    </ul>
+
+    <p>
+      You can use these tracking codes to monitor the progress of each referral.
+    </p>
+
+
+    <p>
+      Thank you for helping us connect with new clients.
+    </p>
+
+    <p>
+      <strong>Best Regards,</strong><br/>
+      Arabian Estates
+    </p>
+
+  </div>
+  `,
+      [
+        {
+          filename: "Referral Agreement.pdf",
+          path: path.join(__dirname, "../document/Referral Agreement.pdf"),
+        }
+      ]
+    );
     // Send to the data
 
-    const salesforceData = {
-      first_name: Reffrer_Firstname,
-      last_name: Reffrer_Lastname,
-      // last_name: Reffrer_FullName,
-      email: Reffrer_EmailAdress,
-      tele_phone: Reffrer_PhoneNumber,
-      Property_Area: PropertyArea || null,
-      Referee_First_Name: Refree_FirstName,
-      Referee_Last_Name: Refree_LastName,
-      Referee_Email: Refree_EmailAdress,
-      Referee_Phone: Refree_PhoneNumber,
-      Relationship_To_Referrer: Relation_to_Reffrer,
-      Preferred_Contact_Method: Refree_Preffered_Contact_Form,
-      Best_Time_To_Contact: Best_Time_To_Contect,
-      Urgency_Level: Urgency_Level,
-      Special_Requirements: Special_Requirements,
-    };
+    try {
+      const salesforceData = {
+        first_name: Reffrer_FirstName,
+        last_name: Reffrer_LastName,
+        email: Reffrer_EmailAdress,
+        tele_phone: Reffrer_PhoneNumber,
+        Property_Area: PropertyArea || null,
+        Referee_First_Name: Refree_Firstname,
+        Referee_Last_Name: Refree_Lastname,
+        Referee_Email: Refree_EmailAdress,
+        Referee_Phone: Refree_PhoneNumber,
+        Relationship_To_Referrer: Relation_to_Reffrer,
+        Preferred_Contact_Method: Refree_Preffered_Contact_Form,
+        Best_Time_To_Contact: Best_Time_To_Contect,
+        Urgency_Level: Urgency_Level,
+        Special_Requirements: Special_Requirements,
+      };
 
-    salesforceService.syncWithRetry(
-      ReferralProperty,
-      savedReferral._id,
-      salesforceData,
-    );
+      salesforceService.syncWithRetry(
+        ReferralProperty,
+        savedReferral._id,
+        salesforceData,
+      );
+    } catch (sfError) {
+      console.error("Error syncing with Salesforce:", sfError);
+    }
   } catch (error) {
     console.error("Error in ReferProperty:", error);
     res.status(500).json({
@@ -541,7 +581,7 @@ const trackQUery = async (req, res) => {
 
       referral_details: {
         referee_name: `${referral.referee.first_name} ${referral.referrer.last_name}`,
-      referrer_name: `${referral.referrer.first_name} ${referral.referrer.last_name}`,
+        referrer_name: `${referral.referrer.first_name} ${referral.referrer.last_name}`,
         property_area: referral.property.area || "Not specified",
         urgency_level: referral.query_details.urgency_level,
       },
@@ -878,8 +918,7 @@ async function sendRefereeIntroductionEmail(referralData) {
     html: `
       <h2>Property Search Application</h2>
       <p>Dear ${referralData.referee.full_name},</p>
-      <p>${
-        referralData.referrer.full_name
+      <p>${referralData.referrer.full_name
       } has submitted a property search application on your behalf.</p>
       
       <h3>About Our Company</h3>
@@ -888,20 +927,17 @@ async function sendRefereeIntroductionEmail(referralData) {
       <p><strong>Your Requirements:</strong></p>
       <ul>
         <li>Urgency: ${referralData.query_details.urgency_level}</li>
-        ${
-          referralData.property.area
-            ? `<li>Preferred Area: ${referralData.property.area}</li>`
-            : ""
-        }
-        ${
-          referralData.query_details.special_requirements
-            ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
-            : ""
-        }
+        ${referralData.property.area
+        ? `<li>Preferred Area: ${referralData.property.area}</li>`
+        : ""
+      }
+        ${referralData.query_details.special_requirements
+        ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
+        : ""
+      }
       </ul>
       
-      <p>One of our agents will contact you soon via ${
-        referralData.referee.preferred_contact
+      <p>One of our agents will contact you soon via ${referralData.referee.preferred_contact
       } during ${referralData.referee.best_time_contact}.</p>
       
       <p>Best regards,<br>Your Property Team</p>
@@ -948,17 +984,14 @@ async function sendProgressUpdateEmail(referralData) {
     html: `
       <h2>Referral Progress Update</h2>
       <p>Dear ${referralData.referrer.full_name},</p>
-      <p>Your referral (Tracking Code: <strong>${
-        referralData.tracking_code
+      <p>Your referral (Tracking Code: <strong>${referralData.tracking_code
       }</strong>) has been updated.</p>
       
-      <p><strong>Current Status:</strong> ${
-        referralData.query_progress.status
+      <p><strong>Current Status:</strong> ${referralData.query_progress.status
       }</p>
-      ${
-        referralData.query_progress.assigned_agent
-          ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
-          : ""
+      ${referralData.query_progress.assigned_agent
+        ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
+        : ""
       }
       
       <p>We will continue to keep you updated on the progress.</p>
@@ -1014,14 +1047,12 @@ async function sendCommissionNotificationEmail(referralData) {
         <h3>Commission Details:</h3>
         <p><strong>Commission Amount:</strong> ₹${referralData.commission.amount.toLocaleString()}</p>
         <p><strong>Deal Value:</strong> ₹${referralData.commission.deal_value.toLocaleString()}</p>
-        <p><strong>Commission Rate:</strong> ${
-          referralData.commission.percentage
-        }%</p>
+        <p><strong>Commission Rate:</strong> ${referralData.commission.percentage
+      }%</p>
       </div>
       
       <p><strong>Please visit our office to collect your commission amount.</strong></p>
-      <p>Bring a valid ID and mention your tracking code: <strong>${
-        referralData.tracking_code
+      <p>Bring a valid ID and mention your tracking code: <strong>${referralData.tracking_code
       }</strong></p>
       
       <p>Thank you for your referral!</p>
