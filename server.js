@@ -228,11 +228,6 @@ scheduleNewOffPlanSync();
 
 // Then mount your API routes
 
-app.get("/test", (req, res) => {
-  // console.log("Testing Logsss  22")
-  return res.json({msg:"Testing Logsss 33"})
-});
-
 app.use("/", router);
 
 // Google Reviews 
