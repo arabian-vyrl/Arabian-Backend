@@ -222,7 +222,7 @@ const createContact = async (req, res) => {
     await contact.save();
     // console.log("✓ Contact saved to database:", contact._id);
 
-     res.status(201).json({
+    res.status(201).json({
       success: true,
       message: "Message sent successfully!",
       data: contact,
@@ -235,9 +235,14 @@ const createContact = async (req, res) => {
       tele_phone: contact.telephone,
       message: contact.message,
       source: contact.source,
+      recordType: "General",
+      leadSource: "Website",
+      leadChannel: "Form",
+      leadSourceContact: "Contact Form",
+      defaultOwner: "info@arabianestates.ae",
     };
     salesforceService.syncWithRetry(Contact, contact._id, salesforceData);
-    
+
   } catch (error) {
     console.error("❌ Error creating contact:", error);
     res.status(500).json({

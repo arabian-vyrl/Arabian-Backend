@@ -53,9 +53,14 @@ const createPropertyValuation = async (req, res) => {
       last_name: propertyValuation.lastName,
       tele_phone: propertyValuation.phone,
       email: propertyValuation.email,
-      preferredDate: propertyValuation.preferredDate, 
-      preferredTime: propertyValuation.preferredTime,
-      propertyAddress: propertyValuation.propertyAddress
+      preferred_date: propertyValuation.preferredDate, 
+      preferred_time: propertyValuation.preferredTime,
+      property_address: propertyValuation.propertyAddress,
+      recordType: "Seller Enquiry",
+      leadSource: "Website",
+      leadChannel: "Form",
+      leadSourceContact: "Valuation request",
+      defaultOwner: "info@arabianestates.ae",
      };
 
     salesforceService.syncWithRetry(

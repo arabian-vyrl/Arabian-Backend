@@ -520,6 +520,11 @@ const ReferProperty = async (req, res) => {
         Best_Time_To_Contact: Best_Time_To_Contect,
         Urgency_Level: Urgency_Level,
         Special_Requirements: Special_Requirements,
+        recordType: "Referral",
+        leadSource: "Website",
+        leadChannel: "Form",
+        leadSourceContact: "Referral  ",
+        defaultOwner: "info@arabianestates.ae",
       };
 
       salesforceService.syncWithRetry(

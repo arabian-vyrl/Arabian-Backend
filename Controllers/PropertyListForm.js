@@ -44,9 +44,12 @@ const createPropertyListForm = async (req, res) => {
       last_name: propertyList.lastName,
       tele_phone: propertyList.telephone,
       email: propertyList.email,
-      // preferredDate: propertyList.preferredDate,
-      // preferredTime: propertyList.preferredTime,
-      address: propertyList.address,
+      property_address: propertyList.address,
+      recordType: "Seller Enquiry",
+      leadSource: "Website",
+      leadChannel: "Form",
+      leadSourceContact: "Request to List",
+      defaultOwner: "info@arabianestates.ae",
     };
     salesforceService.syncWithRetry(PropertyListModel, propertyList._id, salesforceData);
 
