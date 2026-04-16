@@ -8,7 +8,7 @@ const scheduleNewOffPlanSync = () => {
   cron.schedule(
    "0 2 * * *", 
     async () => {
-      console.log(`🔄 [${new Date().toISOString()}] OffPlan sync started`);
+      // console.log(`🔄 [${new Date().toISOString()}] OffPlan sync started`);
       const fakeReq = {
         query: {
           page: 1,

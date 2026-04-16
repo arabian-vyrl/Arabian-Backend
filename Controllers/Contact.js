@@ -192,7 +192,7 @@ const salesforceService = require("../services/SalesforceService");
 const createContact = async (req, res) => {
   try {
     const { firstName, lastName, email, telephone, message, source } = req.body;
-    console.log(req.body)
+    // console.log(req.body)
     // Validation
     if (!firstName || !lastName || !email || !telephone || !message) {
       return res.status(400).json({
@@ -220,7 +220,7 @@ const createContact = async (req, res) => {
     });
 
     await contact.save();
-    console.log("✓ Contact saved to database:", contact._id);
+    // console.log("✓ Contact saved to database:", contact._id);
 
      res.status(201).json({
       success: true,
@@ -229,7 +229,7 @@ const createContact = async (req, res) => {
     });
 
     const salesforceData = {
-      firstName: contact.firstName,
+      first_name: contact.firstName,
       last_name: contact.lastName,
       email: contact.email,
       tele_phone: contact.telephone,

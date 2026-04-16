@@ -8,8 +8,8 @@ const getSingleProperty = async (req, res) => {
     const PropertyId = req.query.id;
     const PropertyType = req.query.type;
     
-    console.log("Property ID:", PropertyId);
-    console.log("Property Type:", PropertyType);
+    // console.log("Property ID:", PropertyId);
+    // console.log("Property Type:", PropertyType);
     
     if (!PropertyId || !PropertyType) {
       return res.status(400).json({
@@ -25,7 +25,7 @@ const getSingleProperty = async (req, res) => {
       // Sale Property
       property = await SaleProperty.findOne({ id: PropertyId });
       
-      console.log("Searching in Sale collection:", property);
+      // console.log("Searching in Sale collection:", property);
       
       if (property) {
         return res.status(200).json({
@@ -39,7 +39,7 @@ const getSingleProperty = async (req, res) => {
     } else if (PropertyType === "RR"|| PropertyType=="Rent" ) {
       // Rent Property
       property = await RentProperty.findOne({ id: PropertyId });
-      console.log("Searching in Rent collection:", property);
+      // console.log("Searching in Rent collection:", property);
       
       if (property) {
         return res.status(200).json({
@@ -53,7 +53,7 @@ const getSingleProperty = async (req, res) => {
     } else if (PropertyType === "CS" || PropertyType === "CR" || PropertyType=="Commercial" ) {
       // Commercial Property (both sale and rent)
       property = await CommercialProperty.findOne({ id: PropertyId });
-      console.log("Searching in Commercial collection:", property);
+      // console.log("Searching in Commercial collection:", property);
       
       if (property) {
         return res.status(200).json({

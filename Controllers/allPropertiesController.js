@@ -5,8 +5,8 @@ const getSingleProperty = async (req, res) => {
     const PropertyId = req.query.id;
     const PropertyType = req.query.type || req.query.listing_type;
 
-    console.log("Property ID:", PropertyId);
-    console.log("Property Type:", PropertyType);
+    // console.log("Property ID:", PropertyId);
+    // console.log("Property Type:", PropertyType);
 
     if (!PropertyId || !PropertyType) {
       return res.status(400).json({
@@ -19,11 +19,11 @@ const getSingleProperty = async (req, res) => {
       listing_type: PropertyType,
     };
 
-    console.log("Searching with query:", query);
+    // console.log("Searching with query:", query);
 
     const property = await Property.findOne(query);
 
-    console.log("Property found:", property ? "Yes" : "No");
+    // console.log("Property found:", property ? "Yes" : "No");
     if (!property) {
       return res.status(404).json({
         success: false,

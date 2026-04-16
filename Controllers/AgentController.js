@@ -1203,8 +1203,8 @@ const addDesignationMetaStages = (
 // };
 
 const createAgent = async (req, res) => {
-  console.log("Create agent request body:", req.body);
-  console.log("Create agent request body:", req.file);
+  // console.log("Create agent request body:", req.body);
+  // console.log("Create agent request body:", req.file);
 
   const session = await mongoose.startSession();
 
@@ -1278,7 +1278,7 @@ const createAgent = async (req, res) => {
               { agentId: agent.agentId },
               { $set: { agentCompressImage: compressed } },
             );
-            console.log(`Compressed images stored for agent: ${agent.agentId}`);
+            // console.log(`Compressed images stored for agent: ${agent.agentId}`);
           }
         })
         .catch((err) => console.error("Compression background error:", err));
@@ -1634,7 +1634,7 @@ const getAgentByEmail = async (req, res) => {
   }
 };
 const updateAgent = async (req, res) => {
-  console.log("updating agent", req.body);
+  // console.log("updating agent", req.body);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -1834,7 +1834,7 @@ const updateAgent = async (req, res) => {
               { agentId },
               { $set: { agentCompressImage: compressed } },
             );
-            console.log(`Recompressed images for updated agent: ${agentId}`);
+            // console.log(`Recompressed images for updated agent: ${agentId}`);
           }
         })
         .catch((err) => console.error("Recompression error:", err));

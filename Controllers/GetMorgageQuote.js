@@ -33,7 +33,7 @@ const createMortgageQuote = async (req, res) => {
     } = req.body;
 
     // Log incoming data for debugging
-    console.log("Received mortgage quote request:", req.body);
+    // console.log("Received mortgage quote request:", req.body);
 
     // Validate required fields
     const missingFields = [];
@@ -80,7 +80,7 @@ const createMortgageQuote = async (req, res) => {
       missingFields.push("mortgagePurchaseCosts");
 
     if (missingFields.length > 0) {
-      console.log("Missing fields:", missingFields);
+      // console.log("Missing fields:", missingFields);
       return res.status(400).json({
         success: false,
         message: `Missing required fields: ${missingFields.join(", ")}`,
@@ -204,7 +204,7 @@ const deleteMortgageQuote = async (req, res) => {
       });
     }
 
-    console.log("Quote deleted successfully:", req.params.id);
+    // console.log("Quote deleted successfully:", req.params.id);
 
     res.status(200).json({
       success: true,

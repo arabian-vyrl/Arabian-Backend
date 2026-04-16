@@ -49,7 +49,7 @@ const createPropertyValuation = async (req, res) => {
     });
 
     const salesforceData = {
-      firstName: propertyValuation.firstName,
+      first_name: propertyValuation.firstName,
       last_name: propertyValuation.lastName,
       tele_phone: propertyValuation.phone,
       email: propertyValuation.email,

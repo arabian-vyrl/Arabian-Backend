@@ -70,9 +70,6 @@ const verifyReferrerToken = async (req, res) => {
       return res.status(401).json({ valid: false, message: "Unauthorized" });
     }
     const { referrerFullName, refferalEmail } = req.user;
-
-    console.log("Working");
-    console.log(req.user);
     const referrals = await ReferralProperty.find({
       // "referrer.full_name": referrerFullName,
       "referrer.email": refferalEmail,

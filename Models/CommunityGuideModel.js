@@ -124,7 +124,6 @@ const communityGuideSchema = new Schema(
       type: String,
       unique: true,
       lowercase: true,
-      index: true,
     },
     tags: [
       {
@@ -311,6 +310,6 @@ communityGuideSchema.index({
 
 communityGuideSchema.index({ publishedAt: -1 });
 communityGuideSchema.index({ tags: 1 });
-communityGuideSchema.index({ slug: 1 });
+// slug index removed — already covered by unique: true on the field
 
 module.exports = mongoose.model("CommunityGuide", communityGuideSchema);

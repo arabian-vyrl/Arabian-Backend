@@ -964,12 +964,6 @@ const SortProperties = async (req, res) => {
     const PropertyModel = getPropertyModelByOfferingType(offeringType);
     const collectionName = getCollectionName(offeringType);
 
-    console.log("Raw Offering Type:", rawOfferingType);
-    console.log("Normalized Offering Type:", offeringType);
-    console.log(
-      `Using ${PropertyModel.modelName} collection for sorting`
-    );
-
     // Sort and pagination parameters
     const sortBy = req.query.sortBy || "most_recent";
     const page = parseInt(req.query.page) || 1;
@@ -1156,21 +1150,41 @@ const SortProperties = async (req, res) => {
 
 const getAddressSuggestions = async (req, res) => {
   try {
-    const listingType =
+    const rawListingType =
       req.query.listing_type ||
       req.query.listingType ||
       req.query.type ||
       "Sale";
+
+
+      // console.log("REQ BODY", req.query)
+
+    // Support multiple listing types: comma-separated string or array
+    const listingTypeArray = Array.isArray(rawListingType)
+      ? rawListingType.flatMap((t) => t.split(",").map((s) => s.trim())).filter(Boolean)
+      : rawListingType.split(",").map((s) => s.trim()).filter(Boolean);
+
+    const listingType = listingTypeArray.length === 1 ? listingTypeArray[0] : listingTypeArray;
+
+    // Build the listing_type condition for MongoDB queries
+    const listingTypeCondition =
+      listingTypeArray.length === 1
+        ? { listing_type: listingTypeArray[0] }
+        : { listing_type: { $in: listingTypeArray } };
+
     const prefix = req.query.prefix;
 
 
-    console.log("Listing Type", listingType)
-    console.log("Prefix", prefix)
+    // console.log("REQ BODY", req.query)
+
+
+    // console.log("Listing Type", listingType)
+    // console.log("Prefix", prefix)
     const maxSuggestions = parseInt(req.query.limit) || 5;
 
-    console.log(
-      `Getting address suggestions for listing_type: "${listingType}"`
-    );
+    // console.log(
+    //   `Getting address suggestions for listing_type: "${listingType}"`
+    // );
 
     if (!prefix) {
       return res.status(400).json({
@@ -1196,16 +1210,10 @@ const getAddressSuggestions = async (req, res) => {
       return words.map(word => word.charAt(0).toUpperCase()).join("");
     };
 
-    const matchesPrefixOrAbbreviation = (text, searchPrefix) => {
+    const matchesPrefixOrAbbreviation = (text, searchPrefix, abbreviationOnly = false) => {
       if (!text) return false;
 
-      const lowerText = text.toLowerCase();
       const lowerPrefix = searchPrefix.toLowerCase();
-
-      // Check word boundary match
-      if (lowerText.match(new RegExp(`\\b${lowerPrefix}`))) {
-        return true;
-      }
 
       // Check if abbreviation matches prefix
       const abbreviation = generateAbbreviation(text);
@@ -1213,12 +1221,21 @@ const getAddressSuggestions = async (req, res) => {
         return true;
       }
 
+      // Skip word boundary match when doing abbreviation-only search
+      if (abbreviationOnly) return false;
+
+      // Check word boundary match
+      const lowerText = text.toLowerCase();
+      if (lowerText.match(new RegExp(`\\b${lowerPrefix}`))) {
+        return true;
+      }
+
       return false;
     };
 
-    console.log(
-      `Getting address suggestions for prefix: "${prefix}" from ${listingType} properties`
-    );
+    // console.log(
+    //   `Getting address suggestions for prefix: "${prefix}" from ${listingType} properties`
+    // );
 
     // Check if prefix looks like an abbreviation (all uppercase or very short)
     const isLikelyAbbreviation = prefix.length <= 3 && /^[A-Z]+$/i.test(prefix);
@@ -1226,20 +1243,15 @@ const getAddressSuggestions = async (req, res) => {
     let properties;
 
     if (isLikelyAbbreviation) {
-      // For abbreviation search, skip regex and fetch all properties
-      console.log(`Detected likely abbreviation search: "${prefix}"`);
-      const generalQuery = {
-        listing_type: listingType,
-      };
 
-      properties = await Property.find(generalQuery)
+      properties = await Property.find(listingTypeCondition)
         .limit(500)
         .select("custom_fields.propertyfinder_region listing_type")
         .lean();
     } else {
       // For regular text search, use regex for efficiency
       const regexQuery = {
-        listing_type: listingType,
+        ...listingTypeCondition,
         "custom_fields.propertyfinder_region": {
           $regex: new RegExp(`\\b${prefix}`, "i"),
         },
@@ -1252,10 +1264,7 @@ const getAddressSuggestions = async (req, res) => {
 
       // If no results from regex, fallback to fetching all
       if (properties.length === 0) {
-        console.log(`No regex matches found, fetching all for manual matching`);
-        const generalQuery = {
-          listing_type: listingType,
-        };
+        const generalQuery = listingTypeCondition;
 
         properties = await Property.find(generalQuery)
           .limit(500)
@@ -1264,9 +1273,9 @@ const getAddressSuggestions = async (req, res) => {
       }
     }
 
-    console.log(
-      `Found ${properties.length} ${listingType} properties in database`
-    );
+    // console.log(
+    //   `Found ${properties.length} ${listingType} properties in database`
+    // );
 
     // Use Set to ensure unique suggestions
     const suggestions = new Set();
@@ -1283,7 +1292,7 @@ const getAddressSuggestions = async (req, res) => {
       for (const part of addressParts) {
         if (part && part.length >= 2) {
           // Check if part matches prefix OR abbreviation
-          if (matchesPrefixOrAbbreviation(part, prefix)) {
+          if (matchesPrefixOrAbbreviation(part, prefix, isLikelyAbbreviation)) {
             suggestions.add(part);
 
             // Stop early if we reached the cap (collect extra for sorting)
@@ -1330,18 +1339,18 @@ const getAddressSuggestions = async (req, res) => {
     // Trim to maxSuggestions
     suggestionsArray = suggestionsArray.slice(0, maxSuggestions);
 
-    console.log(
-      `Returning ${suggestionsArray.length} suggestions for ${listingType} properties`
-    );
+    // console.log(
+    //   `Returning ${suggestionsArray.length} suggestions for ${listingType} properties`
+    // );
 
     res.status(200).json({
       success: true,
-      message: `Found ${suggestionsArray.length} address suggestions for "${prefix}" from ${listingType} properties`,
+      message: `Found ${suggestionsArray.length} address suggestions for "${prefix}" from ${listingTypeArray.join(", ")} properties`,
       count: suggestionsArray.length,
-      listingType: listingType,
+      listingType: listingTypeArray.length === 1 ? listingTypeArray[0] : listingTypeArray,
       data: suggestionsArray,
       debug: {
-        listingType: listingType,
+        listingType: listingTypeArray,
         prefix: prefix,
         totalPropertiesFound: properties.length,
         abbreviationMatching: true,
@@ -1372,13 +1381,13 @@ const filterByCommunity = async (req, res) => {
 
     const propertyPrice = req.query.propertyPrice;
 
-    console.log("PROPERTY PRICE", propertyPrice)
+    // console.log("PROPERTY PRICE", propertyPrice)
     const community = req.query.community;
     const listingTypeParam = req.query.listingType || req.query.type || "Sale";
 
     // listingTypeParam can be "Sale", "Rent", "Sale,Offplan" etc.
     const listingTypes = listingTypeParam.split(",").map((t) => t.trim());
-    console.log("LT", listingTypes);
+    // console.log("LT", listingTypes);
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -1481,9 +1490,9 @@ const filterByCommunity = async (req, res) => {
       ],
     };
 
-    console.log("Community search terms:", searchWords);
-    console.log("Listing types:", normalizedListingTypes);
-    console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
+    // console.log("Community search terms:", searchWords);
+    // console.log("Listing types:", normalizedListingTypes);
+    // console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
 
     const skip = (page - 1) * limit;
 
@@ -1520,11 +1529,11 @@ const filterByCommunity = async (req, res) => {
       .limit(limit)
       .lean();
 
-    console.log(
-      `Found ${properties.length} ${normalizedListingTypes
-        .join(" and ")
-        .toLowerCase()} properties for page ${page} in "${community}" community`
-    );
+    // console.log(
+    //   `Found ${properties.length} ${normalizedListingTypes
+    //     .join(" and ")
+    //     .toLowerCase()} properties for page ${page} in "${community}" community`
+    // );
 
     res.status(200).json({
       success: true,
@@ -1783,7 +1792,7 @@ const filterByCommunity = async (req, res) => {
 //       `Found ${properties.length} ${normalizedListingTypes
 //         .join(" and ")
 //         .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
-//     );
+//     ); 
 
 //     res.status(200).json({
 //       success: true,
@@ -1832,13 +1841,13 @@ const filterByCommunity = async (req, res) => {
 const NewfilterByCommunity = async (req, res) => {
   try {
     const propertyPrice = req.query.propertyPrice || "";
-    console.log("PROPERTY PRICE", propertyPrice);
+    // console.log("PROPERTY PRICE", propertyPrice);
     let community = req.query.community || "";
     const listingTypeParam = req.query.listingType || req.query.type || "";
     const excludePropertyId = req.query.propertyId || ""; // <-- Added
-    console.log("Community", community)
+    // console.log("Community", community)
 
-    console.log("Listing Type Param", listingTypeParam)
+    // console.log("Listing Type Param", listingTypeParam)
 
     //Normalize the Community Name to remove the (Tecom, (Dubai World Central) ) like this 
     if (community) {
@@ -1846,7 +1855,7 @@ const NewfilterByCommunity = async (req, res) => {
     }
 
     const listingTypes = listingTypeParam.split(",").map((t) => t.trim());
-    console.log("LT", listingTypes);
+    // console.log("LT", listingTypes);
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -1953,11 +1962,11 @@ const NewfilterByCommunity = async (req, res) => {
         }
       };
 
-      console.log("Price Range:", {
-        basePrice,
-        minPrice,
-        maxPrice
-      });
+      // console.log("Price Range:", {
+      //   basePrice,
+      //   minPrice,
+      //   maxPrice
+      // });
     }
 
     // Combined query:
@@ -1992,9 +2001,9 @@ const NewfilterByCommunity = async (req, res) => {
       $and: queryConditions,
     };
 
-    console.log("Community search terms:", searchWords);
-    console.log("Listing types:", normalizedListingTypes);
-    console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
+    // console.log("Community search terms:", searchWords);
+    // console.log("Listing types:", normalizedListingTypes);
+    // console.log("Combined query:", JSON.stringify(combinedQuery, null, 2));
 
     const skip = (page - 1) * limit;
 
@@ -2053,11 +2062,11 @@ const NewfilterByCommunity = async (req, res) => {
       communityBreakdown[communityName] = (communityBreakdown[communityName] || 0) + 1;
     });
 
-    console.log(
-      `Found ${properties.length} ${normalizedListingTypes
-        .join(" and ")
-        .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
-    );
+    // console.log(
+    //   `Found ${properties.length} ${normalizedListingTypes
+    //     .join(" and ")
+    //     .toLowerCase()} properties for page ${page}${community ? ` in "${community}" community` : ''}${propertyPrice ? ` within price range` : ''}`
+    // );
 
     res.status(200).json({
       success: true,

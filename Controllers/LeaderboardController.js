@@ -2273,11 +2273,11 @@ async function applyLeaderboardSnapshot(snapshot) {
 
   await Agent.bulkWrite(ops, { ordered: false });
 
-  console.log(
-    `✅ [LEADERBOARD SNAPSHOT] Applied in single bulkWrite for UTC ${targetY}-${String(
-      targetM + 1
-    ).padStart(2, "0")} → Agents touched: ${agentsTouched}`
-  );
+  // console.log(
+  //   `✅ [LEADERBOARD SNAPSHOT] Applied in single bulkWrite for UTC ${targetY}-${String(
+  //     targetM + 1
+  //   ).padStart(2, "0")} → Agents touched: ${agentsTouched}`
+  // );
 
   if (meta?.listings) {
     console.log(
@@ -2309,7 +2309,7 @@ async function syncLeaderboardCoreCurrentMonth() {
   // Update cache AFTER DB write is successful
   try {
     await updateLeaderboardCache();
-    console.log("✅ [CACHE] Leaderboard cache updated successfully");
+    // console.log("✅ [CACHE] Leaderboard cache updated successfully");
   } catch (cacheError) {
     console.error("⚠️ [CACHE] Failed to update cache:", cacheError.message);
     // Don't fail the sync because of cache problems
@@ -2645,9 +2645,9 @@ const getLeaderboardAgents = async (req, res) => {
 
     // Serve from cache while master sync is in progress
     if (masterSyncRunning && lastLeaderboardCache) {
-      console.log(
-        "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
-      );
+      // console.log(
+      //   "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
+      // );
       
       const allAgents = lastLeaderboardCache.allAgents;
       const total = allAgents.length;
