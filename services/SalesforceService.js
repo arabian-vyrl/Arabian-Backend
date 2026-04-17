@@ -53,8 +53,6 @@ class SalesforceService {
   async syncWithRetry(Model, documentId, salesforceData) {
     try {
       await this.sendLead(salesforceData);
-      
-      // ✅ Update salesforceSynced to true
       await Model.findByIdAndUpdate(documentId, {
         salesforceSynced: true,
       });

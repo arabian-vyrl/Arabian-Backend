@@ -76,11 +76,11 @@ const createMortgageApproval = async (req, res) => {
   monthlyRepayment: approval.monthlyRepayment,
   agreedToContact: approval.agreedToContact,
   source: approval.source,
-  recordType: "Buyer Enquiry",
-  leadSource: "Website",
-  leadChannel: "Form",
-  leadSourceContact: "Mortgage enquiry",
-  defaultOwner: "info@arabianestates.ae",
+  record_type: "Buyer Enquiry",
+  lead_source: "Website",
+  lead_channel: "Form",
+  lead_source_contact: "Mortgage enquiry",
+  default_owner: "info@arabianestates.ae",
 };
     salesforceService.syncWithRetry(MortgageApproval, approval._id, salesforceData);
   

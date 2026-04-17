@@ -32,10 +32,6 @@ const createMortgageQuote = async (req, res) => {
       source,
     } = req.body;
 
-    // Log incoming data for debugging
-    // console.log("Received mortgage quote request:", req.body);
-
-    // Validate required fields
     const missingFields = [];
 
     if (!firstName) missingFields.push("firstName");
@@ -87,7 +83,6 @@ const createMortgageQuote = async (req, res) => {
         missingFields,
       });
     }
-
     const quote = new MortgageQuote({
       firstName,
       lastName,
@@ -154,9 +149,15 @@ const createMortgageQuote = async (req, res) => {
       conveyancerFee: quote.conveyancerFee,
       mortgagePurchaseCosts: quote.mortgagePurchaseCosts,
       source: quote.source,
+      record_type: "Buyer Enquiry",
+      lead_source: "Website",
+      lead_channel: "Form",
+      lead_source_contact: "Mortgage enquiry",
+      default_owner: "info@arabianestates.ae",
+
     };
     salesforceService.syncWithRetry(MortgageQuote, quote._id, salesforceData);
-    
+
   } catch (error) {
     console.error("Error creating mortgage quote:", error);
     res.status(500).json({
@@ -165,9 +166,9 @@ const createMortgageQuote = async (req, res) => {
       error: error.message,
       details: error.errors
         ? Object.keys(error.errors).map((key) => ({
-            field: key,
-            message: error.errors[key].message,
-          }))
+          field: key,
+          message: error.errors[key].message,
+        }))
         : null,
     });
   }

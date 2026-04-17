@@ -40,6 +40,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
+const offPlanDownloadController = require("../Controllers/OffplanDownloadController")
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -442,8 +443,14 @@ router.get("/test-controller-geo-pionts", testController.MatchgeoPiont);
 
 // Send Email from Footer
 router.post("/subscribe", footerSubscribeEmail.subscribeEmail);
+
+
+
 // Download Brochure & FloorPlan
-router.post("/download-request", footerSubscribeEmail.downloadFile);
+router.post("/download-request", offPlanDownloadController.createOffplanDownload);
+router.get("/get-offplan-downloads", offPlanDownloadController.getOffplanDownloads);
+router.delete("/delete-offplan-download", offPlanDownloadController.deleteOffplanDownload);
+
 
 
 // ========== OPTIMIZED GEO POINT MATCHING ROUTES ==========
