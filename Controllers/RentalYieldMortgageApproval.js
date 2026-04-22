@@ -3,7 +3,6 @@ const salesforceService = require("../services/SalesforceService");
 
 const createRentalYieldApproval = async (req, res) => {
   try {
-    console.log("Request body:", req.body);
     const {
       firstName,
       lastName,

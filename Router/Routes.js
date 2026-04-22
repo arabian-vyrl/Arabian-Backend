@@ -219,10 +219,10 @@ router.get(
 router.post("/ReferProperty", ReferProperties.ReferProperty);
 router.get("/AllReferelProperties", ReferProperties.GetAllReferal);
 router.get("/Track-Refer-Lead", ReferProperties.trackQUery);
-// router.get("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.put("/Update-Refer-Lead", ReferProperties.updateQueryProgress);
 router.get("/Delete-Refer-Lead", ReferProperties.deleteQuery);
 router.post("/refer-track-logout", ReferProperties.Referrerlogout);
+router.post("/refer-password-reset", ReferProperties.ReferTrackResetPassword)
 
 // Blogs Api's
 router.get("/GetBlogs", Blogs.GetAllBlogs);

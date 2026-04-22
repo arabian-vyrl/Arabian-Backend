@@ -71,9 +71,6 @@ const verifyReferrerToken = async (req, res) => {
       return res.status(401).json({ valid: false, message: "Unauthorized" });
     }
     const { referrerFullName, refferalEmail } = req.user;
-
-    // console.log("Working");
-    // console.log(req.user);
     const referrals = await ReferralProperty.find({
       // "referrer.full_name": referrerFullName,
       "referrer.email": refferalEmail,
@@ -244,80 +241,6 @@ const trackRefer = async (req, res) => {
   }
 };
 
-// const trackRefer = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email and password are required",
-//       });
-//     }
-//     const user = await ReferralProperty.find({
-//       "referrer.email": email,
-//       "referrer.password": password
-//     });
-
-//     if (!user || user.length === 0) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Invalid email or password",
-//       });
-//     }
-//     const referrals = await ReferralProperty.find({
-//       "referrer.email": email,
-//     });
-
-//     if (!referrals || referrals.length === 0) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "No referrals found for this user",
-//       });
-//     }
-//     const referralData = referrals.map((r) => ({
-//       refereeName: r.referee.full_name,
-//       trackingCode: r.tracking_code,
-//     }));
-
-//     const referrerFullName = referrals[0].referrer.full_name;
-//     const refferalEmail = referrals[0].referrer.email;
-
-//     const payload = {
-//       referrerFullName: referrerFullName,
-//       refferalEmail: refferalEmail
-//     };
-
-//     const secretKey = process.env.SECRET_KEY;
-//     const options = {
-//       expiresIn: '1h'
-//     };
-//     const token = jwtToken.sign(payload, secretKey, options)
-
-//     res.cookie("referalToken", token, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-//       maxAge: 10 * 60 * 60 * 1000,
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Login successful",
-//       details: referralData,
-//       // generatedToken: token,
-//     });
-
-//   } catch (error) {
-//     console.error("Error in trackRefer:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//       error: error.message,
-//     });
-//   }
-// };
-
 const GetAllReferal = async (req, res) => {
   try {
     const referells = await ReferralProperty.find();
@@ -353,8 +276,6 @@ const ReferProperty = async (req, res) => {
       Urgency_Level,
       Special_Requirements,
     } = req.body;
-
-    console.log(req.body);
 
     // Step 1: Validation
     // const validationErrors = validateReferralData(req.body);
@@ -612,110 +533,6 @@ const trackQUery = async (req, res) => {
     });
   }
 };
-
-// Validation function
-// function validateReferralData(data) {
-//   const errors = [];
-
-//   // if (!data.Reffrer_FullName) errors.push('Referrer full name is required');
-//   if (!data.Reffrer_EmailAdress) errors.push('Referrer email is required');
-//   if (!data.Reffrer_PhoneNumber) errors.push('Referrer phone number is required');
-//   if (!data.Refree_FullName) errors.push('Referee full name is required');
-//   if (!data.Refree_EmailAdress) errors.push('Referee email is required');
-//   if (!data.Refree_PhoneNumber) errors.push('Referee phone number is required');
-//   // if (!data.Relation_to_Reffrer) errors.push('Relationship to referee is required');
-
-//   // Email validation
-//   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//   if (data.Reffrer_EmailAdress && !emailRegex.test(data.Reffrer_EmailAdress)) {
-//     errors.push('Invalid referrer email format');
-//   }
-//   if (data.Refree_EmailAdress && !emailRegex.test(data.Refree_EmailAdress)) {
-//     errors.push('Invalid referee email format');
-//   }
-
-//   return errors;
-// }
-
-// Function to update query progress (work on it)
-// const updateQueryProgress = async (req, res) => {
-//   try {
-//     const { trackingCode, newStatus,  agentEmail } = req.query;
-//     if (!newStatus) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "newStatus is required",
-//       });
-//     }
-//     const validStatuses = [
-//       "Query Received",
-//       "Agent Assigned",
-//       "Contact Initiated",
-//       "Meeting Scheduled",
-//       "Property Shown",
-//       "Negotiation",
-//       "Deal Closed Collect Commission From Our Office",
-//       "Client Not Interested",
-//       "Cancelled",
-//     ];
-
-//     if (!validStatuses.includes(newStatus)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
-//       });
-//     }
-
-//     const updateData = {
-//       "query_progress.status": newStatus,
-//       "query_progress.last_updated": new Date(),
-//     };
-
-//     if (newStatus === "Agent Assigned") {
-//       if (!agentId || !agentName) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "agentId and agentName are required when status is Agent Assigned",
-//         });
-//       }
-
-//       updateData["agent_assign.agent_id"] = agentId;
-//       updateData["agent_assign.agent_name"] = agentName;
-//     }
-
-//     const updatedDocument = await ReferralProperty.findOneAndUpdate(
-//       { tracking_code: trackingCode },
-//       { $set: updateData },
-//       { new: true, runValidators: true }
-//     );
-
-//     if (!updatedDocument) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Document not found with this tracking code",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Query progress updated successfully",
-//       data: {
-//         id: updatedDocument._id,
-//         tracking_code: updatedDocument.tracking_code,
-//         agent_assign: updatedDocument.agent_assign,
-//         query_progress: updatedDocument.query_progress,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error updating query progress:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Server error while updating query progress",
-//       error: process.env.NODE_ENV === "development" ? error.message : undefined,
-//     });
-//   }
-// };
 
 const updateQueryProgress = async (req, res) => {
   try {
@@ -1068,6 +885,79 @@ async function sendCommissionNotificationEmail(referralData) {
   return transporter.sendMail(mailOptions);
 }
 
+
+// Reset Password
+const ReferTrackResetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    // Check if user exists
+    const user = await ReferralProperty.findOne({
+      "referrer.email": email,
+    });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No user found with this email",
+      });
+    }
+    // Generate new password
+    const newPassword = generateRandomPassword(6);
+    // Update password for all referrals of this referrer
+    await ReferralProperty.updateMany(
+      { "referrer.email": email },
+      {
+        $set: {
+          "referrer.password": newPassword,
+        },
+      }
+    );
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.NODE_MAILER_EMAIL,
+        pass: process.env.NODE_MAILER_PASSWORD,
+      },
+    });
+
+    // Send email
+    await transporter.sendMail({
+      from: process.env.NODE_MAILER_EMAIL,
+      to: email,
+      subject: "Password Reset - Referral Tracking System",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Password Reset Successful</h2>
+          <p>Your referral tracking account password has been reset successfully.</p>
+
+          <p><strong>New Password:</strong> ${newPassword}</p>
+
+          <p>Please login using this new password.</p>
+          <br/>
+          <p>Best Regards,<br/>Arabian Estates</p>
+        </div>
+      `,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "New password sent to your email",
+    });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while resetting password",
+      error: error.message,
+    });
+  }
+};
+
 // Export functions
 module.exports = {
   ReferProperty,
@@ -1080,4 +970,5 @@ module.exports = {
   verifyReferrerToken,
   agentUpdate,
   Referrerlogout,
+  ReferTrackResetPassword
 };
