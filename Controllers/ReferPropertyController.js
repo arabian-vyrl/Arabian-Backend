@@ -553,15 +553,14 @@ const updateQueryProgress = async (req, res) => {
     }
 
     const validStatuses = [
-      "Query Received",
       "Agent Assigned",
-      "Contact Initiated",
-      "Meeting Scheduled",
+      "Contacted",
+      "Booked Meeting",
       "Property Shown",
-      "Negotiation",
-      "Deal Closed Collect Commission From Our Office",
-      "Client Not Interested",
-      "Cancelled",
+      "Negotiations",
+      "Deal Closed/ Commission Collected",
+      "Deal Cancelled",
+      "Client Not Interested"
     ];
 
     if (!validStatuses.includes(newStatus)) {

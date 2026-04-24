@@ -35,7 +35,7 @@ const referralPropertySchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true,
-        minlength: 6, 
+        minlength: 6,
       },
     },
 
@@ -114,29 +114,62 @@ const referralPropertySchema = new mongoose.Schema(
       },
     },
 
-    salesforceSynced:{type: Boolean, default: false },
+    salesforceSynced: { type: Boolean, default: false },
     emailSent: { type: Boolean, default: false },
+    // query_progress: {
+    //   status: {
+    //     type: String,
+    //     enum: [
+    //       "Query Received",
+    //       // 'Lead Sent to Sales',
+    //       "Agent Assigned",
+    //       "Contact Initiated",
+    //       "Meeting Scheduled",
+    //       "Property Shown",
+    //       "Negotiation",
+    //       "Deal Closed Collect Commission From Our Office",
+
+    //       // If CLient Not Intrested
+    //       "Client Not Interested",
+    //       "Cancelled",
+    //       // 'Commission Pending',
+    //       // 'Commission Paid',
+    //       // 'Query Cancelled'
+    //     ],
+    //     default: "Query Received",
+    //   },
+
+    //   notes: [
+    //     {
+    //       note: String,
+    //       updated_by: String,
+    //       timestamp: {
+    //         type: Date,
+    //         default: Date.now,
+    //       },
+    //     },
+    //   ],
+    //   last_updated: {
+    //     type: Date,
+    //     default: Date.now,
+    //   },
+    // },
+
+    // Timestamps
     query_progress: {
       status: {
         type: String,
         enum: [
-          "Query Received",
-          // 'Lead Sent to Sales',
           "Agent Assigned",
-          "Contact Initiated",
-          "Meeting Scheduled",
+          "Contacted",
+          "Booked Meeting",
           "Property Shown",
-          "Negotiation",
-          "Deal Closed Collect Commission From Our Office",
-
-          // If CLient Not Intrested
-          "Client Not Interested",
-          "Cancelled",
-          // 'Commission Pending',
-          // 'Commission Paid',
-          // 'Query Cancelled'
+          "Negotiations",
+          "Deal Closed/ Commission Collected",
+          "Deal Cancelled",
+          "Client Not Interested"
         ],
-        default: "Query Received",
+        default: null, // since no initial status now
       },
 
       notes: [
@@ -149,13 +182,13 @@ const referralPropertySchema = new mongoose.Schema(
           },
         },
       ],
+
       last_updated: {
         type: Date,
         default: Date.now,
       },
     },
-
-    // Timestamps
+  
     created_at: {
       type: Date,
       default: Date.now,
