@@ -300,7 +300,6 @@ const ReferProperty = async (req, res) => {
     } else {
       ReffrerPassword = generateRandomPassword(6);
     }
-
     // Step 3: Save referral to DB
     const referralData = new ReferralProperty({
       referrer: {
@@ -504,21 +503,20 @@ const trackQUery = async (req, res) => {
         submission_date: referral.created_at,
         last_updated: referral.query_progress.last_updated,
       },
-
       referral_details: {
         referee_name: `${referral.referee.first_name} ${referral.referrer.last_name}`,
         referrer_name: `${referral.referrer.first_name} ${referral.referrer.last_name}`,
         property_area: referral.property.area || "Not specified",
         urgency_level: referral.query_details.urgency_level,
+        preferred_contact: referral.referee.preferred_contact || "Not specified",
+        best_time_contact: referral.referee.best_time_contact || "Not specified", 
       },
-
       current_status: {
         status: referral.query_progress.status,
         assigned_agent: referral.agent_assign.agent_name || "Not Assigned Yet",
         last_updated: referral.query_progress.last_updated,
       },
     };
-
     res.status(200).json({
       success: true,
       message: "Query progress retrieved successfully",
@@ -544,14 +542,12 @@ const updateQueryProgress = async (req, res) => {
         message: "trackingCode is required",
       });
     }
-
     if (!newStatus) {
       return res.status(400).json({
         success: false,
         message: "newStatus is required",
       });
     }
-
     const validStatuses = [
       "Agent Assigned",
       "Contacted",
@@ -562,20 +558,17 @@ const updateQueryProgress = async (req, res) => {
       "Deal Cancelled",
       "Client Not Interested"
     ];
-
     if (!validStatuses.includes(newStatus)) {
       return res.status(400).json({
         success: false,
         message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
       });
     }
-
     // Base update (always applied)
     const updateData = {
       "query_progress.status": newStatus,
       "query_progress.last_updated": new Date(),
     };
-
     /**
      * ✅ Agent can be updated at ANY stage
      * If agentEmail is provided → update agent_assign
@@ -592,26 +585,22 @@ const updateQueryProgress = async (req, res) => {
           message: "Active agent not found with this email",
         });
       }
-
       updateData["agent_assign.agent_name"] = agentDoc.agentName;
       updateData["agent_assign.agent_id"] = agentDoc.agentId;
       updateData["agent_assign.agent_email"] = agentDoc.email;
       updateData["agent_assign.updated_at"] = new Date();
     }
-
     const updatedDocument = await ReferralProperty.findOneAndUpdate(
       { tracking_code: trackingCode },
       { $set: updateData },
       { new: true, runValidators: true },
     );
-
     if (!updatedDocument) {
       return res.status(404).json({
         success: false,
         message: "Document not found with this tracking code",
       });
     }
-
     return res.status(200).json({
       success: true,
       message: "Query updated successfully",
@@ -624,7 +613,6 @@ const updateQueryProgress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating query progress:", error);
-
     return res.status(500).json({
       success: false,
       message: "Server error while updating query progress",
