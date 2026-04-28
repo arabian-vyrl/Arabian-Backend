@@ -160,14 +160,14 @@ const referralPropertySchema = new mongoose.Schema(
       status: {
         type: String,
         enum: [
-          "Agent Assigned",
-          "Contacted",
-          "Booked Meeting",
-          "Property Shown",
-          "Negotiations",
-          "Deal Closed/ Commission Collected",
-          "Deal Cancelled",
-          "Client Not Interested"
+          "Query received",
+          "Agent assigned",
+          "Contact initiated",
+          "Viewings in progress",
+          "Contract signed",
+          "Transferred",
+          "Deal cancelled",
+          "Client not interested"
         ],
         default: null, // since no initial status now
       },

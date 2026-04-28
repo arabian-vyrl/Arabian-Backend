@@ -549,14 +549,14 @@ const updateQueryProgress = async (req, res) => {
       });
     }
     const validStatuses = [
-      "Agent Assigned",
-      "Contacted",
-      "Booked Meeting",
-      "Property Shown",
-      "Negotiations",
-      "Deal Closed/ Commission Collected",
-      "Deal Cancelled",
-      "Client Not Interested"
+      "Query received",
+      "Agent assigned",
+      "Contact initiated",
+      "Viewings in progress",
+      "Contract signed",
+       "Transferred", 
+      "Deal cancelled",
+      "Client not interested"
     ];
     if (!validStatuses.includes(newStatus)) {
       return res.status(400).json({
