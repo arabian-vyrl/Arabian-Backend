@@ -10,6 +10,8 @@ This is how only Live market properties are being sent to front Non Live Propert
 listing_type : "NonActive" and active properties are being saved with  listing_type: 'Sale' || Rent || Commercial, whatever the property type is so in the universal 
 filter when we are sending properties there is a base match for listingt_type 
 
+
+
 XML sync → status != "Live" → listing_type = "NonActive" (stored in DB)
                                         ↓
 Frontend request → listingType=Sale → baseMatch.listing_type = "Sale"
