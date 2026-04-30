@@ -90,6 +90,7 @@ function furnishingToBool(f) {
 
 const UniversalSpecializedFilter = async (req, res) => {
   try {
+    // console.log("Working")
     /* ------------------------------- Pagination ------------------------------ */
 
     // Current page number (default: 1)
@@ -955,6 +956,7 @@ const UniversalSpecializedFilter = async (req, res) => {
  */
 const SortProperties = async (req, res) => {
   try {
+    // console.log("Working 2")
     // Normalize offering type (Sale, Rent, OffPlan, etc.)
     const rawOfferingType =
       req.query.offeringType || req.query.type || "Sale";

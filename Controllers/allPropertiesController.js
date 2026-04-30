@@ -1,36 +1,59 @@
 const Property = require("../Models/PropertyModel");
 
 const getSingleProperty = async (req, res) => {
+  // console.log("Single Property Request")
+  // const PropertyId = req.query.id;
+  // const PropertyType = req.query.type || req.query.listing_type;
+
+  // // console.log("Property ID:", PropertyId);
+  // // console.log("Property Type:", PropertyType);
+
+  // if (!PropertyId || !PropertyType) {
+  //   return res.status(400).json({
+  //     success: false,
+  //     message: "Property ID & Property Type are required",
+  //   });
+  // }
+  // const query = {
+  //   id: PropertyId,
+  //   listing_type: PropertyType,
+  // };
+
+  // // console.log("Searching with query:", query);
+
+  // const property = await Property.findOne(query);
+
+  // // console.log("Property found:", property ? "Yes" : "No");
+  // if (!property) {
+  //   return res.status(404).json({
+  //     success: false,
+  //     message: `Property not found with ID: ${PropertyId} and listing_type: ${PropertyType}`,
+  //     propertyId: PropertyId,
+  //     propertyType: PropertyType,
+  //     searchedWith: query,
+  //   });
+  // }
+
   try {
+    console.log("Single Property Request");
     const PropertyId = req.query.id;
     const PropertyType = req.query.type || req.query.listing_type;
 
-    // console.log("Property ID:", PropertyId);
-    // console.log("Property Type:", PropertyType);
-
-    if (!PropertyId || !PropertyType) {
+    if (!PropertyId) {
       return res.status(400).json({
         success: false,
-        message: "Property ID & Property Type are required",
+        message: "Property ID is required",
       });
     }
-    const query = {
-      id: PropertyId,
-      listing_type: PropertyType,
-    };
 
-    // console.log("Searching with query:", query);
+    // ✅ Query by id only — works for Live, NonActive, OffPlan, all types
+    const property = await Property.findOne({ id: PropertyId });
 
-    const property = await Property.findOne(query);
-
-    // console.log("Property found:", property ? "Yes" : "No");
     if (!property) {
       return res.status(404).json({
         success: false,
-        message: `Property not found with ID: ${PropertyId} and listing_type: ${PropertyType}`,
+        message: `Property not found with ID: ${PropertyId}`,
         propertyId: PropertyId,
-        propertyType: PropertyType,
-        searchedWith: query,
       });
     }
 
@@ -48,15 +71,21 @@ const getSingleProperty = async (req, res) => {
       __v: property.__v,
 
       general_listing_information: {
-        listing_title: property.general_listing_information?.listing_title || "",
+        listing_title:
+          property.general_listing_information?.listing_title || "",
         listingprice: property.general_listing_information?.listingprice || "0",
-        currency_iso_code: property.general_listing_information?.currency_iso_code || "AED",
+        currency_iso_code:
+          property.general_listing_information?.currency_iso_code || "AED",
         status: property.general_listing_information?.status || "Live",
         totalarea: property.general_listing_information?.totalarea || "",
         description: property.general_listing_information?.description || "",
         bedrooms: property.general_listing_information?.bedrooms || "",
-        fullbathrooms: property.general_listing_information?.fullbathrooms || "",
-        propertytype: property.general_listing_information?.propertytype || property.property_type || "",
+        fullbathrooms:
+          property.general_listing_information?.fullbathrooms || "",
+        propertytype:
+          property.general_listing_information?.propertytype ||
+          property.property_type ||
+          "",
       },
 
       address_information: {
@@ -65,8 +94,10 @@ const getSingleProperty = async (req, res) => {
         community: property.custom_fields?.community || "",
         sub_community: property.custom_fields?.sub_community || "",
         building_name: property.custom_fields?.building_name || "",
-        address: property.custom_fields?.pba__addresstext_pb ||
-                 property.custom_fields?.propertyfinder_region || "",
+        address:
+          property.custom_fields?.pba__addresstext_pb ||
+          property.custom_fields?.propertyfinder_region ||
+          "",
       },
       listing_media: {
         images: {
@@ -76,22 +107,27 @@ const getSingleProperty = async (req, res) => {
 
       listing_agent: {
         listing_agent_email: property.listing_agent?.listing_agent_email || "",
-        listing_agent_firstname: property.listing_agent?.listing_agent_firstname || "",
-        listing_agent_lastname: property.listing_agent?.listing_agent_lastname || "",
-        listing_agent_mobil_phone: property.listing_agent?.listing_agent_mobil_phone || "",
+        listing_agent_firstname:
+          property.listing_agent?.listing_agent_firstname || "",
+        listing_agent_lastname:
+          property.listing_agent?.listing_agent_lastname || "",
+        listing_agent_mobil_phone:
+          property.listing_agent?.listing_agent_mobil_phone || "",
         listing_agent_phone: property.listing_agent?.listing_agent_phone || "",
       },
 
       custom_fields: {
         property_record_id: property.custom_fields?.property_record_id || "",
         permit_number: property.custom_fields?.permit_number || "",
-        price_on_application: property.custom_fields?.price_on_application || "No",
+        price_on_application:
+          property.custom_fields?.price_on_application || "No",
         payment_method: property.custom_fields?.payment_method || "",
         city: property.custom_fields?.city || "Dubai",
         community: property.custom_fields?.community || "",
         sub_community: property.custom_fields?.sub_community || "",
         property_name: property.custom_fields?.property_name || "",
-        propertyfinder_region: property.custom_fields?.propertyfinder_region || "",
+        propertyfinder_region:
+          property.custom_fields?.propertyfinder_region || "",
         autonumber: property.custom_fields?.autonumber || "",
         unitnumber: property.custom_fields?.unitnumber || "",
         private_amenities: property.custom_fields?.private_amenities || "",
@@ -107,24 +143,26 @@ const getSingleProperty = async (req, res) => {
         community_name: property.custom_fields?.community_name || "",
         tower_text: property.custom_fields?.tower_text || "",
         pba__addresstext_pb: property.custom_fields?.pba__addresstext_pb || "",
-        pba_uaefields__completion_status: property.custom_fields?.pba_uaefields__completion_status || "",
+        pba_uaefields__completion_status:
+          property.custom_fields?.pba_uaefields__completion_status || "",
         sub_community_name: property.custom_fields?.sub_community_name || "",
         building_name: property.custom_fields?.building_name || "",
         rera_permit_number: property.custom_fields?.rera_permit_number || "",
         plot_area: property.custom_fields?.plot_area || "",
         completion_date: property.custom_fields?.completion_date || "",
-        offering_type: property.custom_fields?.offering_type || property.offering_type || "",
+        offering_type:
+          property.custom_fields?.offering_type || property.offering_type || "",
       },
 
       qr_code: property.qr_code || property.custom_fields?.qr_code || "",
 
-
       redin_location: {
-      location_id: property.redin_location?.location_id || null,
-      property_location_id: property.redin_location?.property_location_id || null,
-      property_name: property.redin_location?.property_name || "",
-      main_subtype_name: property.redin_location?.main_subtype_name || "",
-      main_type_name: property.redin_location?.main_type_name || "",
+        location_id: property.redin_location?.location_id || null,
+        property_location_id:
+          property.redin_location?.property_location_id || null,
+        property_name: property.redin_location?.property_name || "",
+        main_subtype_name: property.redin_location?.main_subtype_name || "",
+        main_type_name: property.redin_location?.main_type_name || "",
       },
 
       _classification: property._classification || {

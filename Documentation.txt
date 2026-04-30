@@ -2,8 +2,24 @@
 Fetches the XML feed from process.env.XML_URL and parses it into JSON using xml2js.
 Normalizes each raw XML property into a clean JS object (classification, media, custom fields, listing/agent info).
 Splits properties into Live vs Non-Live, then bulk upserts them into the Property collection using bulkWrite.
+We are saving both live and non-live properties in the DB but sending on the front only live properties
 For all Live properties, links them to agents (create/update embedded Agent.properties[]) and tracks missing agents.
 Returns a detailed JSON response with counts, operation stats, classification breakdown, and missing-agent summary.
+
+This is how only Live market properties are being sent to front Non Live Properties are being saved with 
+listing_type : "NonActive" and active properties are being saved with  listing_type: 'Sale' || Rent || Commercial, whatever the property type is so in the universal 
+filter when we are sending properties there is a base match for listingt_type 
+
+XML sync → status != "Live" → listing_type = "NonActive" (stored in DB)
+                                        ↓
+Frontend request → listingType=Sale → baseMatch.listing_type = "Sale"
+                                        ↓
+MongoDB query → only returns docs where listing_type = "Sale"
+                                        ↓
+NonActive docs never match → never returned → frontend never sees them
+
+
+
 
 2-Main Universal Filter (Main funciton for property fetching)
 Accepts query params (listingType, price/size range, bedrooms, bathrooms, propertyType, address, developer, amenities, furnishing, sortBy, page, limit) and normalizes everything.
