@@ -8,8 +8,8 @@ class SalesforceService {
       tokenUrl: process.env.SALESFORCE_TOKEN_URL,
       clientId: process.env.SALESFORCE_CLIENT_ID,
       clientSecret: process.env.SALESFORCE_CLIENT_SECRET,
-      username: process.env.SALESFORCE_USERNAME,
-      password: process.env.SALESFORCE_PASSWORD,
+      // username: process.env.SALESFORCE_USERNAME,
+      // password: process.env.SALESFORCE_PASSWORD,
       apiUrl: "https://arabianestates.my.salesforce.com/services/apexrest/websiteleads",
     };
   }
@@ -56,7 +56,6 @@ class SalesforceService {
       await Model.findByIdAndUpdate(documentId, {
         salesforceSynced: true,
       });
-
       console.log(`✓ Document ${documentId} marked as synced`);
     } catch (error) {
       console.error(`✗ Sync failed for ${documentId}:`, error.message);
