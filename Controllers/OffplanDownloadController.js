@@ -87,10 +87,10 @@ const createOffplanDownload = async (req, res) => {
       email: email,
       tele_phone: phone,
       source: source,
-      record_type: "OffPlan Download",
+      record_type: "Off Plan enquiry",
       lead_source: "Website",
-      lead_channel: "Form",
-      lead_source_contact: "Download Form",
+      lead_channel: "form",
+      lead_source_contact: "Off Plan download",
       default_owner: "info@arabianestates.ae",
     };
 

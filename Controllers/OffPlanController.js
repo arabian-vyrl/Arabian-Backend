@@ -105,7 +105,7 @@ const createOffPlanContact = async (req, res) => {
         source: contact.source,
         record_type: "Off Plan enquiry",
         lead_source: "Website",
-        lead_channel: "Form",
+        lead_channel: "form",
         lead_source_contact: "Off Plan Form",
         default_owner: "info@arabianestates.ae",
       };

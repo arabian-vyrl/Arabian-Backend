@@ -78,7 +78,7 @@ const createMortgageApproval = async (req, res) => {
   source: approval.source,
   record_type: "Buyer Enquiry",
   lead_source: "Website",
-  lead_channel: "Form",
+  lead_channel: "form",
   lead_source_contact: "Mortgage enquiry",
   default_owner: "info@arabianestates.ae",
 };

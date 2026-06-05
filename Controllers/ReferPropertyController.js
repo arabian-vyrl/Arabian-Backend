@@ -442,8 +442,8 @@ const ReferProperty = async (req, res) => {
         Special_Requirements: Special_Requirements,
         record_type: "Referral",
         lead_source: "Website",
-        lead_channel: "Form",
-        lead_source_contact: "Referral  ",
+        lead_channel: "form",
+        lead_source_contact: "Referral",
         default_owner: "info@arabianestates.ae",
       };
 
