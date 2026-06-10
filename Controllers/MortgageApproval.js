@@ -16,12 +16,12 @@ const createMortgageApproval = async (req, res) => {
       loanTermYears,
       monthlyRepayment,
       agreedToContact,
-      source
+      source,
     } = req.body;
 
     // Validation
     if (
-      !firstName ||  
+      !firstName ||
       !lastName ||
       !email ||
       !phone ||
@@ -53,7 +53,7 @@ const createMortgageApproval = async (req, res) => {
       loanTermYears,
       monthlyRepayment,
       agreedToContact,
-      source
+      source,
     });
     await approval.save();
     res.status(201).json({
@@ -62,28 +62,40 @@ const createMortgageApproval = async (req, res) => {
       data: approval,
     });
 
-  const salesforceData = {
-  first_name: approval.firstName,
-  last_name: approval.lastName,
-  email: approval.email,
-  tele_phone: approval.phone,
-  propertyPrice: approval.propertyPrice,
-  downPayment: approval.downPayment,
-  downPaymentPercent: approval.downPaymentPercent,
-  loanAmount: approval.loanAmount,
-  interestRate: approval.interestRate,
-  loanTermYears: approval.loanTermYears,
-  monthlyRepayment: approval.monthlyRepayment,
-  agreedToContact: approval.agreedToContact,
-  source: approval.source,
-  record_type: "Buyer Enquiry",
-  lead_source: "Website",
-  lead_channel: "form",
-  lead_source_contact: "Mortgage enquiry",
-  default_owner: "info@arabianestates.ae",
-};
-    salesforceService.syncWithRetry(MortgageApproval, approval._id, salesforceData);
-  
+    const salesforceData = {
+      first_name: approval.firstName,
+      last_name: approval.lastName,
+      email: approval.email,
+      phone: approval.phone,
+
+      property_price: approval.propertyPrice,
+      downpayment: approval.downPayment,
+      downpayment_percent: approval.downPaymentPercent,
+      loan_amount: approval.loanAmount,
+      interest_rate: approval.interestRate,
+      loan_term_years: approval.loanTermYears,
+      monthly_repayment: approval.monthlyRepayment,
+      agreed_to_contact: approval.agreedToContact,
+
+      record_type: "Buyer Enquiry",
+      record_type_api_name: " Residential_Buyer",
+      lead_source: "Website",
+      lead_channel: "Form",
+      lead_source_contact: "Mortgage enquiry",
+      leads_default_owner: "info@arabianestates.ae",
+
+      // source: approval.source,
+      // record_type: "Buyer Enquiry",
+      // lead_source: "Website",
+      // lead_channel: "form",
+      // lead_source_contact: "Mortgage enquiry",
+      // default_owner: "info@arabianestates.ae",
+    };
+    salesforceService.syncWithRetry(
+      MortgageApproval,
+      approval._id,
+      salesforceData,
+    );
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -101,7 +113,6 @@ const getMortgageApprovals = async (req, res) => {
       success: true,
       data: approvals,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -127,7 +138,6 @@ const deleteMortgageApproval = async (req, res) => {
       success: true,
       message: "Mortgage approval request deleted successfully.",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,

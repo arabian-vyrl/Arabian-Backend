@@ -4,8 +4,6 @@ const salesforceService = require("../services/SalesforceService");
 const createContact = async (req, res) => {
   try {
     const { firstName, lastName, email, telephone, message, source } = req.body;
-    // console.log(req.body)
-    // Validation
     if (!firstName || !lastName || !email || !telephone || !message) {
       return res.status(400).json({
         success: false,
@@ -31,7 +29,6 @@ const createContact = async (req, res) => {
     });
 
     await contact.save();
-    // console.log("✓ Contact saved to database:", contact._id);
 
     res.status(201).json({
       success: true,
@@ -43,15 +40,19 @@ const createContact = async (req, res) => {
       first_name: contact.firstName,
       last_name: contact.lastName,
       email: contact.email,
-      tele_phone: contact.telephone,
+      phone: contact.telephone,
       message: contact.message,
-      lead_source_contact: "Contact form",
-      source: "Contact form",
-      record_type: "general",
+
+      record_type: "General",
+      record_type_api_name: "General",
       lead_source: "Website",
-      lead_channel: "form",
-      default_owner: "info@arabianestates.ae",
+      lead_channel: "Form",
+      lead_source_contact: "Contact form",
+      leads_default_owner: "info@arabianestates.ae",
+      
+      source: "Website",
     };
+    
     salesforceService.syncWithRetry(Contact, contact._id, salesforceData);
 
   } catch (error) {

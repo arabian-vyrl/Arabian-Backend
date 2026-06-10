@@ -203,7 +203,6 @@ const trackRefer = async (req, res) => {
     //   role: "user",
     // };
 
-
     const payload = {
       referrerFullName: referrals[0].referrer.first_name,
       refferalEmail: referrals[0].referrer.email,
@@ -396,7 +395,7 @@ const ReferProperty = async (req, res) => {
 
     <h3>All Your Referral Tracking Codes</h3>
     <ul>
-      ${allTrackingCodes.map(code => `<li><strong>${code}</strong></li>`).join("")}
+      ${allTrackingCodes.map((code) => `<li><strong>${code}</strong></li>`).join("")}
     </ul>
 
     <p>
@@ -419,8 +418,8 @@ const ReferProperty = async (req, res) => {
         {
           filename: "Referral Agreement.pdf",
           path: path.join(__dirname, "../document/Referral Agreement.pdf"),
-        }
-      ]
+        },
+      ],
     );
     // Send to the data
 
@@ -429,22 +428,24 @@ const ReferProperty = async (req, res) => {
         first_name: Reffrer_FirstName,
         last_name: Reffrer_LastName,
         email: Reffrer_EmailAdress,
-        tele_phone: Reffrer_PhoneNumber,
-        Property_Area: PropertyArea || null,
-        Referee_First_Name: Refree_Firstname,
-        Referee_Last_Name: Refree_Lastname,
-        Referee_Email: Refree_EmailAdress,
-        Referee_Phone: Refree_PhoneNumber,
-        Relationship_To_Referrer: Relation_to_Reffrer,
-        Preferred_Contact_Method: Refree_Preffered_Contact_Form,
-        Best_Time_To_Contact: Best_Time_To_Contect,
-        Urgency_Level: Urgency_Level,
-        Special_Requirements: Special_Requirements,
+        phone: Reffrer_PhoneNumber,
+        property_area: PropertyArea || null,
+        referee_first_name: Refree_Firstname,
+        referee_last_name: Refree_Lastname,
+        referee_email: Refree_EmailAdress,
+        referee_phone: Refree_PhoneNumber,
+        relationship_to_referrer: Relation_to_Reffrer,
+        preferred_contact_method: Refree_Preffered_Contact_Form,
+        best_time_to_contact: Best_Time_To_Contect,
+        urgency_level: Urgency_Level,
+        special_requirements: Special_Requirements,
+
         record_type: "Referral",
+        record_type_api_name: "Referral",
         lead_source: "Website",
-        lead_channel: "form",
+        lead_channel: "Form",
         lead_source_contact: "Referral",
-        default_owner: "info@arabianestates.ae",
+        leads_default_owner: "info@arabianestates.ae",
       };
 
       salesforceService.syncWithRetry(
@@ -508,8 +509,10 @@ const trackQUery = async (req, res) => {
         referrer_name: `${referral.referrer.first_name} ${referral.referrer.last_name}`,
         property_area: referral.property.area || "Not specified",
         urgency_level: referral.query_details.urgency_level,
-        preferred_contact: referral.referee.preferred_contact || "Not specified",
-        best_time_contact: referral.referee.best_time_contact || "Not specified", 
+        preferred_contact:
+          referral.referee.preferred_contact || "Not specified",
+        best_time_contact:
+          referral.referee.best_time_contact || "Not specified",
       },
       current_status: {
         status: referral.query_progress.status,
@@ -554,9 +557,9 @@ const updateQueryProgress = async (req, res) => {
       "Contact initiated",
       "Viewings in progress",
       "Contract signed",
-       "Transferred", 
+      "Transferred",
       "Deal cancelled",
-      "Client not interested"
+      "Client not interested",
     ];
     if (!validStatuses.includes(newStatus)) {
       return res.status(400).json({
@@ -727,7 +730,8 @@ async function sendRefereeIntroductionEmail(referralData) {
     html: `
       <h2>Property Search Application</h2>
       <p>Dear ${referralData.referee.full_name},</p>
-      <p>${referralData.referrer.full_name
+      <p>${
+        referralData.referrer.full_name
       } has submitted a property search application on your behalf.</p>
       
       <h3>About Our Company</h3>
@@ -736,17 +740,20 @@ async function sendRefereeIntroductionEmail(referralData) {
       <p><strong>Your Requirements:</strong></p>
       <ul>
         <li>Urgency: ${referralData.query_details.urgency_level}</li>
-        ${referralData.property.area
-        ? `<li>Preferred Area: ${referralData.property.area}</li>`
-        : ""
-      }
-        ${referralData.query_details.special_requirements
-        ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
-        : ""
-      }
+        ${
+          referralData.property.area
+            ? `<li>Preferred Area: ${referralData.property.area}</li>`
+            : ""
+        }
+        ${
+          referralData.query_details.special_requirements
+            ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
+            : ""
+        }
       </ul>
       
-      <p>One of our agents will contact you soon via ${referralData.referee.preferred_contact
+      <p>One of our agents will contact you soon via ${
+        referralData.referee.preferred_contact
       } during ${referralData.referee.best_time_contact}.</p>
       
       <p>Best regards,<br>Your Property Team</p>
@@ -793,14 +800,17 @@ async function sendProgressUpdateEmail(referralData) {
     html: `
       <h2>Referral Progress Update</h2>
       <p>Dear ${referralData.referrer.full_name},</p>
-      <p>Your referral (Tracking Code: <strong>${referralData.tracking_code
+      <p>Your referral (Tracking Code: <strong>${
+        referralData.tracking_code
       }</strong>) has been updated.</p>
       
-      <p><strong>Current Status:</strong> ${referralData.query_progress.status
+      <p><strong>Current Status:</strong> ${
+        referralData.query_progress.status
       }</p>
-      ${referralData.query_progress.assigned_agent
-        ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
-        : ""
+      ${
+        referralData.query_progress.assigned_agent
+          ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
+          : ""
       }
       
       <p>We will continue to keep you updated on the progress.</p>
@@ -856,12 +866,14 @@ async function sendCommissionNotificationEmail(referralData) {
         <h3>Commission Details:</h3>
         <p><strong>Commission Amount:</strong> ₹${referralData.commission.amount.toLocaleString()}</p>
         <p><strong>Deal Value:</strong> ₹${referralData.commission.deal_value.toLocaleString()}</p>
-        <p><strong>Commission Rate:</strong> ${referralData.commission.percentage
-      }%</p>
+        <p><strong>Commission Rate:</strong> ${
+          referralData.commission.percentage
+        }%</p>
       </div>
       
       <p><strong>Please visit our office to collect your commission amount.</strong></p>
-      <p>Bring a valid ID and mention your tracking code: <strong>${referralData.tracking_code
+      <p>Bring a valid ID and mention your tracking code: <strong>${
+        referralData.tracking_code
       }</strong></p>
       
       <p>Thank you for your referral!</p>
@@ -871,7 +883,6 @@ async function sendCommissionNotificationEmail(referralData) {
 
   return transporter.sendMail(mailOptions);
 }
-
 
 // Reset Password
 const ReferTrackResetPassword = async (req, res) => {
@@ -902,7 +913,7 @@ const ReferTrackResetPassword = async (req, res) => {
         $set: {
           "referrer.password": newPassword,
         },
-      }
+      },
     );
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -957,5 +968,5 @@ module.exports = {
   verifyReferrerToken,
   agentUpdate,
   Referrerlogout,
-  ReferTrackResetPassword
+  ReferTrackResetPassword,
 };
