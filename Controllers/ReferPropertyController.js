@@ -730,8 +730,7 @@ async function sendRefereeIntroductionEmail(referralData) {
     html: `
       <h2>Property Search Application</h2>
       <p>Dear ${referralData.referee.full_name},</p>
-      <p>${
-        referralData.referrer.full_name
+      <p>${referralData.referrer.full_name
       } has submitted a property search application on your behalf.</p>
       
       <h3>About Our Company</h3>
@@ -740,20 +739,17 @@ async function sendRefereeIntroductionEmail(referralData) {
       <p><strong>Your Requirements:</strong></p>
       <ul>
         <li>Urgency: ${referralData.query_details.urgency_level}</li>
-        ${
-          referralData.property.area
-            ? `<li>Preferred Area: ${referralData.property.area}</li>`
-            : ""
-        }
-        ${
-          referralData.query_details.special_requirements
-            ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
-            : ""
-        }
+        ${referralData.property.area
+        ? `<li>Preferred Area: ${referralData.property.area}</li>`
+        : ""
+      }
+        ${referralData.query_details.special_requirements
+        ? `<li>Special Requirements: ${referralData.query_details.special_requirements}</li>`
+        : ""
+      }
       </ul>
       
-      <p>One of our agents will contact you soon via ${
-        referralData.referee.preferred_contact
+      <p>One of our agents will contact you soon via ${referralData.referee.preferred_contact
       } during ${referralData.referee.best_time_contact}.</p>
       
       <p>Best regards,<br>Your Property Team</p>
@@ -800,17 +796,14 @@ async function sendProgressUpdateEmail(referralData) {
     html: `
       <h2>Referral Progress Update</h2>
       <p>Dear ${referralData.referrer.full_name},</p>
-      <p>Your referral (Tracking Code: <strong>${
-        referralData.tracking_code
+      <p>Your referral (Tracking Code: <strong>${referralData.tracking_code
       }</strong>) has been updated.</p>
       
-      <p><strong>Current Status:</strong> ${
-        referralData.query_progress.status
+      <p><strong>Current Status:</strong> ${referralData.query_progress.status
       }</p>
-      ${
-        referralData.query_progress.assigned_agent
-          ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
-          : ""
+      ${referralData.query_progress.assigned_agent
+        ? `<p><strong>Assigned Agent:</strong> ${referralData.query_progress.assigned_agent}</p>`
+        : ""
       }
       
       <p>We will continue to keep you updated on the progress.</p>
@@ -866,14 +859,12 @@ async function sendCommissionNotificationEmail(referralData) {
         <h3>Commission Details:</h3>
         <p><strong>Commission Amount:</strong> ₹${referralData.commission.amount.toLocaleString()}</p>
         <p><strong>Deal Value:</strong> ₹${referralData.commission.deal_value.toLocaleString()}</p>
-        <p><strong>Commission Rate:</strong> ${
-          referralData.commission.percentage
-        }%</p>
+        <p><strong>Commission Rate:</strong> ${referralData.commission.percentage
+      }%</p>
       </div>
       
       <p><strong>Please visit our office to collect your commission amount.</strong></p>
-      <p>Bring a valid ID and mention your tracking code: <strong>${
-        referralData.tracking_code
+      <p>Bring a valid ID and mention your tracking code: <strong>${referralData.tracking_code
       }</strong></p>
       
       <p>Thank you for your referral!</p>

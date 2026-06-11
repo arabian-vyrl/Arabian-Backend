@@ -86,12 +86,15 @@ const createOffplanDownload = async (req, res) => {
       last_name: lastName,
       email: email,
       tele_phone: phone,
-      source: source,
+
+
+      source: "Website",
       record_type: "Off Plan enquiry",
+      record_type_api_name: "Off_Plan_Enquiry", 
       lead_source: "Website",
-      lead_channel: "form",
+      lead_channel: "Form",
       lead_source_contact: "Off Plan download",
-      default_owner: "info@arabianestates.ae",
+      leads_default_owner: "info@arabianestates.ae",
     };
 
     salesforceService.syncWithRetry(OffplanDownload, download._id, salesforceData);

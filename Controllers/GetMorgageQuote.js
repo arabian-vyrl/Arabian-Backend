@@ -148,12 +148,14 @@ const createMortgageQuote = async (req, res) => {
       valuationFee: quote.valuationFee,
       conveyancerFee: quote.conveyancerFee,
       mortgagePurchaseCosts: quote.mortgagePurchaseCosts,
-      source: quote.source,
+
+      // source: quote.source,
       record_type: "Buyer Enquiry",
+      record_type_api_name: "Residential_Buyer",
       lead_source: "Website",
-      lead_channel: "form",
+      lead_channel: "Form",
       lead_source_contact: "Mortgage enquiry",
-      default_owner: "info@arabianestates.ae",
+      leads_default_owner: "info@arabianestates.ae",
 
     };
     salesforceService.syncWithRetry(MortgageQuote, quote._id, salesforceData);
