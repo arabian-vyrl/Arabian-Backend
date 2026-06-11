@@ -89,10 +89,10 @@ const createOffplanDownload = async (req, res) => {
 
 
       source: "Website",
-      record_type: "Off Plan enquiry",
+      Record_type: "Off Plan enquiry",
       record_type_api_name: "Off_Plan_Enquiry", 
-      lead_source: "Website",
-      lead_channel: "Form",
+      Lead_source: "Website",
+      Lead_channel: "Form",
       lead_source_contact: "Off Plan download",
       leads_default_owner: "info@arabianestates.ae",
     };

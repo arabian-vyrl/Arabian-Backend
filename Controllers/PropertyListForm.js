@@ -46,10 +46,10 @@ const createPropertyListForm = async (req, res) => {
       email: propertyList.email,
       address: propertyList.address,
       
-      record_type: "Seller Enquiry",
+      Record_type: "Seller Enquiry",
       record_type_api_name: "Residential_Seller",
-      lead_source: "Website",
-      lead_channel: "Form",
+      Lead_source: "Website",
+      Lead_channel: "Form",
       lead_source_contact: "Request to List",
       leads_default_owner: "info@arabianestates.ae",
      

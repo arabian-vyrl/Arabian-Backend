@@ -77,10 +77,10 @@ const createMortgageApproval = async (req, res) => {
       monthly_repayment: approval.monthlyRepayment,
       agreed_to_contact: approval.agreedToContact,
 
-      record_type: "Buyer Enquiry",
+      Record_type: "Buyer Enquiry",
       record_type_api_name: " Residential_Buyer",
-      lead_source: "Website",
-      lead_channel: "Form",
+      Lead_source: "Website",
+      Lead_channel: "Form",
       lead_source_contact: "Mortgage enquiry",
       leads_default_owner: "info@arabianestates.ae",
 

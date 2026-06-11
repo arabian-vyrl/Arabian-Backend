@@ -57,10 +57,10 @@ const createPropertyValuation = async (req, res) => {
       preferred_date: propertyValuation.preferredDate, 
       preferred_time: propertyValuation.preferredTime,
       
-      record_type: "Seller Enquiry",
+      Record_type: "Seller Enquiry",
       record_type_api_name: "Residential_Seller",
-      lead_source: "Website",
-      lead_channel: "Form",
+      Lead_source: "Website",
+      Lead_channel: "Form",
       lead_source_contact: "Valuation request",
       leads_default_owner: "info@arabianestates.ae",
      };

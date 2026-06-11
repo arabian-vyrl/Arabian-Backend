@@ -150,10 +150,10 @@ const createMortgageQuote = async (req, res) => {
       mortgagePurchaseCosts: quote.mortgagePurchaseCosts,
 
       // source: quote.source,
-      record_type: "Buyer Enquiry",
-      record_type_api_name: "Residential_Buyer",
-      lead_source: "Website",
-      lead_channel: "Form",
+      Record_type: "Buyer Enquiry",
+      Record_type_api_name: "Residential_Buyer",
+      Lead_source: "Website",
+      Lead_channel: "Form",
       lead_source_contact: "Mortgage enquiry",
       leads_default_owner: "info@arabianestates.ae",
 
