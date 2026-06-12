@@ -42,18 +42,18 @@ const createPropertyListForm = async (req, res) => {
     const salesforceData = {
       first_name: propertyList.firstName,
       last_name: propertyList.lastName,
-      phone: propertyList.telephone,
+      tele_phone: propertyList.telephone,
       email: propertyList.email,
-      address: propertyList.address,
-      
-      Record_type: "Seller Enquiry",
+      property_address: propertyList.address,
+      comments: `Property Address: ${propertyList.address}`, 
+      record_type: "Seller Enquiry",
       record_type_api_name: "Residential_Seller",
-      Lead_source: "Website",
-      Lead_channel: "Form",
+      lead_source: "Website",
+      lead_channel: "Form",
       lead_source_contact: "Request to List",
       leads_default_owner: "info@arabianestates.ae",
-     
     };
+
     salesforceService.syncWithRetry(PropertyListModel, propertyList._id, salesforceData);
 
   } catch (error) {

@@ -127,37 +127,88 @@ const createMortgageQuote = async (req, res) => {
       last_name: quote.lastName,
       email: quote.email,
       tele_phone: quote.phone,
-      requestMessage: quote.requestMessage,
-      propertyTitle: quote.propertyTitle,
-      propertyLink: quote.propertyLink,
-      purchasePrice: quote.purchasePrice,
-      downpaymentPercentage: quote.downpaymentPercentage,
-      downPayment: quote.downPayment,
-      loanAmount: quote.loanAmount,
-      interestRate: quote.interestRate,
-      loanDuration: quote.loanDuration,
-      monthlyPayment: quote.monthlyPayment,
-      amountRequiredUpfront: quote.amountRequiredUpfront,
-      currency: quote.currency,
-      landDeptFee: quote.landDeptFee,
-      agencyFeeBase: quote.agencyFeeBase,
-      agencyFee: quote.agencyFee,
-      trusteeFee: quote.trusteeFee,
-      mortgageRegFee: quote.mortgageRegFee,
-      bankArrangementFee: quote.bankArrangementFee,
-      valuationFee: quote.valuationFee,
-      conveyancerFee: quote.conveyancerFee,
-      mortgagePurchaseCosts: quote.mortgagePurchaseCosts,
+
+
+      // requestMessage: quote.requestMessage,
+      // propertyTitle: quote.propertyTitle,
+      // propertyLink: quote.propertyLink,
+      // purchasePrice: quote.purchasePrice,
+      // downpaymentPercentage: quote.downpaymentPercentage,
+      // downPayment: quote.downPayment,
+      // loanAmount: quote.loanAmount,
+      // interestRate: quote.interestRate,
+      // loanDuration: quote.loanDuration,
+      // monthlyPayment: quote.monthlyPayment,
+      // amountRequiredUpfront: quote.amountRequiredUpfront,
+      // currency: quote.currency,
+      // landDeptFee: quote.landDeptFee,
+      // agencyFeeBase: quote.agencyFeeBase,
+      // agencyFee: quote.agencyFee,
+      // trusteeFee: quote.trusteeFee,
+      // mortgageRegFee: quote.mortgageRegFee,
+      // bankArrangementFee: quote.bankArrangementFee,
+      // valuationFee: quote.valuationFee,
+      // conveyancerFee: quote.conveyancerFee,
+      // mortgagePurchaseCosts: quote.mortgagePurchaseCosts,
+
+      comments: `
+      Request Message: ${quote.requestMessage}
+      Property Title: ${quote.propertyTitle}
+      Property Link: ${quote.propertyLink}
+      Purchase Price: ${quote.purchasePrice}
+      Down Payment Percentage: ${quote.downpaymentPercentage}
+      Down Payment: ${quote.downPayment}
+      Loan Amount: ${quote.loanAmount}
+      Interest Rate: ${quote.interestRate}
+      Loan Duration: ${quote.loanDuration}
+      Monthly Payment: ${quote.monthlyPayment}
+      Amount Required Upfront: ${quote.amountRequiredUpfront}
+      Currency: ${quote.currency}
+      Land Department Fee: ${quote.landDeptFee}
+      Agency Fee Base: ${quote.agencyFeeBase}
+      Agency Fee: ${quote.agencyFee}
+      Trustee Fee: ${quote.trusteeFee}
+      Mortgage Registration Fee: ${quote.mortgageRegFee}
+      Bank Arrangement Fee: ${quote.bankArrangementFee}
+      Valuation Fee: ${quote.valuationFee}
+      Conveyancer Fee: ${quote.conveyancerFee}
+      Mortgage Purchase Costs: ${quote.mortgagePurchaseCosts}
+      `,
+
+
 
       // source: quote.source,
-      Record_type: "Buyer Enquiry",
-      Record_type_api_name: "Residential_Buyer",
-      Lead_source: "Website",
-      Lead_channel: "Form",
+      record_type: "Buyer Enquiry",
+      record_type_api_name: "Residential_Buyer",
+      lead_source: "Website",
+      lead_channel: "Form",
       lead_source_contact: "Mortgage enquiry",
       leads_default_owner: "info@arabianestates.ae",
 
     };
+
+
+    // console.log("Mortagege", salesforceData) 
+    //     Payload
+    // {
+    //   "first_name": "sathyatest123",
+    //   "last_name": "sathyatest123",
+    //   "email": "dotts12june@gmail.com",
+    //   "tele_phone": "67545516890",
+    //   "listing_id": "",
+    //   "property_address": "dubai",
+    //   "preferred_date": "12/06/2026",
+    //   "preferred_time": "12.06.2026",
+    //   "comments": "sathyatestlead without listing",
+    //   "Tracking_code": "  ",
+    //   "recordtypeId": " ",
+    //   "lead_source_contact": " ",
+    //   "record_type": "General",
+    //    "lead_source": "Website",
+    //    "lead_channel": "Call",
+    //    "message": " "
+    // }
+
     salesforceService.syncWithRetry(MortgageQuote, quote._id, salesforceData);
 
   } catch (error) {

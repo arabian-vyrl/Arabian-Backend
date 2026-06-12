@@ -43,14 +43,19 @@ const createContact = async (req, res) => {
       tele_phone: contact.telephone,
       message: contact.message,
 
-      Record_type: "General",
-      Record_type_api_name: "General",
-      Lead_source: "Website",
-      Lead_channel: "Form",
+      record_type: "General",
+      record_type_api_name: "General",
+      lead_source: "Website",
+      lead_channel: "Form",
       lead_source_contact: "Contact form",
       leads_default_owner: "info@arabianestates.ae",
-      source: "Website",
+      // source: "Website",
     };
+
+
+    // console.log("Sales force Data", salesforceData)
+
+
   
     salesforceService.syncWithRetry(Contact, contact._id, salesforceData);
 

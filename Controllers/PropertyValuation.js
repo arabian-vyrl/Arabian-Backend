@@ -51,16 +51,18 @@ const createPropertyValuation = async (req, res) => {
     const salesforceData = {
       first_name: propertyValuation.firstName,
       last_name: propertyValuation.lastName,
-      phone: propertyValuation.phone,
+      tele_phone: propertyValuation.phone,
       email: propertyValuation.email,
-      address: propertyValuation.propertyAddress,
+      property_address: propertyValuation.propertyAddress,
       preferred_date: propertyValuation.preferredDate, 
       preferred_time: propertyValuation.preferredTime,
+
+      comments: `Property Address: ${propertyValuation.propertyAddress} , Preferred Date: ${propertyValuation.preferredDate}, Preferred Time: ${propertyValuation.preferredTime}`,   //for the safety check to pass into the comments
       
-      Record_type: "Seller Enquiry",
+      record_type: "Seller Enquiry",
       record_type_api_name: "Residential_Seller",
-      Lead_source: "Website",
-      Lead_channel: "Form",
+      lead_source: "Website",
+      lead_channel: "Form",
       lead_source_contact: "Valuation request",
       leads_default_owner: "info@arabianestates.ae",
      };

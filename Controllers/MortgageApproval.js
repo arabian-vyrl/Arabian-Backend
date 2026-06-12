@@ -66,36 +66,63 @@ const createMortgageApproval = async (req, res) => {
       first_name: approval.firstName,
       last_name: approval.lastName,
       email: approval.email,
-      phone: approval.phone,
+      tele_phone: approval.phone,
 
-      property_price: approval.propertyPrice,
-      downpayment: approval.downPayment,
-      downpayment_percent: approval.downPaymentPercent,
-      loan_amount: approval.loanAmount,
-      interest_rate: approval.interestRate,
-      loan_term_years: approval.loanTermYears,
-      monthly_repayment: approval.monthlyRepayment,
-      agreed_to_contact: approval.agreedToContact,
+      // property_price: approval.propertyPrice,
+      // downpayment: approval.downPayment,
+      // downpayment_percent: approval.downPaymentPercent,
+      // loan_amount: approval.loanAmount,
+      // interest_rate: approval.interestRate,
+      // loan_term_years: approval.loanTermYears,
+      // monthly_repayment: approval.monthlyRepayment,
+      // agreed_to_contact: approval.agreedToContact,
 
-      Record_type: "Buyer Enquiry",
+      comments: `
+      Property Price: ${approval.propertyPrice}, 
+      Down Payment: ${approval.downPayment}, 
+      Down Payment Percent: ${approval.downPaymentPercent}, 
+      Loan Amount: ${approval.loanAmount}, 
+      Interest Rate: ${approval.interestRate}, 
+      Loan Term (Years): ${approval.loanTermYears}, 
+      Monthly Repayment: ${approval.monthlyRepayment}, 
+      Agreed To Contact: ${approval.agreedToContact}`,
+
+      record_type: "Buyer Enquiry",
       record_type_api_name: " Residential_Buyer",
-      Lead_source: "Website",
-      Lead_channel: "Form",
+      lead_source: "Website",
+      lead_channel: "Form",
       lead_source_contact: "Mortgage enquiry",
       leads_default_owner: "info@arabianestates.ae",
-
-      // source: approval.source,
-      // record_type: "Buyer Enquiry",
-      // lead_source: "Website",
-      // lead_channel: "form",
-      // lead_source_contact: "Mortgage enquiry",
-      // default_owner: "info@arabianestates.ae",
     };
-    salesforceService.syncWithRetry(
-      MortgageApproval,
-      approval._id,
-      salesforceData,
-    );
+
+
+
+    console.log("Mortgage Approval", salesforceData)
+
+    // Payload
+// {
+//   "first_name": "sathyatest123",
+//   "last_name": "sathyatest123",
+//   "email": "dotts12june@gmail.com",
+//   "tele_phone": "67545516890",
+//   "listing_id": "",
+//   "property_address": "dubai",
+//   "preferred_date": "12/06/2026",
+//   "preferred_time": "12.06.2026",
+//   "comments": "sathyatestlead without listing",
+//   "Tracking_code": "  ",
+//   "recordtypeId": " ",
+//   "lead_source_contact": " ",
+//   "record_type": "General",
+//    "lead_source": "Website",
+//    "lead_channel": "Call",
+//    "message": " "
+// }
+
+
+
+
+    salesforceService.syncWithRetry(MortgageApproval, approval._id, salesforceData,);
   } catch (error) {
     res.status(500).json({
       success: false,

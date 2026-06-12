@@ -104,21 +104,16 @@ const createOffPlanContact = async (req, res) => {
         budgetRange: contact.budgetRange,
         // source: contact.source,
 
-
-
-//         "lead_source_contact": 
-// "record_type":
-// "lead_source":
-// "lead_channel":
-
-
-        Record_type: "Off Plan enquiry",
+        comments: `Project Name:${contact.projectName}, Budget Range: ${contact.budgetRange}`, 
+ 
+        record_type: "Off Plan enquiry",
         record_type_api_name: "Off_Plan_Enquiry", 
-        Lead_source: "Website",
-        Lead_channel: "Form",
+        lead_source: "Website",
+        lead_channel: "Form",
         lead_source_contact: "Off Plan Form",
         leads_default_owner: "info@arabianestates.ae",
       };
+
 
       await salesforceService.syncWithRetry(
         OffPlanContact,

@@ -87,15 +87,35 @@ const createOffplanDownload = async (req, res) => {
       email: email,
       tele_phone: phone,
 
-
-      source: "Website",
-      Record_type: "Off Plan enquiry",
+      record_type: "Off Plan enquiry",
       record_type_api_name: "Off_Plan_Enquiry", 
-      Lead_source: "Website",
-      Lead_channel: "Form",
+      lead_source: "Website",
+      lead_channel: "Form",
       lead_source_contact: "Off Plan download",
       leads_default_owner: "info@arabianestates.ae",
     };
+    
+// {
+//   "first_name": "sathyatest123",
+//   "last_name": "sathyatest123",
+//   "email": "dotts12june@gmail.com",
+//   "tele_phone": "67545516890",
+//   "listing_id": "",
+//   "property_address": "dubai",
+//   "preferred_date": "12/06/2026",
+//   "preferred_time": "12.06.2026",
+//   "comments": "sathyatestlead without listing",
+//   "Tracking_code": "  ",
+//   "recordtypeId": " ",
+//   "lead_source_contact": " ",
+//   "record_type": "General",
+//    "lead_source": "Website",
+//    "lead_channel": "Call",
+//    "message": " "
+// }
+
+
+
 
     salesforceService.syncWithRetry(OffplanDownload, download._id, salesforceData);
 

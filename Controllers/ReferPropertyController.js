@@ -428,25 +428,64 @@ const ReferProperty = async (req, res) => {
         first_name: Reffrer_FirstName,
         last_name: Reffrer_LastName,
         email: Reffrer_EmailAdress,
-        phone: Reffrer_PhoneNumber,
-        property_area: PropertyArea || null,
-        referee_first_name: Refree_Firstname,
-        referee_last_name: Refree_Lastname,
-        referee_email: Refree_EmailAdress,
-        referee_phone: Refree_PhoneNumber,
-        relationship_to_referrer: Relation_to_Reffrer,
-        preferred_contact_method: Refree_Preffered_Contact_Form,
-        best_time_to_contact: Best_Time_To_Contect,
-        urgency_level: Urgency_Level,
-        special_requirements: Special_Requirements,
+        tele_phone: Reffrer_PhoneNumber,
+        property_address: PropertyArea || null,
 
-        Record_type: "Referral",
+
+        // referee_first_name: Refree_Firstname,
+        // referee_last_name: Refree_Lastname,
+        // referee_email: Refree_EmailAdress,
+        // referee_phone: Refree_PhoneNumber,
+        // relationship_to_referrer: Relation_to_Reffrer,
+        // preferred_contact_method: Refree_Preffered_Contact_Form,
+        // best_time_to_contact: Best_Time_To_Contect,
+        // urgency_level: Urgency_Level,
+        // special_requirements: Special_Requirements,
+
+
+        comments: `
+        Refree First Name: ${Refree_Firstname}, 
+        Refree Last Name: ${Refree_Lastname},
+        Refree Email: ${Refree_EmailAdress},
+        Refree Phone: ${Refree_PhoneNumber},
+        Relationship to Referrer: ${Relation_to_Reffrer},
+        Preferred Contact Method: ${Refree_Preffered_Contact_Form},
+        Best Time to Contact: ${Best_Time_To_Contect},
+        Urgency Level: ${Urgency_Level},
+        Special Requirements: ${Special_Requirements},
+        Property Address: ${PropertyArea},
+        `,
+        record_type: "Referral",
         record_type_api_name: "Referral",
-        Lead_source: "Website",
-        Lead_channel: "Form",
+        lead_source: "Website",
+        lead_channel: "Form",
         lead_source_contact: "Referral",
         leads_default_owner: "info@arabianestates.ae",
       };
+
+
+      console.log("Sale For Data", salesforceData)
+
+
+
+      //     {
+      //     "first_name": "sathyatest123",
+      //     "last_name": "sathyatest12340125678",
+      //     "email": "dotts121200657june@gmail.com",
+      //     "tele_phone": "684455168123900012",
+      //     "listing_id": "",
+      //     "property_address": "dubai",
+      //     "preferred_date": "12/06/2026",
+      //     "preferred_time": "12.06.2026",
+      //     "comments": "Purchase Price: AED 1,777,000,Down Payment: AED 781",
+      //     "Tracking_code": "",
+      //     "recordtypeId": "",
+      //     "lead_source_contact": "",
+      //     "record_type": "General",
+      //     "lead_source": "Website",
+      //     "lead_channel": "Call",
+      //     "message": ""
+      // }
 
       salesforceService.syncWithRetry(
         ReferralProperty,
