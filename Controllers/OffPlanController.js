@@ -106,7 +106,7 @@ const createOffPlanContact = async (req, res) => {
 
         comments: `Project Name:${contact.projectName}, Budget Range: ${contact.budgetRange}`, 
  
-        record_type: "Off Plan enquiry",
+        record_type: "Off Plan Enquiry",
         record_type_api_name: "Off_Plan_Enquiry", 
         lead_source: "Website",
         lead_channel: "Form",

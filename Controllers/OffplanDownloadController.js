@@ -65,10 +65,6 @@ const createOffplanDownload = async (req, res) => {
         <p><strong>Download Type:</strong> ${type}</p>
       `,
     };
-    await transporter.sendMail(adminMailOptions);
-    await OffplanDownload.findByIdAndUpdate(download._id, {
-      emailSent: true,
-    });
 
     try {
       await transporter.sendMail(adminMailOptions);
@@ -86,8 +82,8 @@ const createOffplanDownload = async (req, res) => {
       last_name: lastName,
       email: email,
       tele_phone: phone,
-
-      record_type: "Off Plan enquiry",
+      comments: `Property Link: ${source}, DownloadType: ${type}`,
+      record_type: "Off Plan Enquiry",
       record_type_api_name: "Off_Plan_Enquiry", 
       lead_source: "Website",
       lead_channel: "Form",
@@ -112,10 +108,9 @@ const createOffplanDownload = async (req, res) => {
 //    "lead_source": "Website",
 //    "lead_channel": "Call",
 //    "message": " "
-// }
+// }  
 
-
-
+    console.log("Sales force Service",salesforceService)
 
     salesforceService.syncWithRetry(OffplanDownload, download._id, salesforceData);
 
