@@ -41,7 +41,7 @@ const createContact = async (req, res) => {
       last_name: contact.lastName,
       email: contact.email,
       tele_phone: contact.telephone,
-      message: contact.message,
+      comments: contact.message,
 
       record_type: "General",
       record_type_api_name: "General",
