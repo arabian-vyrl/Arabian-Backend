@@ -671,7 +671,7 @@
 // async function syncLeaderboardCoreCurrentMonth() {
 //   const snapshot = await buildLeaderboardSnapshotCurrentMonth();
 //   const result = await applyLeaderboardSnapshot(snapshot);
-  
+
 //   // 🔥 CRITICAL: Update cache ONLY after successful DB write
 //   // This ensures the cache is always populated with the latest committed data
 //   try {
@@ -681,7 +681,7 @@
 //     console.error("⚠️ [CACHE] Failed to update cache:", cacheError.message);
 //     // Don't throw - cache update failure shouldn't stop the sync
 //   }
-  
+
 //   return result;
 // }
 
@@ -752,7 +752,7 @@
 //     globalTotalCommission,
 //     cachedAt: new Date(),
 //   };
-  
+
 //   lastLeaderboardCacheAt = new Date();
 // }
 
@@ -843,7 +843,7 @@
 //       console.log(
 //         "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
 //       );
-      
+
 //       const allAgents = lastLeaderboardCache.allAgents;
 //       const total = allAgents.length;
 //       const totalPages = Math.ceil(total / limit);
@@ -950,11 +950,11 @@
 //     // 🔥 Fallback to cache if DB query fails and cache exists
 //     if (lastLeaderboardCache) {
 //       console.log("⚠️ [LEADERBOARD] DB error, falling back to cached data");
-      
+
 //       const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
 //       const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
 //       const skip = (page - 1) * limit;
-      
+
 //       const allAgents = lastLeaderboardCache.allAgents;
 //       const total = allAgents.length;
 //       const totalPages = Math.ceil(total / limit);
@@ -977,7 +977,7 @@
 //         fallback: true,
 //       });
 //     }
-    
+
 //     return res.status(500).json({ success: false, error: err.message });
 //   }
 // };
@@ -2118,7 +2118,7 @@ async function buildLeaderboardSnapshotCurrentMonth() {
 
   console.log(
     `✅ Listings processed → considered: ${totalListingsConsidered}, ` +
-      `matched: ${totalListingsMatched}, activePropertiesThisMonth total: ${totalActivePropsThisMonth}`
+    `matched: ${totalListingsMatched}, activePropertiesThisMonth total: ${totalActivePropsThisMonth}`
   );
 
   if (unmatchedListingEmails.size > 0) {
@@ -2282,9 +2282,9 @@ async function applyLeaderboardSnapshot(snapshot) {
   if (meta?.listings) {
     console.log(
       `📊 [LEADERBOARD SNAPSHOT] Listings summary → ` +
-        `considered: ${meta.listings.totalListingsConsidered}, ` +
-        `matched: ${meta.listings.totalListingsMatched}, ` +
-        `activePropertiesThisMonth total: ${meta.listings.totalActivePropsThisMonth}`
+      `considered: ${meta.listings.totalListingsConsidered}, ` +
+      `matched: ${meta.listings.totalListingsMatched}, ` +
+      `activePropertiesThisMonth total: ${meta.listings.totalActivePropsThisMonth}`
     );
   }
 
@@ -2305,7 +2305,7 @@ async function applyLeaderboardSnapshot(snapshot) {
 async function syncLeaderboardCoreCurrentMonth() {
   const snapshot = await buildLeaderboardSnapshotCurrentMonth();
   const result = await applyLeaderboardSnapshot(snapshot);
-  
+
   // Update cache AFTER DB write is successful
   try {
     await updateLeaderboardCache();
@@ -2314,7 +2314,7 @@ async function syncLeaderboardCoreCurrentMonth() {
     console.error("⚠️ [CACHE] Failed to update cache:", cacheError.message);
     // Don't fail the sync because of cache problems
   }
-  
+
   return result;
 }
 
@@ -2388,7 +2388,7 @@ async function updateLeaderboardCache() {
     globalTotalCommission,
     cachedAt: new Date(),
   };
-  
+
   lastLeaderboardCacheAt = new Date();
 }
 
@@ -2494,7 +2494,7 @@ const GetSalesForceToken = async (req, res) => {
 //       console.log(
 //         "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
 //       );
-      
+
 //       const allAgents = lastLeaderboardCache.allAgents;
 //       const total = allAgents.length;
 //       const totalPages = Math.ceil(total / limit);
@@ -2601,11 +2601,11 @@ const GetSalesForceToken = async (req, res) => {
 //     // Fallback to in-memory cache if DB query fails
 //     if (lastLeaderboardCache) {
 //       console.log("⚠️ [LEADERBOARD] DB error, falling back to cached data");
-      
+
 //       const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
 //       const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
 //       const skip = (page - 1) * limit;
-      
+
 //       const allAgents = lastLeaderboardCache.allAgents;
 //       const total = allAgents.length;
 //       const totalPages = Math.ceil(total / limit);
@@ -2628,7 +2628,7 @@ const GetSalesForceToken = async (req, res) => {
 //         fallback: true,
 //       });
 //     }
-    
+
 //     return res.status(500).json({ success: false, error: err.message });
 //   }
 // };
@@ -2643,12 +2643,14 @@ const getLeaderboardAgents = async (req, res) => {
     const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
     const skip = (page - 1) * limit;
 
+    const leasingData = req.query.leasingData === "true";
+
     // Serve from cache while master sync is in progress
     if (masterSyncRunning && lastLeaderboardCache) {
       // console.log(
       //   "📊 [LEADERBOARD] Serving cached leaderboard while master sync is running."
       // );
-      
+
       const allAgents = lastLeaderboardCache.allAgents;
       const total = allAgents.length;
       const totalPages = Math.ceil(total / limit);
@@ -2675,7 +2677,16 @@ const getLeaderboardAgents = async (req, res) => {
     const pipeline = [
       {
         $match: {
-          activeOnLeaderboard: true
+
+          activeOnLeaderboard: true,
+          designation: {
+            $nin: ["leasing consultant", "leasing manager"]
+          },
+          ...(leasingData && {
+            designation: {
+              $in: [/^leasing consultant$/i, /^leasing manager$/i]
+            }
+          })
         }
       },
       {
@@ -2740,6 +2751,7 @@ const getLeaderboardAgents = async (req, res) => {
     const mapped = paginatedAgents.map((a) => ({
       position: a.position,
       name: a.agentName,
+      designation: a.designation,
       imageUrl: a.imageUrl, // Now this will have the transformed image URL
       compressedImageUrl: a.agentCompressImage?.thumbnail,
       leaderboard: {
@@ -2773,11 +2785,11 @@ const getLeaderboardAgents = async (req, res) => {
     // Fallback to in-memory cache if DB query fails
     if (lastLeaderboardCache) {
       console.log("⚠️ [LEADERBOARD] DB error, falling back to cached data");
-      
+
       const page = Math.max(parseInt(req.query.page ?? "1", 10), 1);
       const limit = Math.max(parseInt(req.query.limit ?? "8", 10), 1);
       const skip = (page - 1) * limit;
-      
+
       const allAgents = lastLeaderboardCache.allAgents;
       const total = allAgents.length;
       const totalPages = Math.ceil(total / limit);
@@ -2800,7 +2812,7 @@ const getLeaderboardAgents = async (req, res) => {
         fallback: true,
       });
     }
-    
+
     return res.status(500).json({ success: false, error: err.message });
   }
 };
