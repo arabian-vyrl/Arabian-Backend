@@ -33,7 +33,7 @@ const CategoryController = require("../Controllers/CategoryController");
 // testing Routes
 const testController2 = require("../Controllers/testController2");
 const testController = require("../Controllers/testController");
-const footerSubscribeEmail = require("../Controllers/FooterSubscribe") 
+const footerSubscribeEmail = require("../Controllers/FooterSubscribe")
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -41,6 +41,8 @@ const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
 const offPlanDownloadController = require("../Controllers/OffplanDownloadController")
+const OffplanPixxiController = require("../Controllers/OFFPLAN_PIXXI/offPlanPIXXIController")
+
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -117,7 +119,7 @@ router.get("/get-hero", HeroController.getHero);
 router.post("/hero/upload", heroUpload, HeroController.uploadHero);
 router.put("/hero/update", heroUpload, HeroController.updateHero);
 router.delete("/hero/image", HeroController.deleteHeroImage);
-router.delete("/hero/video", HeroController.deleteHeroVideo);  
+router.delete("/hero/video", HeroController.deleteHeroVideo);
 
 
 // Hero Content
@@ -271,15 +273,17 @@ router.delete(
   offPlanListingForm.deleteOffPlanContact,
 );
 
-// Community Guideline Api's
-// router.get("/GetCommunityGuides", CommunityGuides.GetAllCommunityGuides);
-// router.get("/SingleCommunityGuide", CommunityGuides.getSingleCommunityGuide);
-// router.get("/DeleteCommunityGuide", CommunityGuides.deleteCommunityGuide);
-// router.post("/AddCommunityGuide", CommunityGuides.upload.single("image"), CommunityGuides.createCommunityGuide);
-// router.post("/UpdateCommunityGuide", CommunityGuides.upload.single("image"), CommunityGuides.updateCommunityGuide);
 
-// Podcast Api's
-// router.post("/CreatePodcast", Podcast.createPodcast);
+
+// OffPlan PIXXI Projects
+router.post("/pixxi/fetch", OffplanPixxiController.syncWellingtonPIXXIProjects)
+router.get("/offplan/projects/properties", OffplanPixxiController.getOffplanPIXXIProperties)
+router.get("/offplan/projects/slug/:slug", OffplanPixxiController.getOffplanPIXXIPropertyBySlug)
+router.get("/offplan/projects/similar/:slug", OffplanPixxiController.getSimilarOffplanPIXXIProperties)
+router.get("/offplan/projects/location-suggestions", OffplanPixxiController.getOffplanPIXXILocationSuggestions)
+router.get("/offplan/projects/developer-suggestions", OffplanPixxiController.getOffplanPIXXIDeveloperSuggestions)
+router.get("/offplan/projects/developers", OffplanPixxiController.getAllOffplanPIXXIDevelopers)
+// router.post("/offplan/projects/backfill-slugs", OffplanPixxiController.backfillOffplanPIXXISlugs)
 
 router.post("/CreatePodcast", Podcast.upload, Podcast.createPodcast);
 router.get("/AllPodcasts", Podcast.getAllPodcasts);
@@ -360,7 +364,7 @@ router.post("/track-referrer", ReferProperties.trackRefer);
 
 router.get(
   "/verify-referral-token",
-  middleWare, 
+  middleWare,
   ReferProperties.verifyReferrerToken,
 );
 
