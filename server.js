@@ -136,6 +136,9 @@ const { schedulePropertySync } = require("./Controllers/XmlParser.js");
 const {
   scheduleNewOffPlanSync,
 } = require("./Controllers/NewOffplanController.js");
+const {
+  scheduleWellingtonPIXXISync,
+} = require("./Controllers/OFFPLAN_PIXXI/offPlanPIXXIController.js");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -147,7 +150,7 @@ const router = require("./Router/Routes");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cookieParser = require("cookie-parser");
-const axios=require('axios')
+const axios = require('axios')
 const mongoose = require("mongoose");
 
 // Set up middlewares
@@ -159,8 +162,8 @@ app.use(
       "http://localhost:5174",
       "http://localhost:5175",
       "https://arabiann.netlify.app",
-      "https://arabianestates.ae", 
-      "https://arabian-com.netlify.app", 
+      "https://arabianestates.ae",
+      "https://arabian-com.netlify.app",
       "https://arabianestates.com"
     ],
     credentials: true,
@@ -225,7 +228,14 @@ const upload = multer({
 
 setupCronJobs();
 schedulePropertySync();
-scheduleNewOffPlanSync();
+
+
+
+// No need to Open this is the old code
+// scheduleNewOffPlanSync();
+
+// Wellington -> PIXXI off-plan sync (insert / update / delete stale), daily
+scheduleWellingtonPIXXISync();
 
 
 // Then mount your API routes
@@ -234,8 +244,8 @@ app.use("/", router);
 
 // Google Reviews 
 app.get("/get-google-reviews", async (req, res) => {
-  const PLACE_ID=process.env.GOOGLE_PLACE_ID
-  const GOOGLE_API_KEY=process.env.GOOGLE_MAP_API
+  const PLACE_ID = process.env.GOOGLE_PLACE_ID
+  const GOOGLE_API_KEY = process.env.GOOGLE_MAP_API
   try {
     // console.log(PLACE_ID, GOOGLE_API_KEY);
     const url =

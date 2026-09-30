@@ -1,6 +1,7 @@
 const getWellingtonConnection = require("../../Database/WellingtonDB");
 const OffplanPIXXIModel = require("../../Models/OffplanPIXXIModel");
 const mongoose = require("mongoose");
+const cron = require("node-cron");
 
 // ============================================================
 // SLUG HELPERS
@@ -9,17 +10,13 @@ const mongoose = require("mongoose");
 const slugify = (text) => {
     return String(text || "")
         .normalize("NFD")
-        .replace(/[̀-ͯ]/g, "") // strip diacritics: â -> a, é -> e, ô -> o, etc.
+        .replace(/[̀-ͯ]/g, "")
         .toLowerCase()
         .trim()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
 };
 
-// Generates a unique slug for a project title.
-// e.g. "gold-trails", then "gold-trails-1", "gold-trails-2", ...
-// `usedSlugs` tracks slugs already claimed within the current batch
-// so duplicates inside the same batch are also handled correctly.
 const generateUniqueSlug = async (title, usedSlugs) => {
     const baseSlug = slugify(title);
 
@@ -60,6 +57,17 @@ const processBatch = async (properties) => {
     const operations = [];
     const preparationErrors = [];
     const usedSlugs = new Set();
+
+    // Only brand-new properties need a slug; skip the lookup for existing ones.
+    const existingIds = new Set(
+        (
+            await OffplanPIXXIModel.find({
+                _id: { $in: properties.map((p) => p._id).filter(Boolean) },
+            })
+                .select("_id")
+                .lean()
+        ).map((doc) => String(doc._id))
+    );
 
     for (const property of properties) {
         try {
@@ -106,10 +114,9 @@ const processBatch = async (properties) => {
             // Only assigned on insert so existing slugs never change.
             // --------------------------------------------------------
 
-            const slug = await generateUniqueSlug(
-                propertyData.title,
-                usedSlugs
-            );
+            const slug = existingIds.has(String(wellingtonId))
+                ? null
+                : await generateUniqueSlug(propertyData.title, usedSlugs);
 
             // --------------------------------------------------------
             // Prepare bulk upsert
@@ -145,6 +152,11 @@ const processBatch = async (properties) => {
                     // Insert if _id doesn't exist.
                     // Update if _id already exists.
                     upsert: true,
+
+                    // Don't bump updatedAt, otherwise unchanged properties
+                    // would look modified. Mongo skips the write when the
+                    // $set values are identical to what is stored.
+                    timestamps: false,
                 },
             });
         } catch (error) {
@@ -223,258 +235,250 @@ const processBatch = async (properties) => {
 // SYNC WELLINGTON PIXXI NEW PROJECTS
 // ============================================================
 
-const syncWellingtonPIXXIProjects = async (req, res) => {
-    try {
-        // --------------------------------------------------------
-        // Batch size
-        // --------------------------------------------------------
+let syncInProgress = false;
 
-        const requestedBatchSize = Number(req.query.batchSize);
+const getWellingtonProperty = async () => {
+    const wellingtonDb = await getWellingtonConnection();
 
-        const BATCH_SIZE =
-            Number.isInteger(requestedBatchSize) &&
-                requestedBatchSize > 0 &&
-                requestedBatchSize <= 500
-                ? requestedBatchSize
-                : 50;
+    return (
+        wellingtonDb.models.Property ||
+        wellingtonDb.model(
+            "Property",
+            new mongoose.Schema(
+                {},
+                {
+                    strict: false,
 
-        console.log("====================================");
-        console.log("WELLINGTON NEW PROPERTIES SYNC");
-        console.log(`Batch Size: ${BATCH_SIZE}`);
-        console.log("====================================");
+                    // Exact Wellington collection name
+                    collection: "properties",
+                }
+            )
+        )
+    );
+};
 
-        // ========================================================
-        // 1. CONNECT TO WELLINGTON DATABASE
-        // ========================================================
+// ------------------------------------------------------------
+// Remove properties that no longer exist in Wellington.
+// `seenIds` = every Wellington _id read during this run.
+// ------------------------------------------------------------
 
-        const wellingtonDb = await getWellingtonConnection();
+const cleanupStaleProperties = async (seenIds) => {
+    const MAX_DELETE_RATIO = 0.5;
 
-        console.log("Wellington database connected");
+    const ourDocs = await OffplanPIXXIModel.find({ listingType: "NEW" })
+        .select("_id")
+        .lean();
 
-        // ========================================================
-        // 2. CREATE WELLINGTON PROPERTY MODEL
-        // ========================================================
+    const staleIds = ourDocs
+        .map((doc) => doc._id)
+        .filter((id) => !seenIds.has(String(id)));
 
-        const WellingtonProperty =
-            wellingtonDb.models.Property ||
-            wellingtonDb.model(
-                "Property",
-                new mongoose.Schema(
-                    {},
-                    {
-                        strict: false,
+    if (staleIds.length === 0) {
+        return { deleted: 0, skipped: false, stale: 0 };
+    }
 
-                        // Exact Wellington collection name
-                        collection: "properties",
-                    }
-                )
-            );
+    // Safety net: if Wellington returned far fewer records than we hold,
+    // something is probably wrong on their side. Don't wipe our data.
+    if (staleIds.length > ourDocs.length * MAX_DELETE_RATIO) {
+        console.warn(
+            `Stale cleanup skipped: ${staleIds.length}/${ourDocs.length} ` +
+            `properties would be deleted (limit ${MAX_DELETE_RATIO * 100}%)`
+        );
+        return { deleted: 0, skipped: true, stale: staleIds.length };
+    }
 
-        // ========================================================
-        // 3. QUERY
-        // ========================================================
+    const result = await OffplanPIXXIModel.deleteMany({
+        _id: { $in: staleIds },
+    });
 
-        const query = {
-            listingType: "NEW",
-        };
+    return {
+        deleted: result.deletedCount || 0,
+        skipped: false,
+        stale: staleIds.length,
+    };
+};
 
-        // ========================================================
-        // 4. COUNT NEW PROPERTIES
-        // ========================================================
+// ------------------------------------------------------------
+// Core sync (used by both the API route and the scheduler)
+// ------------------------------------------------------------
 
-        const totalProperties =
-            await WellingtonProperty.countDocuments(query);
+const runWellingtonSync = async ({ batchSize = 50, cleanup = true } = {}) => {
+    const BATCH_SIZE =
+        Number.isInteger(batchSize) && batchSize > 0 && batchSize <= 500
+            ? batchSize
+            : 50;
+
+    console.log("====================================");
+    console.log("WELLINGTON NEW PROPERTIES SYNC");
+    console.log(`Batch Size: ${BATCH_SIZE}`);
+    console.log("====================================");
+
+    const WellingtonProperty = await getWellingtonProperty();
+    const query = { listingType: "NEW" };
+
+    const totalProperties = await WellingtonProperty.countDocuments(query);
+
+    console.log(`Found ${totalProperties} NEW Wellington properties`);
+
+    const stats = {
+        total: totalProperties,
+        processed: 0,
+        inserted: 0,
+        matched: 0,
+        updated: 0,
+        failed: 0,
+        batchSize: BATCH_SIZE,
+        cleanup: null,
+    };
+    const errors = [];
+
+    // Never clean up on an empty Wellington response.
+    if (totalProperties === 0) {
+        return { stats, errors };
+    }
+
+    const seenIds = new Set();
+    let batch = [];
+
+    const flush = async () => {
+        const size = batch.length;
+        const result = await processBatch(batch);
+
+        stats.inserted += result.inserted;
+        stats.matched += result.matched;
+        stats.updated += result.updated;
+        stats.failed += result.failed;
+        stats.processed += size;
+        errors.push(...result.errors);
 
         console.log(
-            `Found ${totalProperties} NEW Wellington properties`
+            `Progress: ${stats.processed}/${totalProperties} | ` +
+            `Inserted: ${result.inserted} | Updated: ${result.updated} | ` +
+            `Failed: ${result.failed}`
         );
 
-        // --------------------------------------------------------
-        // Nothing to sync
-        // --------------------------------------------------------
+        batch = [];
+    };
 
-        if (totalProperties === 0) {
-            return res.status(200).json({
-                success: true,
+    const cursor = WellingtonProperty.find(query)
+        .lean()
+        .cursor({ batchSize: BATCH_SIZE });
 
-                message:
-                    "No NEW Wellington properties found",
+    for await (const property of cursor) {
+        seenIds.add(String(property._id));
+        batch.push(property);
 
-                data: {
-                    total: 0,
-                    processed: 0,
-                    inserted: 0,
-                    matched: 0,
-                    updated: 0,
-                    failed: 0,
-                },
+        if (batch.length >= BATCH_SIZE) {
+            await flush();
+        }
+    }
+
+    if (batch.length > 0) {
+        await flush();
+    }
+
+    // ---- Stale cleanup ----
+    // Only when we actually read everything we expected to read.
+    if (cleanup) {
+        if (seenIds.size >= totalProperties) {
+            stats.cleanup = await cleanupStaleProperties(seenIds);
+        } else {
+            stats.cleanup = { deleted: 0, skipped: true, stale: 0 };
+            console.warn(
+                `Stale cleanup skipped: read ${seenIds.size} of ${totalProperties}`
+            );
+        }
+    }
+
+    console.log("====================================");
+    console.log("WELLINGTON SYNC COMPLETED");
+    console.log(JSON.stringify(stats));
+    console.log("====================================");
+
+    return { stats, errors };
+};
+
+const runWellingtonSyncSafely = async (options) => {
+    if (syncInProgress) {
+        return { alreadyRunning: true };
+    }
+
+    syncInProgress = true;
+    try {
+        return await runWellingtonSync(options);
+    } finally {
+        syncInProgress = false;
+    }
+};
+
+const syncWellingtonPIXXIProjects = async (req, res) => {
+    try {
+        const outcome = await runWellingtonSyncSafely({
+            batchSize: Number(req.query.batchSize),
+            cleanup: req.query.cleanup !== "false",
+        });
+
+        if (outcome.alreadyRunning) {
+            return res.status(409).json({
+                success: false,
+                message: "A Wellington sync is already running",
             });
         }
 
-        // ========================================================
-        // 5. SYNC COUNTERS
-        // ========================================================
-
-        let processed = 0;
-        let inserted = 0;
-        let matched = 0;
-        let updated = 0;
-        let failed = 0;
-
-        const errors = [];
-
-        // ========================================================
-        // 6. CREATE MONGODB CURSOR
-        // ========================================================
-
-        const cursor = WellingtonProperty.find(query)
-            .lean()
-            .cursor({
-                batchSize: BATCH_SIZE,
-            });
-
-        let batch = [];
-
-        // ========================================================
-        // 7. READ WELLINGTON PROPERTIES
-        // ========================================================
-
-        for await (const property of cursor) {
-            batch.push(property);
-
-            // ------------------------------------------------------
-            // Batch is ready
-            // ------------------------------------------------------
-
-            if (batch.length >= BATCH_SIZE) {
-                const currentBatchSize = batch.length;
-
-                console.log("------------------------------------");
-                console.log(
-                    `Processing batch of ${currentBatchSize} properties`
-                );
-
-                // ====================================================
-                // SAVE INTO OUR DATABASE
-                // ====================================================
-
-                const result = await processBatch(batch);
-
-                inserted += result.inserted;
-                matched += result.matched;
-                updated += result.updated;
-                failed += result.failed;
-
-                if (result.errors.length > 0) {
-                    errors.push(...result.errors);
-                }
-
-                processed += currentBatchSize;
-
-                console.log(
-                    `Progress: ${processed}/${totalProperties}`
-                );
-
-                console.log(
-                    `Inserted: ${result.inserted} | ` +
-                    `Matched: ${result.matched} | ` +
-                    `Updated: ${result.updated} | ` +
-                    `Failed: ${result.failed}`
-                );
-
-                // Clear batch
-                batch = [];
-            }
-        }
-
-        // ========================================================
-        // 8. PROCESS REMAINING PROPERTIES
-        // ========================================================
-
-        if (batch.length > 0) {
-            const currentBatchSize = batch.length;
-
-            console.log("------------------------------------");
-            console.log(
-                `Processing final batch of ${currentBatchSize} properties`
-            );
-
-            const result = await processBatch(batch);
-
-            inserted += result.inserted;
-            matched += result.matched;
-            updated += result.updated;
-            failed += result.failed;
-
-            if (result.errors.length > 0) {
-                errors.push(...result.errors);
-            }
-
-            processed += currentBatchSize;
-
-            console.log(
-                `Progress: ${processed}/${totalProperties}`
-            );
-        }
-
-        // ========================================================
-        // 9. COMPLETED
-        // ========================================================
-
-        console.log("====================================");
-        console.log("WELLINGTON SYNC COMPLETED");
-        console.log("====================================");
-        console.log(`Total:     ${totalProperties}`);
-        console.log(`Processed: ${processed}`);
-        console.log(`Inserted:  ${inserted}`);
-        console.log(`Matched:   ${matched}`);
-        console.log(`Updated:   ${updated}`);
-        console.log(`Failed:    ${failed}`);
-        console.log("====================================");
-
-        // ========================================================
-        // 10. RESPONSE
-        // ========================================================
+        const { stats, errors } = outcome;
 
         return res.status(200).json({
             success: true,
 
             message:
-                "Wellington NEW properties synced successfully",
+                stats.total === 0
+                    ? "No NEW Wellington properties found"
+                    : "Wellington NEW properties synced successfully",
 
-            data: {
-                total: totalProperties,
-                processed,
-                inserted,
-                matched,
-                updated,
-                failed,
-                batchSize: BATCH_SIZE,
-            },
-
-            // Don't send thousands of errors
+            data: stats,
             errors: errors.slice(0, 20),
         });
     } catch (error) {
-        console.error("====================================");
-        console.error("WELLINGTON PROPERTY SYNC ERROR");
-        console.error("====================================");
-        console.error(error);
+        console.error("WELLINGTON PROPERTY SYNC ERROR", error);
 
         return res.status(500).json({
             success: false,
-
-            message:
-                "Failed to sync Wellington properties",
-
+            message: "Failed to sync Wellington properties",
             error: error.message,
         });
     }
 };
 
-// ============================================================
-// FETCH OFFPLAN PIXXI PROPERTIES (PAGINATED)
-// ============================================================
+// ------------------------------------------------------------
+// Scheduler: daily sync (insert / update / delete stale)
+// ------------------------------------------------------------
+
+const scheduleWellingtonPIXXISync = () => {
+    const TZ = process.env.CRON_TZ || "Etc/UTC";
+    const EXPRESSION = "0 2 * * 0,3";
+
+    cron.schedule(
+        EXPRESSION,
+        async () => {
+            console.log(
+                `[${new Date().toISOString()}] Wellington scheduled sync started`
+            );
+            try {
+                const outcome = await runWellingtonSyncSafely();
+
+                if (outcome.alreadyRunning) {
+                    console.log("Wellington sync skipped: already running");
+                }
+            } catch (error) {
+                console.error("Wellington scheduled sync failed:", error);
+            }
+        },
+        { timezone: TZ }
+    );
+
+    console.log(`Wellington sync scheduled: "${EXPRESSION}" (${TZ})`);
+};
+
 
 const getOffplanPIXXIProperties = async (req, res) => {
     try {
@@ -964,6 +968,7 @@ const getAllOffplanPIXXIDevelopers = async (req, res) => {
 
 module.exports = {
     syncWellingtonPIXXIProjects,
+    scheduleWellingtonPIXXISync,
     getOffplanPIXXIProperties,
     getOffplanPIXXIPropertyBySlug,
     getSimilarOffplanPIXXIProperties,
