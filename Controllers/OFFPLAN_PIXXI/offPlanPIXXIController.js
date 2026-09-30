@@ -454,7 +454,7 @@ const syncWellingtonPIXXIProjects = async (req, res) => {
 // ------------------------------------------------------------
 
 const scheduleWellingtonPIXXISync = () => {
-    const TZ = process.env.CRON_TZ || "Etc/UTC";
+    const TZ = "Etc/UTC";
     const EXPRESSION = "0 2 * * 0,3";
 
     cron.schedule(
