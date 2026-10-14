@@ -164,7 +164,8 @@ app.use(
       "https://arabiann.netlify.app",
       "https://arabianestates.ae",
       "https://arabian-com.netlify.app",
-      "https://arabianestates.com"
+      "https://arabianestates.com",
+      "https://araabian.netlify.app"
     ],
     credentials: true,
   }),
