@@ -28239,3 +28239,84 @@
 2026-04-15 18:03:43 [INFO]: ✅ [CACHE] Leaderboard cache updated successfully
 2026-04-15 18:03:43 [INFO]: ✅ [CRON] All syncs completed successfully in 52.90s
 2026-04-15 18:03:43 [INFO]:    → Leaderboard: agentsTouched=64, month=4/2026
+2026-10-22 11:21:23 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 11:21:23 [ERROR]: (node:36400) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 11:21:23 [ERROR]: (node:36400) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 11:21:24 [INFO]: Server is running on port 8000
+2026-10-22 11:48:11 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 11:48:11 [ERROR]: (node:40003) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 11:48:11 [ERROR]: (node:40003) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 11:48:12 [INFO]: Server is running on port 8000
+2026-10-22 11:48:26 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 11:48:26 [ERROR]: (node:40149) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 11:48:26 [ERROR]: (node:40149) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 11:48:27 [INFO]: Server is running on port 8000
+2026-10-22 11:48:38 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 11:48:38 [ERROR]: (node:40243) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 11:48:38 [ERROR]: (node:40243) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 11:48:40 [INFO]: Server is running on port 8000
+2026-10-22 12:08:12 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 12:08:12 [ERROR]: (node:43802) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 12:08:12 [ERROR]: (node:43802) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 12:08:13 [INFO]: Server is running on port 8000
+2026-10-22 12:08:23 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 12:08:23 [ERROR]: (node:43932) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 12:08:23 [ERROR]: (node:43932) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 12:08:24 [INFO]: Server is running on port 8000
+2026-10-22 12:10:17 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 12:10:17 [ERROR]: (node:44297) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 12:10:17 [ERROR]: (node:44297) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 12:10:18 [INFO]: Server is running on port 8000
+2026-10-22 12:10:27 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 12:10:27 [ERROR]: (node:44449) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 12:10:27 [ERROR]: (node:44449) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 12:10:28 [INFO]: Server is running on port 8000
+2026-10-22 12:17:11 [INFO]: ✅ Cron job scheduled: Salesforce sync will run every 12 minutes (UTC)
+2026-10-22 12:17:11 [INFO]: 🚀 Running initial sync on startup...
+2026-10-22 12:17:11 [INFO]: ⏰ [CRON] Starting scheduled Salesforce sync job...
+2026-10-22 12:17:11 [INFO]: 🔄 [LEADERBOARD SNAPSHOT] Building for UTC 2026-10
+2026-10-22 12:17:11 [INFO]: Property sync scheduler initialized - Running daily at 00:00, 12:00, and 15:00 (Etc/UTC), with cleanup + ownership move AFTER each sync
+2026-10-22 12:17:11 [INFO]: Wellington sync scheduled: "0 2 * * 0,3" (Etc/UTC)
+2026-10-22 12:17:11 [ERROR]: (node:45519) [MONGOOSE] Warning: Duplicate schema index on {"agentId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-22 12:17:11 [ERROR]: (node:45519) [MONGOOSE] Warning: Duplicate schema index on {"propertyId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+2026-10-22 12:17:13 [INFO]: Server is running on port 8000
+2026-10-22 12:17:16 [INFO]: 📊 Processing listingsAPI for activePropertiesThisMonth...
+2026-10-22 12:17:16 [INFO]: ✅ Listings processed → considered: 1000, matched: 101, activePropertiesThisMonth total: 101
+2026-10-22 12:17:16 [INFO]: ⚠️ Unmatched listing_agent_email values: [
+  "adrian@arabianestates.ae",
+  "roheet@arabianestates.ae",
+  "f.ndhlovu@barnes-international.com",
+  "faizal.m@arabianestates.ae",
+  "obaida@arabianestates.ae",
+  "tatsiana@arabianestates.ae",
+  "sarkar@arabianestates.ae",
+  "rolla@arabianestates.ae",
+  "paloma@arabianestates.ae",
+  "mahsa@arabianestates.ae",
+  "gray@arabianestates.ae",
+  "r.buckel@barnes-international.com",
+  "jennifer@arabianestates.ae",
+  "vikram@arabianestates.ae",
+  "m.shopova@barnes-international.com",
+  "mahmoud@arabianestates.ae",
+  "ingrid@arabianestates.ae",
+  "kerry@arabianestates.ae",
+  "seth@arabianestates.ae",
+  "saqeb@arabianestates.ae",
+  "s.hossain@barnes-international.com",
+  "e.maries@barnes-international.com",
+  "elina@arabianestates.ae",
+  "alex@arabianestates.ae"
+]
+2026-10-22 12:17:17 [INFO]: 📊 [LEADERBOARD SNAPSHOT] Listings summary → considered: 1000, matched: 101, activePropertiesThisMonth total: 101
+2026-10-22 12:17:17 [INFO]: ✅ [CRON] All syncs completed successfully in 5.87s
+2026-10-22 12:17:17 [INFO]:    → Leaderboard: agentsTouched=57, month=10/2026

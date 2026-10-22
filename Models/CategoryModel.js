@@ -24,7 +24,6 @@ const designationCategorySchema = new mongoose.Schema(
         name: {
           type: String,
           trim: true,
-          lowercase: true,
           required: true,
         },
         showRera: {

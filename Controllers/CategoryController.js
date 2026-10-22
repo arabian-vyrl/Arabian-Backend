@@ -1,5 +1,6 @@
 // Controllers/DesignationCategoryController.js
 const DesignationCategory = require("../Models/CategoryModel");
+const Agent = require("../Models/AgentModel");
 
 const normalizeDesignations = (designations) => {
   if (!Array.isArray(designations)) return [];
@@ -8,14 +9,14 @@ const normalizeDesignations = (designations) => {
     .map((d) => {
       // if already correct
       if (d && typeof d === "object" && "name" in d) {
-        const name = String(d.name || "").trim().toLowerCase();
+        const name = String(d.name || "").trim();
         if (!name) return null;
         return { name, showRera: d.showRera !== undefined ? !!d.showRera : true };
       }
 
       // old string format
       if (typeof d === "string") {
-        const name = d.trim().toLowerCase();
+        const name = d.trim();
         if (!name) return null;
         return { name, showRera: true };
       }
@@ -28,7 +29,7 @@ const normalizeDesignations = (designations) => {
           .map((k) => d[k])
           .join("");
 
-        const name = String(maybeName || "").trim().toLowerCase();
+        const name = String(maybeName || "").trim();
         if (!name) return null;
 
         return { name, showRera: d.showRera !== undefined ? !!d.showRera : true };
@@ -128,8 +129,10 @@ const updateCategory = async (req, res) => {
       updateFields.categoryName = categoryName.trim();
     }
 
+    let newDesignations;
     if (designations !== undefined) {
-      updateFields.designations = normalizeDesignations(designations); // ✅ updated
+      newDesignations = normalizeDesignations(designations); // ✅ updated
+      updateFields.designations = newDesignations;
     }
 
     if (displayOrder !== undefined) {
@@ -138,6 +141,24 @@ const updateCategory = async (req, res) => {
 
     if (isActive !== undefined) {
       updateFields.isActive = isActive;
+    }
+
+    // Capture old designation names (by position) before overwriting,
+    // so renames can be propagated to agents currently using them.
+    let renames = [];
+    if (newDesignations !== undefined) {
+      const existingCategory = await DesignationCategory.findOne({ categoryId });
+      if (existingCategory) {
+        const oldDesignations = existingCategory.designations || [];
+        renames = oldDesignations
+          .map((oldD, i) => {
+            const newD = newDesignations[i];
+            if (!newD) return null;
+            if (!oldD.name || oldD.name === newD.name) return null;
+            return { oldName: oldD.name, newName: newD.name };
+          })
+          .filter(Boolean);
+      }
     }
 
     const category = await DesignationCategory.findOneAndUpdate(
@@ -151,6 +172,19 @@ const updateCategory = async (req, res) => {
         success: false,
         error: "Category not found",
       });
+    }
+
+    // Propagate renamed designations to agents currently assigned to them
+    // (case-insensitive match against the old name), so agent profiles stay in sync.
+    if (renames.length > 0) {
+      await Promise.all(
+        renames.map(({ oldName, newName }) =>
+          Agent.updateMany(
+            { designation: new RegExp(`^${oldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+            { $set: { designation: newName } },
+          ),
+        ),
+      );
     }
 
     return res.status(200).json({

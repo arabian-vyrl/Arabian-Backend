@@ -1034,7 +1034,7 @@ const addDesignationMetaStages = (
         {
           $match: {
             $expr: {
-              $eq: ["$designations.name", "$$agentDesignation"],
+              $eq: [{ $toLower: "$designations.name" }, "$$agentDesignation"],
             },
           },
         },
