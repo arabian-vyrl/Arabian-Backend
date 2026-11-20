@@ -116,10 +116,10 @@ const heroUpload = HeroController.upload.fields([
 ]);
 
 router.get("/get-hero", HeroController.getHero);
-router.post("/hero/upload", heroUpload, HeroController.uploadHero);
-router.put("/hero/update", heroUpload, HeroController.updateHero);
-router.delete("/hero/image", HeroController.deleteHeroImage);
-router.delete("/hero/video", HeroController.deleteHeroVideo);
+router.post("/hero/upload", AdminAuthMiddleware, heroUpload, HeroController.uploadHero);
+router.put("/hero/update", AdminAuthMiddleware, heroUpload, HeroController.updateHero);
+router.delete("/hero/image", AdminAuthMiddleware, HeroController.deleteHeroImage);
+router.delete("/hero/video", AdminAuthMiddleware, HeroController.deleteHeroVideo);
 
 
 // Hero Content
@@ -154,8 +154,8 @@ router.get("/image-proxy", async (req, res) => {
 
 // Contact us
 router.post("/Contact", ContactUs.createContact);
-router.get("/GetContact", ContactUs.getContacts);
-router.delete("/DeleteContact", ContactUs.deleteContact);
+router.get("/GetContact", AdminAuthMiddleware, ContactUs.getContacts);
+router.delete("/DeleteContact", AdminAuthMiddleware, ContactUs.deleteContact);
 
 // Properties Api's
 // router.get("/all-properties", PropertyController.getAllProperties);
@@ -208,12 +208,12 @@ router.get("/universalFilterNewOffPlan", NewOffPlanProperties.filterOffPlanPrope
 
 // toggle Status of the newOffplan Properties
 router.put(
-  "/update-status-offplan-properties/:id",
+  "/update-status-offplan-properties/:id", AdminAuthMiddleware,
   NewOffPlanProperties.StatusUpdateOffPlanProperties,
 );
 // Dashboard Filter
 router.get(
-  "/filter-offplan-properties",
+  "/filter-offplan-properties", AdminAuthMiddleware,
   NewOffPlanProperties.filterDashboardProperties,
 );
 
@@ -230,46 +230,46 @@ router.post("/refer-password-reset", ReferProperties.ReferTrackResetPassword)
 router.get("/GetBlogs", Blogs.GetAllBlogs);
 router.get("/SingleBlog", Blogs.getSingleBlog);
 router.get("/SingleBlogBySlug", Blogs.getBlogBySlug);
-router.get("/DeleteBlog", Blogs.deleteBlog);
+router.get("/DeleteBlog", AdminAuthMiddleware, Blogs.deleteBlog);
 router.get("/GetBlogByTag", Blogs.getBlogsByTags);
-router.post("/Addblog", Blogs.upload, Blogs.createBlog);
-router.put("/UpdateBlog/:id", Blogs.upload, Blogs.updateBlog);
+router.post("/Addblog", AdminAuthMiddleware, Blogs.upload, Blogs.createBlog);
+router.put("/UpdateBlog/:id", AdminAuthMiddleware, Blogs.upload, Blogs.updateBlog);
 router.get("/getBlogByAgent", Blogs.getBlogsByAgent);
 
 // Category Routes
-router.post("/create-category", CategoryController.createCategory);
+router.post("/create-category", AdminAuthMiddleware, CategoryController.createCategory);
 router.get("/get-category", CategoryController.getCategories);
-router.put("/update-category", CategoryController.updateCategory);
-router.delete("/delete-category", CategoryController.deleteCategory);
+router.put("/update-category", AdminAuthMiddleware, CategoryController.updateCategory);
+router.delete("/delete-category", AdminAuthMiddleware, CategoryController.deleteCategory);
 
 // News Routes/
 router.get("/GetNews", News.GetAllNews);
 router.get("/SingleNews", News.getSingleNews);
 router.get("/SingleNewsBySlug", News.getNewsBySlug);
-router.get("/DeleteNews", News.deleteNews);
+router.get("/DeleteNews", AdminAuthMiddleware, News.deleteNews);
 router.get("/GetNewsByTag", News.getNewsByTags);
-router.post("/AddNews", News.upload, News.createNews);
-router.put("/UpdateNews", News.upload, News.updateNews);
+router.post("/AddNews", AdminAuthMiddleware, News.upload, News.createNews);
+router.put("/UpdateNews", AdminAuthMiddleware, News.upload, News.updateNews);
 
 // Community Guideline
 router.get("/GetCommunityGuides", CommunityGuides.getAllCommunityGuides);
 router.get("/SingleCommunityGuide", CommunityGuides.getSingleCommunityGuide);
-router.get("/DeleteCommunityGuide", CommunityGuides.deleteCommunityGuide);
+router.get("/DeleteCommunityGuide", AdminAuthMiddleware, CommunityGuides.deleteCommunityGuide);
 router.post(
-  "/AddCommunityGuide",
+  "/AddCommunityGuide", AdminAuthMiddleware,
   CommunityGuides.uploadMultiple,
   CommunityGuides.createCommunityGuide,
 );
 router.post(
-  "/UpdateCommunityGuide",
+  "/UpdateCommunityGuide", AdminAuthMiddleware,
   CommunityGuides.uploadMultiple,
   CommunityGuides.updateCommunityGuide,
 );
 
 router.post("/off-plan-form", offPlanListingForm.createOffPlanContact);
-router.get("/off-plan-contacts", offPlanListingForm.getOffPlanContacts);
+router.get("/off-plan-contacts", AdminAuthMiddleware, offPlanListingForm.getOffPlanContacts);
 router.delete(
-  "/off-plan-contacts-delete/:id",
+  "/off-plan-contacts-delete/:id", AdminAuthMiddleware,
   offPlanListingForm.deleteOffPlanContact,
 );
 
@@ -285,13 +285,13 @@ router.get("/offplan/projects/developer-suggestions", OffplanPixxiController.get
 router.get("/offplan/projects/developers", OffplanPixxiController.getAllOffplanPIXXIDevelopers)
 // router.post("/offplan/projects/backfill-slugs", OffplanPixxiController.backfillOffplanPIXXISlugs)
 
-router.post("/CreatePodcast", Podcast.upload, Podcast.createPodcast);
+router.post("/CreatePodcast", AdminAuthMiddleware, Podcast.upload, Podcast.createPodcast);
 router.get("/AllPodcasts", Podcast.getAllPodcasts);
 router.get("/SinglePodcast", Podcast.getPodcastById);
 router.get("/SinglePodcastBySlug", Podcast.getPodcastBySlug);
 router.get("/PodcastByTag", Podcast.getPodcastsByTags);
-router.post("/UpdatePodcast", Podcast.upload, Podcast.updatePodcast);
-router.get("/DeletePodcast", Podcast.deletePodcast);
+router.post("/UpdatePodcast", AdminAuthMiddleware, Podcast.upload, Podcast.updatePodcast);
+router.get("/DeletePodcast", AdminAuthMiddleware, Podcast.deletePodcast);
 
 // router.get("/SinglePodcast", Podcast.getSinglePodcast);
 
@@ -309,13 +309,13 @@ router.get("/Property-location-suggestions", AllFilter.getAddressSuggestions);
 
 // AGENT API ENDPOINTS
 router.post(
-  "/register-agents",
+  "/register-agents", AdminAuthMiddleware,
   agentUpload.single("imageUrl"),
   AgentController.createAgent,
 );
 // Your route is already correct!
 router.post(
-  "/update-agent",
+  "/update-agent", AdminAuthMiddleware,
   agentUpload.single("image"),
   AgentController.updateAgent,
 );
@@ -327,7 +327,7 @@ router.get("/Allagents", AgentController.getAgents);
 
 router.get("/Agent", AgentController.getAgentById);
 router.get("/AgentByEmail", AgentController.getAgentByEmail);
-router.get("/delete-agent", AgentController.deleteAgent);
+router.get("/delete-agent", AdminAuthMiddleware, AgentController.deleteAgent);
 router.get("/getAgentLanguages", AgentController.getAgentLanguages)
 // router.post("/backfill-agent-images", AgentController.backfillAgentCompressImages)
 
@@ -369,23 +369,23 @@ router.get(
 );
 
 router.post("/propertyValuation", propertyValuation.createPropertyValuation);
-router.get("/get-property-valuations", propertyValuation.getPropertyValuations);
+router.get("/get-property-valuations", AdminAuthMiddleware, propertyValuation.getPropertyValuations);
 router.delete(
-  "/delete-property-valuation/:id",
+  "/delete-property-valuation/:id", AdminAuthMiddleware,
   propertyValuation.deletePropertyValuation,
 );
 
 router.post("/list-property-form", propertyListForm.createPropertyListForm);
-router.get("/get-list-property-forms", propertyListForm.getPropertyListsForm);
+router.get("/get-list-property-forms", AdminAuthMiddleware, propertyListForm.getPropertyListsForm);
 router.delete(
-  "/delete-list-property-form/:id",
+  "/delete-list-property-form/:id", AdminAuthMiddleware,
   propertyListForm.deletePropertyListForm,
 );
 
 // router.post("/agent-update/:trackingCode", ReferProperties.agentUpdate)
 
 router.put(
-  "/update-community-guide-status/:id",
+  "/update-community-guide-status/:id", AdminAuthMiddleware,
   CommunityGuides.updateCommunityStatus,
 );
 router.get("/get-community-guides", CommunityGuides.getAllCommunityGuideInfo);
@@ -402,16 +402,16 @@ router.get(
 );
 
 router.post("/mortgage-quote", MortgageQuote.createMortgageQuote);
-router.get("/get-all-mortgage-quote", MortgageQuote.getMortgageQuotes);
-router.delete("/delete-mortgage-quote/:id", MortgageQuote.deleteMortgageQuote);
+router.get("/get-all-mortgage-quote", AdminAuthMiddleware, MortgageQuote.getMortgageQuotes);
+router.delete("/delete-mortgage-quote/:id", AdminAuthMiddleware, MortgageQuote.deleteMortgageQuote);
 
 router.post("/mortgage-approval", MortgageApproval.createMortgageApproval);
 router.get(
-  "/get-all-mortgage-approvals",
+  "/get-all-mortgage-approvals", AdminAuthMiddleware,
   MortgageApproval.getMortgageApprovals,
 );
 router.delete(
-  "/delete-mortgage-approval/:id",
+  "/delete-mortgage-approval/:id", AdminAuthMiddleware,
   MortgageApproval.deleteMortgageApproval,
 );
 
@@ -420,15 +420,16 @@ router.post(
   RentalYieldMortgageApproval.createRentalYieldApproval,
 );
 router.get(
-  "/get-all-rental-yield-approvals",
+  "/get-all-rental-yield-approvals", AdminAuthMiddleware,
   RentalYieldMortgageApproval.getRentalYieldApprovals,
 );
 router.delete(
-  "/delete-rental-yeild-approval/:id",
+  "/delete-rental-yeild-approval/:id", AdminAuthMiddleware,
   RentalYieldMortgageApproval.deleteRentalYieldApproval,
 );
 
 router.post("/auth/login", DashboardLoginAuthController.login);
+router.get("/auth/refresh-token", DashboardLoginAuthController.refreshToken);
 router.get(
   "/auth/verify",
   AdminAuthMiddleware,
@@ -452,8 +453,8 @@ router.post("/subscribe", footerSubscribeEmail.subscribeEmail);
 
 // Download Brochure & FloorPlan
 router.post("/download-request", offPlanDownloadController.createOffplanDownload);
-router.get("/get-offplan-downloads", offPlanDownloadController.getOffplanDownloads);
-router.delete("/delete-offplan-download", offPlanDownloadController.deleteOffplanDownload);
+router.get("/get-offplan-downloads", AdminAuthMiddleware, offPlanDownloadController.getOffplanDownloads);
+router.delete("/delete-offplan-download", AdminAuthMiddleware, offPlanDownloadController.deleteOffplanDownload);
 
 
 

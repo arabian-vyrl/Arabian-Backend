@@ -1,27 +1,35 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.SECRET_KEY;
-
 const authenticateToken = (req, res, next) => {
   try {
-    const token = req.cookies.login_token;
+    const authHeader = req.headers.authorization;
 
-
-    
-    if (!token) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
+        code: "NO_TOKEN",
         message: "Access denied. No token provided.",
       });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    if (!process.env.ACCESS_SECRET) {
+      return res.status(500).json({ success: false, message: "Server configuration error" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+
+    if (decoded.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Insufficient permissions" });
+    }
+
+    req.user = { email: decoded.email, role: decoded.role };
     next();
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: "Invalid or expired token",
+      code: "TOKEN_INVALID",
+      message: "Token expired or invalid",
     });
   }
 };
