@@ -27,6 +27,7 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const GetLocationRedin = require("../Controllers/GetLocationRedin");
 const DashboardLoginAuthController = require("../Controllers/DashboardLoginAuthController");
 const AdminAuthMiddleware = require("../Middlewares/Auth");
+const LandingPageController = require("../Controllers/LandingPageController");
 // Import Agent Controller
 const AgentController = require("../Controllers/AgentController");
 const CategoryController = require("../Controllers/CategoryController");
@@ -427,6 +428,9 @@ router.delete(
   "/delete-rental-yeild-approval/:id", AdminAuthMiddleware,
   RentalYieldMortgageApproval.deleteRentalYieldApproval,
 );
+
+router.get("/landing-page-content", LandingPageController.getLandingPage);
+router.put("/landing-page-content", AdminAuthMiddleware, LandingPageController.updateLandingPage);
 
 router.post("/auth/login", DashboardLoginAuthController.login);
 router.get("/auth/refresh-token", DashboardLoginAuthController.refreshToken);
